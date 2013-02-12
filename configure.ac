@@ -5,7 +5,7 @@ AC_PREREQ([2.68])
 AC_INIT([libSDLc],
         [0.1.0],
         [jon@haeggblad.com],
-        [libsdl],
+        [libsdlc],
         [http://github.com/octol/libsdlc])
 AC_CONFIG_SRCDIR([README])
 AC_CONFIG_MACRO_DIR([m4])
