@@ -1,0 +1,10 @@
+NEWS
+====
+
+This file contains verious news and updates regarding the development of SDLc.
+
+* Tue, 12 Feb 2013 18:00:32 +0000: Jon Haggblad <jon@haeggblad.com>
+
+    While SDLc was initially written 10 years ago as part of the Kexx2 game,
+    this (libsdlc-0.1.0) is the first release separate from Kexx2. The changes
+    are very minor.
