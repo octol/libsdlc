@@ -1,9 +1,9 @@
 README
 ======
 
-SDLc is a basic set of C++ classes that wrap the C interface of SDL. It does
-not attempt to be a complete framework, merely to make SDL a little bit easier
-to use in an OOP setting.
+SDLc ("SDL classes") is a basic set of C++ classes that wrap the C interface of
+SDL. It does not attempt to be a complete framework, merely to make SDL a
+little bit easier to use in an OOP setting.
 
 The initial version was written in traditional C++ (C with classes style) in
 2000-2002. If I get around to it, I'll eventually refactor the code to a more
