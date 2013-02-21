@@ -16,6 +16,7 @@ General:
 - Rule of five in Font class
 - Rule of five in Music class
 - Rule of five in Sound class
+- SDLc.h / libsdlc.h that includes all headers.
 
 BaseSurface
 - printSurfaceInfo() Should probably return ostream instead of printing directly
