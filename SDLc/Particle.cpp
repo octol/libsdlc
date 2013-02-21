@@ -22,10 +22,10 @@
 void Particle::update(const Timer& timer)
 {
     // Update position
-    setX(getX() + (getXVel()  * timer.getFrametime()));
-    setY(getY() + (getYVel()  * timer.getFrametime()));
+    setX(getX() + (getXVel()  * timer.frame_time()));
+    setY(getY() + (getYVel()  * timer.frame_time()));
 
     // Update alpha
-    setAlpha(getAlpha() - (getFadeSpeed() * timer.getFrametime()));
+    setAlpha(getAlpha() - (getFadeSpeed() * timer.frame_time()));
 }
 

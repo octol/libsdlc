@@ -30,7 +30,7 @@ Timer::Timer()
 
 Timer::~Timer()
 {
-    if (!initialised)
+    if (!initialised_)
         close();
 }
 
@@ -50,33 +50,33 @@ int Timer::init()
     } else {
         result = SDL_InitSubSystem(SDL_INIT_TIMER);
     }
-    initialised = true;
+    initialised_ = true;
     return result;
 }
 
 void Timer::close()
 {
     SDL_QuitSubSystem(SDL_INIT_TIMER);
-    initialised = false;
+    initialised_ = false;
 }
 
-void Timer::update(int frame_time_wait)
+void Timer::update(uint32_t frame_time_wait)
 {
     // Run the first time
-    if (start_ticks == 0) {
-        start_ticks = getTicks();
+    if (start_ticks_ == 0) {
+        start_ticks_ = ticks();
         
     // The rest of the time
     } else {
-        current_ticks = getTicks();
+        current_ticks_ = ticks();
 
-        while (current_ticks - start_ticks < frame_time_wait) {
-            current_ticks = getTicks();
+        while (current_ticks_ - start_ticks_ < frame_time_wait) {
+            current_ticks_ = ticks();
         }
 
-        frame_time = current_ticks - start_ticks;
-        fps = (1.0f / ((float)frame_time / 1000.0f));
-        start_ticks = current_ticks;
+        frame_ticks_ = current_ticks_ - start_ticks_;
+        fps_ = (1.0f / ((float)frame_ticks_ / 1000.0f));
+        start_ticks_ = current_ticks_;
     }
 }
 
@@ -85,12 +85,17 @@ void Timer::update()
     update(0);
 }
 
-void Timer::resetTimer()
+void Timer::reset_timer()
 {
-    start_ticks = getTicks();
+    start_ticks_ = ticks();
 }
 
-Uint32 Timer::getTicks() const
+uint32_t Timer::ticks() const
 {
     return SDL_GetTicks();
+}
+
+void Timer::delay(uint32_t ms)
+{
+    SDL_Delay(ms);
 }

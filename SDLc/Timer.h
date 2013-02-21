@@ -30,30 +30,30 @@ public:
     void close();
 
     // Updates the fps and frametime.
-    void update(int frame_time_wait);
+    void update(uint32_t frame_time_wait);
     void update();
 
-    // In case we want to limit the FPS. Should be called after Timer::update()
-    //int limitFPS(float fps);
-
-    void resetTimer();
-    float getFPS();
-    float getFrametime() const;
+    void reset_timer();
 
     // Get the number of ticks (ms) since init.
-    virtual Uint32 getTicks() const;
+    virtual uint32_t ticks() const;
+
+    void delay(uint32_t ms);
+
+    float fps();
+    float frame_time() const;
 
 private:
-    bool initialised = false;
+    bool initialised_ = false;
 
     // Keeps track of the frame rate timing.
     //int frame = 0;
-    int start_ticks = 0;
-    int current_ticks = 0;
+    uint32_t start_ticks_ = 0;
+    uint32_t current_ticks_ = 0;
 
     // These gets updated from this info, not necessarily every frame.
-    float fps = 0;
-    float frame_time = 0;
+    float fps_ = 0;
+    uint32_t frame_ticks_ = 0;
 };
 
 // -----------------------------------------------------------------------------
@@ -61,15 +61,15 @@ private:
 // -----------------------------------------------------------------------------
 
 inline
-float Timer::getFPS()
+float Timer::fps()
 {
-    return fps;
+    return fps_;
 }
 
 inline
-float Timer::getFrametime() const 
+float Timer::frame_time() const 
 {
-    return (float)frame_time / 1000.0f;
+    return (float)frame_ticks_ / 1000.0f;
 }
 
 #endif // SDLC_TIMER_H

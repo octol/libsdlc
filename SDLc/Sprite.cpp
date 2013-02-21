@@ -38,7 +38,7 @@ Sprite::~Sprite()
 
 void Sprite::update(const Timer& timer)
 {
-    update(timer.getFrametime());
+    update(timer.frame_time());
 }
 
 void Sprite::update(float frametime)
