@@ -124,10 +124,10 @@ SDL_Rect Sprite::getRect() const
 {
     SDL_Rect rect;
 
-    rect.x = (int)getX();
-    rect.y = (int)getY();
-    rect.w = getWidth();
-    rect.h = getHeight();
+    rect.x = (int16_t)getX();
+    rect.y = (int16_t)getY();
+    rect.w = (uint16_t)getWidth();
+    rect.h = (uint16_t)getHeight();
 
     return rect;
 }
@@ -136,10 +136,10 @@ SDL_Rect Sprite::getReducedRect() const
 {
     SDL_Rect rect = getRect();
 
-    rect.x = rect.x + (int)((float)rect.w * 0.25f);
-    rect.y = rect.y + (int)((float)rect.h * 0.25f);
-    rect.w = (int)(rect.w * 0.5f);
-    rect.h = (int)(rect.h * 0.5f);
+    rect.x = rect.x + (int16_t)((float)rect.w * 0.25f);
+    rect.y = rect.y + (int16_t)((float)rect.h * 0.25f);
+    rect.w = (int16_t)(rect.w * 0.5f);
+    rect.h = (int16_t)(rect.h * 0.5f);
 
     return rect;
 }

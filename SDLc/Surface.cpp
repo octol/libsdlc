@@ -80,7 +80,7 @@ void Surface::alloc(int w, int h)
 
 void Surface::load(const std::string path)
 {
-    Uint8 r[4], g[4], b[4], a[4];
+    uint8_t r[4], g[4], b[4], a[4];
 
     Surface surface;
     surface.loadAlpha(path);

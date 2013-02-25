@@ -50,39 +50,39 @@ public:
     void blit(Sprite& sprite);
 
     // Drawing primitives
-    void setPix(int x, int y, Uint8 r, Uint8 g, Uint8 b);  
-    void blendPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a); 
-    void getPix(int x, int y, Uint8* r, Uint8* g, Uint8* b) const; 
+    void setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b);  
+    void blendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
+    void getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const; 
 
     // These are 16 bit only.
-    void fastSetPix(int x, int y, Uint8 r, Uint8 g, Uint8 b); 
-    void fastBlendPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a); 
-    void fastGetPix(int x, int y, Uint8* r, Uint8* g, Uint8* b) const; 
+    void fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b); 
+    void fastBlendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
+    void fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const; 
 
     // These are 32 bit only.
-    void setPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a); 
-    void fastSetPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a); 
-    void getPix(int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a) const; 
-    void fastGetPix(int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a) const;
+    void setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
+    void fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
+    void getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const; 
+    void fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const;
 
-    void line(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b);
-    void lineAA(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b);
+    void line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
+    void lineAA(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
 
     // These are 16 bit only
-    void fastLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b);
-    void fastLineAA(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b);
+    void fastLine(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
+    void fastLineAA(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
 
-    void fillRect(int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b);
+    void fillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b);
 
     // The alpha value of the entire surface
-    Uint8 setAlpha(Uint8 value);
-    Uint8 getAlpha() const;
+    uint8_t setAlpha(uint8_t value);
+    uint8_t getAlpha() const;
 
     // Basic printing. Uses fixed font if not specified.
     // Note that max(value) = 999 999 999.
-    void print(int x, int y, const std::string text, Uint8 r, Uint8 g, Uint8 b);
+    void print(int x, int y, const std::string text, uint8_t r, uint8_t g, uint8_t b);
     void print(int x, int y, const std::string text, Font& font);
-    void print(int x, int y, Uint32 value, Uint8 r, Uint8 g, Uint8 b);
+    void print(int x, int y, Uint32 value, uint8_t r, uint8_t g, uint8_t b);
     void print(int x, int y, Uint32 value, Font& font); 
 
     virtual int getWidth() const;
@@ -96,7 +96,7 @@ public:
 
 private:
     void drawChar(int x, int y, char c, Uint32 color);   // used by print()
-    Uint8 m_alpha = 255;  // surface alpha value, buffered
+    uint8_t m_alpha = 255;  // surface alpha value, buffered
 };
 
 // -----------------------------------------------------------------------------
@@ -132,19 +132,19 @@ void BaseSurface::blit(int x, int y, BaseSurface& src)
 
 #ifdef INLINE_FASTPIX
 inline
-void BaseSurface::fastSetPix(int x, int y, Uint8 r, Uint8 g, Uint8 b)
+void BaseSurface::fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
-    Uint16 color = static_cast<Uint16>(SDL_MapRGB(data->format, r, g, b));
+    uint16_t color = static_cast<uint16_t>(SDL_MapRGB(data->format, r, g, b));
 #ifndef OPTIMIZE_SCREEN_WIDTH_640
-    *((Uint16*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
+    *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
 #endif
 #ifdef OPTIMIZE_SCREEN_WIDTH_640
-    *((Uint16*)data->pixels + y * 640 + x) = color;
+    *((uint16_t*)data->pixels + y * 640 + x) = color;
 #endif
 }
 
 inline
-void BaseSurface::fastSetPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+void BaseSurface::fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     Uint32 color = SDL_MapRGBA(data->format, r, g, b, a);
 #ifndef OPTIMIZE_SCREEN_WIDTH_640
@@ -156,9 +156,9 @@ void BaseSurface::fastSetPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 }
 
 inline
-void BaseSurface::fastBlendPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+void BaseSurface::fastBlendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-    Uint8 red = 0, green = 0, blue = 0;
+    uint8_t red = 0, green = 0, blue = 0;
     fastGetPix(x, y, &red, &green, &blue);
     red = ((a * (r - red)) >> 8) + red;
     green = ((a * (g - green)) >> 8) + green;
@@ -167,26 +167,26 @@ void BaseSurface::fastBlendPix(int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 }
 
 inline
-void BaseSurface::fastGetPix(int x, int y, Uint8* r, Uint8* g, Uint8* b) const
+void BaseSurface::fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
 {
 #ifndef OPTIMIZE_SCREEN_WIDTH_640
-    Uint16 pixel = *((Uint16*)data->pixels + ((y * data->pitch) >> 1) + x);
+    uint16_t pixel = *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x);
 #endif
 #ifdef OPTIMIZE_SCREEN_WIDTH_640
-    Uint16 pixel = *((Uint16*)data->pixels + y * 640 + x);
+    uint16_t pixel = *((uint16_t*)data->pixels + y * 640 + x);
 #endif
 
-    Uint8 tmp;
+    uint8_t tmp;
     tmp = (pixel & 63488) >> 11;
-    *r = (Uint8)(tmp << 3) + (tmp >> 5);
+    *r = (uint8_t)(tmp << 3) + (tmp >> 5);
     tmp = (pixel & 2016) >> 5;
-    *g = (Uint8)(tmp << 2) + (tmp >> 5);
+    *g = (uint8_t)(tmp << 2) + (tmp >> 5);
     tmp = (pixel & 31) >> 0;
-    *b = (Uint8)(tmp << 3) + (tmp >> 5);
+    *b = (uint8_t)(tmp << 3) + (tmp >> 5);
 }
 
 inline
-void BaseSurface::fastGetPix(int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a) const
+void BaseSurface::fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
 {
 #ifndef OPTIMIZE_SCREEN_WIDTH_640
     Uint32 pixel = *((Uint32*)data->pixels + ((y * data->pitch) >> 1) + x);
@@ -199,14 +199,14 @@ void BaseSurface::fastGetPix(int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* 
 #endif // INLINE_FASTPIX
 
 inline
-Uint8 BaseSurface::setAlpha(Uint8 value) 
+uint8_t BaseSurface::setAlpha(uint8_t value) 
 {
     SDL_SetAlpha(data, SDL_SRCALPHA, value);
     return (m_alpha = value);
 }
 
 inline
-Uint8 BaseSurface::getAlpha() const
+uint8_t BaseSurface::getAlpha() const
 {
     return m_alpha;
 }
