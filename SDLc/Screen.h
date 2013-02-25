@@ -23,12 +23,13 @@
 
 class Screen : public BaseSurface {
 public:
-    Screen();
     virtual ~Screen();
 
     void init(int w, int h, int bpp, int type);
     void close();
     void printVideoInfo();
+    int show_cursor(bool toggle);
+    void set_caption(std::string title);
 
     // Use either UpdateArea() + Flip() or just FlipAll()
     void updateArea(int x, int y, int w, int h);

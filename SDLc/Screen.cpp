@@ -24,9 +24,6 @@
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
-Screen::Screen()
-{
-}
 
 Screen::~Screen()
 {
@@ -36,6 +33,7 @@ Screen::~Screen()
 // -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
+
 void Screen::init(int w, int h, int bpp, int type)
 {
     if (sdlinited == false) {
@@ -82,6 +80,16 @@ void Screen::printVideoInfo()
     std::cout << "BytesPerPixel: "  << info->vfmt->BytesPerPixel << std::endl;
 
     std::cout << std::endl;
+}
+
+int Screen::show_cursor(bool toggle)
+{
+    return SDL_ShowCursor(toggle);
+}
+
+void Screen::set_caption(std::string title)
+{
+    SDL_WM_SetCaption(title.c_str(), NULL);
 }
 
 void Screen::updateArea(int x, int y, int w, int h)
