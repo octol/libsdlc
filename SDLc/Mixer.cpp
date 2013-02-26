@@ -103,3 +103,8 @@ int Mixer::getSoundVolume() const
     return soundVolume;
 }
 
+int Mixer::fade_out_music(int ms)
+{
+    return Mix_FadeOutMusic(3000);
+}
+

@@ -32,6 +32,8 @@ public:
     int setSoundVolume(int value);
     int getSoundVolume() const;
 
+    int fade_out_music(int ms);
+
 private:
     bool initialised = false;
     int musicVolume = 128;
