@@ -23,6 +23,7 @@
 
 namespace sdlc {
 
+// TODO: move to composition.
 class Screen : public BaseSurface {
 public:
     virtual ~Screen();

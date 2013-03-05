@@ -29,6 +29,7 @@
 
 namespace sdlc {
 
+// TODO: move to composition.
 class Surface : public BaseSurface {
 public:
     Surface();
