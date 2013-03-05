@@ -38,7 +38,8 @@ libsdlc_@LIBSDLC_API_VERSION@_la_LDFLAGS = -version-info $(LIBSDLC_SO_VERSION)
 ## installation directory.  This only works if the directory hierarchy in the
 ## source tree matches the hierarchy at the install location, however.
 libsdlc_includedir = $(includedir)/libsdlc-$(LIBSDLC_API_VERSION)
-nobase_libsdlc_include_HEADERS = SDLc/Surface.h \
+nobase_libsdlc_include_HEADERS = SDLc.h \
+				 SDLc/Surface.h \
 				 SDLc/BaseSurface.h \
 				 SDLc/Font.h \
 				 SDLc/Misc.h \
