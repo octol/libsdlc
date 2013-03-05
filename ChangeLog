@@ -1,9 +1,16 @@
 Change Log
 ==========
 
-Tue, 12 Feb 2013 18:03:31 +0000: Jon Haggblad <jon@haeggblad.com>
-0.1.0: First release separate from Kexx2.
+v0.2.0: Tue, 05 Mar 2013 17:43:03 +0000: Jon Haggblad <jon@haeggblad.com>
 
+    * Moved all classes to sdlc namespace.
+    * Added a global SDLc.h header file.
+    * Misc fixes.
+    * Started the migration to intrinsic c++ type.
+
+v0.1.0: Tue, 12 Feb 2013 18:03:31 +0000: Jon Haggblad <jon@haeggblad.com>
+
+    * First release separate from Kexx2.
     * Minor code cleanup.
 
 

@@ -3,6 +3,11 @@ NEWS
 
 This file contains verious news and updates regarding the development of SDLc.
 
+* Tue, 05 Mar 2013 17:42:28 +0000: Jon Haggblad <jon@haeggblad.com>
+
+    Version 0.2.0 now has a reasonable public interface due to the new sdlc
+    namespace and the global header file.
+
 * Tue, 12 Feb 2013 18:00:32 +0000: Jon Haggblad <jon@haeggblad.com>
 
     While SDLc was initially written 10 years ago as part of the Kexx2 game,
