@@ -21,6 +21,8 @@
 #include "Misc.h"
 #include "Screen.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -134,3 +136,4 @@ void Screen::flipAll()
     SDL_Flip(data);
     updateI = 0;
 }
+} // namespace sdlc

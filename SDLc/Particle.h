@@ -19,6 +19,8 @@
 #ifndef SDLC_PARTICLE_H
 #define SDLC_PARTICLE_H
 
+namespace sdlc {
+
 class Timer;
 
 class Particle {
@@ -194,4 +196,5 @@ bool Particle::active(bool value)
 {
     return (m_active = value);
 }
+} // namespace sdlc
 #endif // SDLC_PARTICLE_H

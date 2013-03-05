@@ -21,6 +21,8 @@
 #include "Font.h"
 #include "Sprite.h"
 
+namespace sdlc {
+
 void BaseSurface::printSurfaceInfo() const
 {
     printf("flags: %x\n", data->flags);
@@ -839,3 +841,4 @@ void BaseSurface::drawChar(int x, int y, char c, Uint32 color)
         xTmp = xTmp - 8;
     }
 }
+} // namespace sdlc

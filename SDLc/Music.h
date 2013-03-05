@@ -22,6 +22,8 @@
 #include <string>
 #include "SDL_mixer.h"
 
+namespace sdlc {
+
 class Music {
 public:
     Music();
@@ -38,5 +40,5 @@ private:
     Mix_Music* music = nullptr;
     bool loaded = false;
 };
-
+} // namespace sdlc
 #endif // SDLC_MUSIC_H

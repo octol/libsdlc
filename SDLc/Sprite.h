@@ -21,6 +21,8 @@
 
 #include "Surface.h"
 
+namespace sdlc {
+
 class Timer;
 
 class Sprite : public Surface {
@@ -157,4 +159,5 @@ bool Sprite::lockedToScreen(bool value)
 {
     return m_lockedToScreen = value;
 }
+} // namespace sdlc
 #endif // SDLC_SPRITE_H

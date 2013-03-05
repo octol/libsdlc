@@ -19,6 +19,8 @@
 #include "Timer.h"
 #include "Particle.h"
 
+namespace sdlc {
+
 void Particle::update(const Timer& timer)
 {
     // Update position
@@ -28,4 +30,4 @@ void Particle::update(const Timer& timer)
     // Update alpha
     setAlpha(getAlpha() - (getFadeSpeed() * timer.frame_time()));
 }
-
+} // namespace sdlc

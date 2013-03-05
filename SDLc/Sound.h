@@ -22,6 +22,8 @@
 #include <string>
 #include "SDL_mixer.h"
 
+namespace sdlc {
+
 class Sound {
 public:
     Sound();
@@ -58,5 +60,5 @@ int Sound::setChannel(int value)
 {
     return (channel = value);
 }
-
+} // namespace sdlc
 #endif // SDLC_SOUND_H

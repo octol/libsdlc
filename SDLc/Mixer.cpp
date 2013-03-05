@@ -22,6 +22,8 @@
 #include "Misc.h"
 #include "Mixer.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -107,4 +109,5 @@ int Mixer::fade_out_music(int ms)
 {
     return Mix_FadeOutMusic(3000);
 }
+} // namespace sdlc
 

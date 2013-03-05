@@ -18,6 +18,8 @@
 
 #define FONTDATAMAX (8*256)
 
+namespace sdlc {
+
 unsigned char fontdata[FONTDATAMAX] = {
 
     /* 0 0x00 '^@' */
@@ -2581,4 +2583,5 @@ unsigned char fontdata[FONTDATAMAX] = {
     0x00, /* 00000000 */
 
 };
+} // namespace sdlc
 

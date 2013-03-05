@@ -21,6 +21,8 @@
 
 #include "SDL.h"
 
+namespace sdlc {
+
 enum AUTOFIRE_KEYSTATE { AUTOFIRE, NO_AUTOFIRE };
 
 class Input {
@@ -34,5 +36,5 @@ private:
     bool pressDetected = false;
     unsigned char* keyAutofire = nullptr;
 };
-
+} // namespace sdlc
 #endif // SDLC_INPUT_H

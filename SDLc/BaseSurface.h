@@ -19,14 +19,16 @@
 #ifndef SDLC_BASE_SURFACE_H
 #define SDLC_BASE_SURFACE_H
 
+#include <string>
+#include "SDL.h"
+
 // Speeds up pixel ops on 640x* displays
 //#define OPTIMIZE_SCREEN_WIDTH_640
 
 // Might give slight speed gain
 #define INLINE_FASTPIX
 
-#include <string>
-#include "SDL.h"
+namespace sdlc {
 
 class Font;
 class Sprite;
@@ -228,5 +230,5 @@ int BaseSurface::getDepth() const
 {
     return data->format->BitsPerPixel;
 }
-
+} // namespace sdlc
 #endif // SDLC_BASE_SURFACE_H

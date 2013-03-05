@@ -18,6 +18,8 @@
 
 #include "Input.h"
 
+namespace sdlc {
+
 void Input::update()
 {
     // for regular input
@@ -58,3 +60,4 @@ bool Input::mouseButtonPressed()
         return false;
     }
 }
+} // namespace sdlc

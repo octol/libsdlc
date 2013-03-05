@@ -19,6 +19,8 @@
 #ifndef SDLC_MIXER_H
 #define SDLC_MIXER_H
 
+namespace sdlc {
+
 class Mixer {
 public:
     Mixer();  
@@ -39,4 +41,5 @@ private:
     int musicVolume = 128;
     int soundVolume = 128;
 };
+} // namespace sdlc
 #endif // SDLC_MIXER_H

@@ -19,8 +19,11 @@
 #ifndef SDLC_MISC_H
 #define SDLC_MISC_H
 
+namespace sdlc {
+
 extern bool sdlinited;
 
 int bound(int value, int boundary1, int boundary2);
 
+} // namespace sdlc
 #endif // SDLC_MISC_H

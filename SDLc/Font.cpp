@@ -20,6 +20,8 @@
 #include "Surface.h"
 #include "Font.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -118,5 +120,6 @@ Surface* Font::getChar(char c) const
     }
     return gfx[i][j];
 }
+} // namespace sdlc
 
 

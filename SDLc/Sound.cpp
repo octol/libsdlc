@@ -19,6 +19,8 @@
 #include <iostream>
 #include "Sound.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -62,3 +64,4 @@ void Sound::play(int iterations)
 {
     Mix_PlayChannel(channel, sound, iterations);
 }
+} // namespace sdlc

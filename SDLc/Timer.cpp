@@ -20,6 +20,8 @@
 #include "Misc.h"
 #include "Timer.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -99,3 +101,4 @@ void Timer::delay(uint32_t ms)
 {
     SDL_Delay(ms);
 }
+} // namespace sdlc

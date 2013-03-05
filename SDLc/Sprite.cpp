@@ -20,6 +20,8 @@
 #include "Screen.h"
 #include "Sprite.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -167,3 +169,4 @@ bool Sprite::overlap(const SDL_Rect& rect1, const SDL_Rect& rect2)
         return false;
     }
 }
+} // namespace sdlc

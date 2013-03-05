@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace sdlc {
+
 class Surface;
 
 class Font {
@@ -37,5 +39,5 @@ private:
     Surface* gfx[29][3];
     Surface* blank = nullptr;
 };
-
+} // namespace sdlc
 #endif // SDLC_FONT_H

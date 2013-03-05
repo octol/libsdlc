@@ -20,6 +20,8 @@
 #include "Screen.h"
 #include "Surface.h"
 
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -190,3 +192,4 @@ SDL_Surface* Surface::internalLoad(std::string path)
 
     return surface;
 }
+} // namespace sdlc

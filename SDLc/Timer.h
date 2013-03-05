@@ -21,6 +21,8 @@
 
 #include "SDL.h"
 
+namespace sdlc {
+
 class Timer {
 public:
     Timer();
@@ -71,5 +73,5 @@ float Timer::frame_time() const
 {
     return (float)frame_ticks_ / 1000.0f;
 }
-
+} // namespace sdlc
 #endif // SDLC_TIMER_H

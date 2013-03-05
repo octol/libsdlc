@@ -20,6 +20,11 @@
 #include "Mixer.h"
 #include "Music.h"
 
+// TODO: in which namespace should mixer be?
+extern sdlc::Mixer* mixer;
+
+namespace sdlc {
+
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
@@ -63,7 +68,7 @@ void Music::unload()
 
 void Music::play(int iterations)
 {
-    extern Mixer* mixer;
     Mix_PlayMusic(music, iterations);
     mixer->setMusicVolume(mixer->getMusicVolume());
 }
+} // namespace sdlc

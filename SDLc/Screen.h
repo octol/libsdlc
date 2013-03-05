@@ -21,6 +21,8 @@
 
 #include "BaseSurface.h"
 
+namespace sdlc {
+
 class Screen : public BaseSurface {
 public:
     virtual ~Screen();
@@ -41,4 +43,5 @@ private:
     int updateI = 0;            // used by UpdateArea() and Flip()
     SDL_Rect updateR[256];      // used by UpdateArea() and Flip()
 };
+} // namespace sdlc
 #endif // SDLC_SCREEN_H

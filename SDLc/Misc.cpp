@@ -18,6 +18,8 @@
 
 #include "Misc.h"
 
+namespace sdlc {
+
 bool sdlinited = false;
 
 int bound(int value, int boundary1, int boundary2)
@@ -28,3 +30,4 @@ int bound(int value, int boundary1, int boundary2)
         value = boundary2;
     return value;
 }
+} // namespace sdlc

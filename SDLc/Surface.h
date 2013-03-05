@@ -27,6 +27,8 @@
 #include "SDL_image.h"
 #endif
 
+namespace sdlc {
+
 class Surface : public BaseSurface {
 public:
     Surface();
@@ -87,5 +89,5 @@ int Surface::setHeight(int h)
 {
     return (height = h);
 }
-
+} // namespace sdlc
 #endif // SDLC_SURFACE_H
