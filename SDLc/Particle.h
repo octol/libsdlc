@@ -27,6 +27,28 @@ class Particle {
 public:
     void update(const Timer& timer);
 
+    float x() const;
+    float y() const;
+    float set_x(float value);
+    float set_y(float value);
+    float x_vel() const;
+    float y_vel() const;
+    float set_x_vel(float value);
+    float set_y_vel(float value);
+
+    float alpha() const;
+    float set_alpha(float value);
+
+    float fade_speed() const;
+    float set_fade_speed(float value);
+    int r() const;
+    int g() const;
+    int b() const;
+    int set_r(int value);
+    int set_b(int value);
+    int set_g(int value);
+
+    // DEPRECATED
     float getX() const;
     float getY() const;
     float setX(float value);
@@ -53,16 +75,16 @@ public:
     bool active(bool value);
 
 private:
-    float x = 0;
-    float y = 0;
-    float xVel = 0;
-    float yVel = 0;
-    float alpha = 255;
-    float fadeSpeed = 0;
-    int r = 0;
-    int g = 0;
-    int b = 0;
-    bool m_active = false;
+    float x_ = 0;
+    float y_ = 0;
+    float x_vel_ = 0;
+    float y_vel_ = 0;
+    float alpha_ = 255;
+    float fade_speed_ = 0;
+    int r_ = 0;
+    int g_ = 0;
+    int b_ = 0;
+    bool active_ = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -72,55 +94,103 @@ private:
 inline
 float Particle::getX() const
 {
-    return x;
+    return x_;
 }
 
 inline
 float Particle::getY() const
 {
-    return y;
+    return y_;
+}
+
+inline
+float Particle::x() const
+{
+    return x_;
+}
+
+inline
+float Particle::y() const
+{
+    return y_;
 }
 
 inline
 float Particle::setX(float value)
 {
-    return (x = value);
+    return x_ = value;
 }
 
 inline
 float Particle::setY(float value)
 {
-    return (y = value);
+    return y_ = value;
+}
+
+inline
+float Particle::set_x(float value)
+{
+    return x_ = value;
+}
+
+inline
+float Particle::set_y(float value)
+{
+    return y_ = value;
 }
 
 inline
 float Particle::getXVel() const
 {
-    return xVel;
+    return x_vel_;
 }
 
 inline
 float Particle::getYVel() const
 {
-    return yVel;
+    return y_vel_;
+}
+
+inline
+float Particle::x_vel() const
+{
+    return x_vel_;
+}
+
+inline
+float Particle::y_vel() const
+{
+    return y_vel_;
 }
 
 inline
 float Particle::setXVel(float value)
 {
-    return (xVel = value);
+    return x_vel_ = value;
 }
 
 inline
 float Particle::setYVel(float value)
 {
-    return (yVel = value);
+    return y_vel_ = value;
+}
+
+inline
+float Particle::set_x_vel(float value)
+{
+    return x_vel_ = value;
+}
+
+inline
+float Particle::set_y_vel(float value)
+{
+    return y_vel_ = value;
 }
 
 inline
 float Particle::getAlpha() const
 {
-    return alpha;
+    return alpha_;
 }
 
 inline
@@ -128,37 +198,81 @@ float Particle::setAlpha(float value)
 {
     if (value > 255)     value = 255;
     else if (value < 0)  value = 0;
-    return (alpha = value);
+    return (alpha_ = value);
+}
+
+inline
+float Particle::alpha() const
+{
+    return alpha_;
+}
+
+inline
+float Particle::set_alpha(float value)
+{
+    if (value > 255)     value = 255;
+    else if (value < 0)  value = 0;
+    return (alpha_ = value);
 }
 
 inline
 float Particle::getFadeSpeed() const
 {
-    return fadeSpeed;
+    return fade_speed_;
 }
 
 inline
 float Particle::setFadeSpeed(float value)
 {
-    return (fadeSpeed = value);
+    return fade_speed_ = value;
+}
+
+inline
+float Particle::fade_speed() const
+{
+    return fade_speed_;
+}
+
+inline
+float Particle::set_fade_speed(float value)
+{
+    return fade_speed_ = value;
 }
 
 inline
 int Particle::getR() const
 {
-    return r;
+    return r_;
 }
 
 inline
 int Particle::getG() const
 {
-    return g;
+    return g_;
 }
 
 inline
 int Particle::getB() const 
 {
-    return b;
+    return b_;
+}
+
+inline
+int Particle::r() const
+{
+    return r_;
+}
+
+inline
+int Particle::g() const
+{
+    return g_;
+}
+
+inline
+int Particle::b() const 
+{
+    return b_;
 }
 
 inline
@@ -166,15 +280,7 @@ int Particle::setR(int value)
 {
     if (value > 255)     value = 255;
     else if (value < 0)  value = 0;
-    return (r = value);
-}
-
-inline
-int Particle::setB(int value)
-{
-    if (value > 255)     value = 255;
-    else if (value < 0)  value = 0;
-    return (g = value);
+    return r_ = value;
 }
 
 inline
@@ -182,19 +288,51 @@ int Particle::setG(int value)
 {
     if (value > 255)     value = 255;
     else if (value < 0)  value = 0;
-    return (b = value);
+    return g_ = value;
+}
+
+inline
+int Particle::setB(int value)
+{
+    if (value > 255)     value = 255;
+    else if (value < 0)  value = 0;
+    return b_ = value;
+}
+
+inline
+int Particle::set_r(int value)
+{
+    if (value > 255)     value = 255;
+    else if (value < 0)  value = 0;
+    return r_ = value;
+}
+
+inline
+int Particle::set_g(int value)
+{
+    if (value > 255)     value = 255;
+    else if (value < 0)  value = 0;
+    return g_ = value;
+}
+
+inline
+int Particle::set_b(int value)
+{
+    if (value > 255)     value = 255;
+    else if (value < 0)  value = 0;
+    return b_ = value;
 }
 
 inline
 bool Particle::active() const
 {
-    return m_active;
+    return active_;
 }
 
 inline
 bool Particle::active(bool value)
 {
-    return (m_active = value);
+    return active_ = value;
 }
 } // namespace sdlc
 #endif // SDLC_PARTICLE_H

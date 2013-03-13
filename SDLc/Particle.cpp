@@ -24,10 +24,10 @@ namespace sdlc {
 void Particle::update(const Timer& timer)
 {
     // Update position
-    setX(getX() + (getXVel()  * timer.frame_time()));
-    setY(getY() + (getYVel()  * timer.frame_time()));
+    set_x(x() + (x_vel()  * timer.frame_time()));
+    set_y(y() + (y_vel()  * timer.frame_time()));
 
     // Update alpha
-    setAlpha(getAlpha() - (getFadeSpeed() * timer.frame_time()));
+    set_alpha(alpha() - (fade_speed() * timer.frame_time()));
 }
 } // namespace sdlc

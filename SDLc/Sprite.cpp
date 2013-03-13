@@ -46,7 +46,6 @@ void Sprite::update(const Timer& timer)
 void Sprite::update(float frametime)
 {
     // update position
-    //extern Timer *timer;
     setX(getX() + (getXVel() * frametime));
     setY(getY() + (getYVel() * frametime));
 
@@ -97,7 +96,6 @@ bool Sprite::animationActive() const
 
 float Sprite::setX(float value)
 {
-    //extern SDL_Screen *Screen;
     SDL_Surface* screen = SDL_GetVideoSurface();
     if (lockedToScreen()) {
         if (value > (screen->w - getWidth())) {
