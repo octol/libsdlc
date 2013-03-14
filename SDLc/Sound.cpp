@@ -25,10 +25,6 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Sound::Sound()
-{
-}
-
 Sound::~Sound()
 {
     unload();
@@ -40,28 +36,28 @@ Sound::~Sound()
 
 void Sound::load(std::string path)
 {
-    sound = Mix_LoadWAV(path.c_str());
-    if (sound == NULL) {
+    sound_ = Mix_LoadWAV(path.c_str());
+    if (sound_ == NULL) {
         std::cerr << "Sound::load() " << SDL_GetError() << std::endl;
     }
-    loaded = true;
+    loaded_ = true;
 }
 
 void Sound::link(Sound* object)
 {
-    sound = object->sound;
+    sound_ = object->sound_;
 }
 
 void Sound::unload()
 {
-    if (loaded) {
-        Mix_FreeChunk(sound);
-        sound = 0;
+    if (loaded_) {
+        Mix_FreeChunk(sound_);
+        sound_ = nullptr;
     }
 }
 
 void Sound::play(int iterations)
 {
-    Mix_PlayChannel(channel, sound, iterations);
+    Mix_PlayChannel(channel_, sound_, iterations);
 }
 } // namespace sdlc

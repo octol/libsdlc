@@ -24,25 +24,29 @@
 
 namespace sdlc {
 
-class Sound {
+class Sound final {
 public:
-    Sound();
+    Sound() {};
     Sound(const Sound& sound) = delete;
     Sound& operator=(Sound& sound) = delete;
-    virtual ~Sound();
+    ~Sound();
 
     void load(std::string path);
     void link(Sound* object);
     void unload();
     void play(int iterations);
 
+    int channel() const;
+    int set_channel(int value);
+    
+    // DEPRECATED
     int getChannel() const;
     int setChannel(int value);
 
 private:
-    Mix_Chunk* sound = nullptr;
-    int channel = -1;
-    bool loaded = false;
+    Mix_Chunk* sound_ = nullptr;
+    int channel_ = -1;
+    bool loaded_ = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -50,15 +54,27 @@ private:
 // -----------------------------------------------------------------------------
 
 inline
+int Sound::channel() const
+{
+    return channel_;
+}
+
+inline
+int Sound::set_channel(int value)
+{
+    return channel_ = value;
+}
+
+inline
 int Sound::getChannel() const
 {
-    return channel;
+    return channel_;
 }
 
 inline
 int Sound::setChannel(int value)
 {
-    return (channel = value);
+    return channel_ = value;
 }
 } // namespace sdlc
 #endif // SDLC_SOUND_H
