@@ -25,6 +25,10 @@ class Timer;
 
 class Particle {
 public:
+    Particle() = default;
+    Particle(float x, float y, float x_vel, float y_vel, 
+             int red, int green, int blue, float alpha);
+
     void update(const Timer& timer);
 
     float x() const;
@@ -47,6 +51,8 @@ public:
     int set_r(int value);
     int set_b(int value);
     int set_g(int value);
+
+    bool inside(float x1, float x2, float y1, float y2);
 
     // DEPRECATED
     float getX() const;

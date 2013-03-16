@@ -21,6 +21,13 @@
 
 namespace sdlc {
 
+Particle::Particle(float x, float y, float x_vel, float y_vel, 
+                   int red, int green, int blue, float alpha) 
+    : x_(x), y_(y), x_vel_(x_vel), y_vel_(y_vel),
+      r_(red), g_(green), b_(blue), alpha_(alpha)
+{
+}
+
 void Particle::update(const Timer& timer)
 {
     // Update position
@@ -30,4 +37,10 @@ void Particle::update(const Timer& timer)
     // Update alpha
     set_alpha(alpha() - (fade_speed() * timer.frame_time()));
 }
+
+bool Particle::inside(float x1, float x2, float y1, float y2)
+{
+    return x() >= x1 && x() <= x2 && y() >= y1 && y() <= y2;
+}
+
 } // namespace sdlc
