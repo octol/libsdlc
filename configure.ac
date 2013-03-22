@@ -3,7 +3,7 @@ m4_include(m4/acx_pthread.m4)
 
 AC_PREREQ([2.68])
 AC_INIT([libSDLc],
-        [0.2.0],
+        [0.3.0],
         [jon@haeggblad.com],
         [libsdlc],
         [http://github.com/octol/libsdlc])
@@ -13,8 +13,8 @@ AC_CONFIG_HEADERS([config.h libsdlcconfig.h])
 AM_INIT_AUTOMAKE
 LT_INIT([disable-static])
 
-AC_SUBST([LIBSDLC_SO_VERSION],[0:2:0])
-AC_SUBST([LIBSDLC_API_VERSION],[0.2])
+AC_SUBST([LIBSDLC_SO_VERSION],[0:3:0])
+AC_SUBST([LIBSDLC_API_VERSION],[0.3])
 
 #-------------------------------------------------------------------------------
 # Checks for programs.
@@ -35,8 +35,9 @@ AC_LANG_PUSH([C++])
 AX_CXX_COMPILE_STDCXX_11
 AC_LANG_POP([C++])
 
-CXXFLAGS="$CXXFLAGS -pedantic -Wall -Wextra"
-CXXFLAGS="$CXXFLAGS -Weffc++ -W -Wshadow -Wcast-qual -Wwrite-strings"
+CXXFLAGS="$CXXFLAGS -pedantic -Wall -W -Wextra"
+CXXFLAGS="$CXXFLAGS -Weffc++ -Wcast-qual -Wwrite-strings"
+#CXXFLAGS="$CXXFLAGS  -Wshadow"
 #CXXFLAGS="$CXXFLAGS -Wconversion" 
 
 #-------------------------------------------------------------------------------
