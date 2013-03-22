@@ -3,6 +3,10 @@ NEWS
 
 This file contains verious news and updates regarding the development of SDLc.
 
+* Wed, 20 Mar 2013 07:34:26 +0000: Jon Haggblad <jon@haeggblad.com>
+
+    Started the migration to the new naming convention.
+
 * Tue, 05 Mar 2013 17:42:28 +0000: Jon Haggblad <jon@haeggblad.com>
 
     Version 0.2.0 now has a reasonable public interface due to the new sdlc
