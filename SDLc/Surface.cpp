@@ -26,10 +26,6 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Surface::Surface()
-{
-}
-
 Surface::~Surface()
 {
     unload();
@@ -53,7 +49,7 @@ void Surface::alloc(int w, int h, int bpp, int type)
 
     setWidth(data->w);
     setHeight(data->h);
-    loaded = true;
+    loaded_ = true;
 }
 
 void Surface::alloc(int w, int h, int bpp)
@@ -115,14 +111,28 @@ void Surface::load(const std::string path)
 
 void Surface::loadRaw(const std::string path)
 {
-    SDL_Surface* surface = internalLoad(path);
+    SDL_Surface* surface = internal_load(path);
+    data = SDL_DisplayFormat(surface);
+    SDL_FreeSurface(surface);
+}
+
+void Surface::load_raw(const std::string path)
+{
+    SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormat(surface);
     SDL_FreeSurface(surface);
 }
 
 void Surface::loadAlpha(const std::string path)
 {
-    SDL_Surface* surface = internalLoad(path);
+    SDL_Surface* surface = internal_load(path);
+    data = SDL_DisplayFormatAlpha(surface);
+    SDL_FreeSurface(surface);
+}
+
+void Surface::load_alpha(const std::string path)
+{
+    SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormatAlpha(surface);
     SDL_FreeSurface(surface);
 }
@@ -133,11 +143,17 @@ void Surface::loadColorkey(const std::string path)
     setColorKey();
 }
 
+void Surface::load_color_key(const std::string path)
+{
+    load_raw(path);
+    set_color_key();
+}
+
 void Surface::link(SDL_Surface* src)
 {
     data = src;
-    width = data->w;
-    height = data->h;
+    width_ = data->w;
+    height_ = data->h;
 }
 
 void Surface::link(Surface* src)
@@ -147,10 +163,18 @@ void Surface::link(Surface* src)
 
 void Surface::unload()
 {
-    if (loaded) {
+    if (loaded_) {
         SDL_FreeSurface(data);
-        loaded = false;
+        loaded_ = false;
     }
+}
+
+void Surface::enable_per_pixel_alpha()
+{
+    SDL_Surface* surface;
+    surface = SDL_DisplayFormatAlpha(data);
+    SDL_FreeSurface(data);
+    data = surface;
 }
 
 void Surface::enablePerPixelAlpha()
@@ -159,6 +183,13 @@ void Surface::enablePerPixelAlpha()
     surface = SDL_DisplayFormatAlpha(data);
     SDL_FreeSurface(data);
     data = surface;
+}
+
+void Surface::set_color_key()
+{
+    SDL_Surface* screen = SDL_GetVideoSurface();
+    SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
+                    SDL_MapRGB(screen->format, 255, 0, 255));
 }
 
 void Surface::setColorKey()
@@ -172,7 +203,7 @@ void Surface::setColorKey()
 // Private Functions
 // -----------------------------------------------------------------------------
 
-SDL_Surface* Surface::internalLoad(std::string path)
+SDL_Surface* Surface::internal_load(std::string path)
 {
     SDL_Surface* surface;
 
@@ -184,11 +215,11 @@ SDL_Surface* Surface::internalLoad(std::string path)
 #endif
 
     if (surface == NULL)
-        std::cerr << "Surface::internalLoad() " << SDL_GetError() << std::endl;
+        std::cerr << "Surface::internal_load() " << SDL_GetError() << std::endl;
 
-    width = surface->w;
-    height = surface->h;
-    loaded = true;
+    width_ = surface->w;
+    height_ = surface->h;
+    loaded_ = true;
 
     return surface;
 }

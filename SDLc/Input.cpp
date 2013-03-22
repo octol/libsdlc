@@ -23,27 +23,45 @@ namespace sdlc {
 void Input::update()
 {
     // for regular input
-    pressDetected = false;
-    while (SDL_PollEvent(&event))
-        pressDetected = true;
+    press_detected_ = false;
+    while (SDL_PollEvent(&event_))
+        press_detected_ = true;
 
     // for autofire
-    keyAutofire = SDL_GetKeyState(NULL);
+    key_autofire_ = SDL_GetKeyState(NULL);
 }
 
 bool Input::keyPressed(int key, AUTOFIRE_KEYSTATE autofire)
 {
     if (autofire == NO_AUTOFIRE) {
-        if (event.type == SDL_KEYDOWN && pressDetected) {
-            if (event.key.keysym.sym == key)
+        if (event_.type == SDL_KEYDOWN && press_detected_) {
+            if (event_.key.keysym.sym == key)
                 return true;
             else return false;
         } else {
             return false;
         }
-
     } else {
-        if (keyAutofire[key] == SDL_PRESSED)
+        if (key_autofire_[key] == SDL_PRESSED)
+            return true;
+        else {
+            return false;
+        }
+    }
+}
+
+bool Input::key_pressed(int key, AUTOFIRE_KEYSTATE autofire)
+{
+    if (autofire == NO_AUTOFIRE) {
+        if (event_.type == SDL_KEYDOWN && press_detected_) {
+            if (event_.key.keysym.sym == key)
+                return true;
+            else return false;
+        } else {
+            return false;
+        }
+    } else {
+        if (key_autofire_[key] == SDL_PRESSED)
             return true;
         else {
             return false;
@@ -53,10 +71,18 @@ bool Input::keyPressed(int key, AUTOFIRE_KEYSTATE autofire)
 
 bool Input::mouseButtonPressed()
 {
-    if (event.type == SDL_MOUSEBUTTONDOWN && pressDetected) {
+    if (event_.type == SDL_MOUSEBUTTONDOWN && press_detected_) {
         return true;
+    } else {
+        return false;
     }
-    else {
+}
+
+bool Input::mouse_button_pressed()
+{
+    if (event_.type == SDL_MOUSEBUTTONDOWN && press_detected_) {
+        return true;
+    } else {
         return false;
     }
 }

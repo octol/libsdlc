@@ -32,19 +32,30 @@ namespace sdlc {
 // TODO: move to composition.
 class Surface : public BaseSurface {
 public:
-    Surface();
+    Surface() {};
     virtual ~Surface();
 
     void alloc(int w, int h, int bpp, int type);
     void alloc(int w, int h, int bpp);
     void alloc(int w, int h);
     void load(const std::string path);
-    void loadRaw(const std::string path);
-    void loadAlpha(const std::string path);
-    void loadColorkey(const std::string path);
+    void load_raw(const std::string path);
+    void load_alpha(const std::string path);
+    void load_color_key(const std::string path);
     void link(SDL_Surface* src);  // remove this ?
     void link(Surface* src);
     void unload();
+
+    void enable_per_pixel_alpha();
+    void set_color_key();
+
+    int width() const;
+    int height() const;
+
+    // DEPRECATED
+    void loadRaw(const std::string path);
+    void loadAlpha(const std::string path);
+    void loadColorkey(const std::string path);
 
     void enablePerPixelAlpha();
     void setColorKey();
@@ -53,14 +64,18 @@ public:
     int getHeight() const;
 
 protected:
+    int set_width(int w);
+    int set_height(int h);
+
+    // DEPRECATED
     int setWidth(int w);
     int setHeight(int h);
 
 private:
-    SDL_Surface* internalLoad(std::string path);
-    bool loaded = false;
-    int width = 0;
-    int height = 0;
+    SDL_Surface* internal_load(std::string path);
+    bool loaded_ = false;
+    int width_ = 0;
+    int height_ = 0;
 };
 
 // -----------------------------------------------------------------------------
@@ -68,27 +83,51 @@ private:
 // -----------------------------------------------------------------------------
 
 inline
+int Surface::width() const
+{
+    return width_;
+}
+
+inline
+int Surface::height() const
+{
+    return height_;
+}
+
+inline
+int Surface::set_width(int w) 
+{
+    return width_ = w;
+}
+
+inline
+int Surface::set_height(int h) 
+{
+    return height_ = h;
+}
+
+inline
 int Surface::getWidth() const
 {
-    return width;
+    return width_;
 }
 
 inline
 int Surface::getHeight() const
 {
-    return height;
+    return height_;
 }
 
 inline
 int Surface::setWidth(int w) 
 {
-    return (width = w);
+    return (width_ = w);
 }
 
 inline
 int Surface::setHeight(int h) 
 {
-    return (height = h);
+    return (height_ = h);
 }
 } // namespace sdlc
 #endif // SDLC_SURFACE_H

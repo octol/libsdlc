@@ -33,6 +33,16 @@ void BaseSurface::printSurfaceInfo() const
     printf("data->format->BytesPerPixel: %d\n", data->format->BytesPerPixel);
 }
 
+void BaseSurface::print_surface_info() const
+{
+    printf("flags: %x\n", data->flags);
+    printf("data->w: %d\n", data->w);
+    printf("data->h: %d\n", data->h);
+    printf("data->pitch: %d\n", data->pitch);
+    printf("data->format->BitsPerPixel: %d\n", data->format->BitsPerPixel);
+    printf("data->format->BytesPerPixel: %d\n", data->format->BytesPerPixel);
+}
+
 void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
 {
     //SDL_Rect dst_rect = { x, y, rect.w, rect.h };
@@ -68,7 +78,7 @@ void BaseSurface::blit(Sprite& sprite)
 {
     SDL_Rect src_rect;
 
-    src_rect.x = static_cast<int16_t>((sprite.currentFrame - 1) 
+    src_rect.x = static_cast<int16_t>((sprite.current_frame_ - 1) 
                                     * sprite.getWidth());
     src_rect.y = 0;
     src_rect.w = static_cast<uint16_t>(sprite.getWidth());
@@ -86,6 +96,15 @@ void BaseSurface::setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 //  else *((uint16_t *)data->pixels + y * data->pitch / 2 + x) = color;
     else *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
 }
+void BaseSurface::set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
+{
+    Uint32 color = SDL_MapRGB(data->format, r, g, b);
+    if (data->format->BitsPerPixel > 16)
+//      *((Uint32 *)data->pixels + y * data->pitch / 4 + x) = color;
+        *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
+//  else *((uint16_t *)data->pixels + y * data->pitch / 2 + x) = color;
+    else *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
+}
 
 void BaseSurface::setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
@@ -93,8 +112,26 @@ void BaseSurface::setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t 
     *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
 }
 
+void BaseSurface::set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    Uint32 color = SDL_MapRGBA(data->format, r, g, b, a);
+    *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
+}
+
 #ifndef INLINE_FASTPIX
 void BaseSurface::fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
+{
+    uint16_t color = SDL_MapRGB(data->format, r, g, b);
+#ifndef OPTIMIZE_SCREEN_WIDTH_640
+//  *((uint16_t *)data->pixels + y * data->w + x) = color;
+    *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
+#endif
+#ifdef OPTIMIZE_SCREEN_WIDTH_640
+    *((uint16_t*)data->pixels + y * 640 + x) = color;
+#endif
+}
+
+void BaseSurface::fast_set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
     uint16_t color = SDL_MapRGB(data->format, r, g, b);
 #ifndef OPTIMIZE_SCREEN_WIDTH_640
@@ -118,9 +155,33 @@ void BaseSurface::fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint
     *((Uint32*)data->pixels + y * 640 + x) = color;
 #endif
 }
+
+void BaseSurface::fast_set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    Uint32 color = SDL_MapRGBA(data->format, r, g, b, a);
+#ifndef OPTIMIZE_SCREEN_WIDTH_640
+    *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
+#endif
+#ifdef OPTIMIZE_SCREEN_WIDTH_640
+    *((Uint32*)data->pixels + y * 640 + x) = color;
+#endif
+}
 #endif
 
 void BaseSurface::blendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    // fÃ€rgny = ((A/255) * fÃ€rg) + (((255-A)/255) * fÃ€rggammal)
+    uint8_t red, green, blue;
+    getPix(x, y, &red, &green, &blue);
+
+    red = ((a * (r - red)) >> 8) + red;
+    green = ((a * (g - green)) >> 8) + green;
+    blue = ((a * (b - blue)) >> 8) + blue;
+
+    setPix(x, y, red, green, blue);
+}
+
+void BaseSurface::blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     // fÃ€rgny = ((A/255) * fÃ€rg) + (((255-A)/255) * fÃ€rggammal)
     uint8_t red, green, blue;
@@ -146,6 +207,19 @@ void BaseSurface::fastBlendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, ui
 
     fastSetPix(x, y, red, green, blue);
 }
+
+void BaseSurface::fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    // new color = ((A/255) * color) + (((255-A)/255) * old color)
+    uint8_t red = 0, green = 0, blue = 0;
+    fastGetPix(x, y, &red, &green, &blue);
+
+    red = ((a * (r - red)) >> 8) + red;
+    green = ((a * (g - green)) >> 8) + green;
+    blue = ((a * (b - blue)) >> 8) + blue;
+
+    fastSetPix(x, y, red, green, blue);
+}
 #endif
 
 void BaseSurface::getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
@@ -159,7 +233,24 @@ void BaseSurface::getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
     SDL_GetRGB(pixel, data->format, r, g, b);
 }
 
+void BaseSurface::get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
+{
+    Uint32 pixel;
+    if (data->format->BitsPerPixel > 16)
+//      pixel = *((Uint32*)data->pixels + y * data->pitch / 4 + x);
+        pixel = *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x);
+//  else pixel = *((uint16_t*)data->pixels + y * data->pitch / 2 + x);
+    else pixel = *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x);
+    SDL_GetRGB(pixel, data->format, r, g, b);
+}
+
 void BaseSurface::getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
+{
+    Uint32 pixel = *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x);
+    SDL_GetRGBA(pixel, data->format, r, g, b, a);
+}
+
+void BaseSurface::get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
 {
     Uint32 pixel = *((Uint32*)data->pixels + ((y * data->pitch) >> 2) + x);
     SDL_GetRGBA(pixel, data->format, r, g, b, a);
@@ -184,10 +275,40 @@ void BaseSurface::fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) c
     tmp = (pixel & 31) >> 0;
     *b = (tmp << 3) + (tmp >> 5);
 }
+
+void BaseSurface::fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
+{
+#ifndef OPTIMIZE_SCREEN_WIDTH_640
+//  uint16_t pixel = *((uint16_t*)data->pixels + y * data->w + x);
+    uint16_t pixel = *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x);
+#endif
+#ifdef OPTIMIZE_SCREEN_WIDTH_640
+    uint16_t pixel = *((uint16_t*)data->pixels + y * 640 + x);
+#endif
+
+    unsigned tmp;
+    tmp = (pixel & 63488) >> 11;
+    *r = (tmp << 3) + (tmp >> 5);
+    tmp = (pixel & 2016) >> 5;
+    *g = (tmp << 2) + (tmp >> 5);
+    tmp = (pixel & 31) >> 0;
+    *b = (tmp << 3) + (tmp >> 5);
+}
 #endif
 
 #ifndef INLINE_FASTPIX
 void BaseSurface::fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
+{
+#ifndef OPTIMIZE_SCREEN_WIDTH_640
+    Uint32 pixel = *((Uint32*)data->pixels + ((y * data->pitch) >> 1) + x);
+#endif
+#ifdef OPTIMIZE_SCREEN_WIDTH_640
+    Uint32 pixel = *((Uint32*)data->pixels + y * 640 + x);
+#endif
+    SDL_GetRGBA(pixel, data->format, r, g, b, a);
+}
+
+void BaseSurface::fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
 {
 #ifndef OPTIMIZE_SCREEN_WIDTH_640
     Uint32 pixel = *((Uint32*)data->pixels + ((y * data->pitch) >> 1) + x);
@@ -326,9 +447,13 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
     }
 }
 
-// This implementation seems far too verbose. Need to make this more
+// TODO: This implementation seems far too verbose. Need to make this more
 // compact.
 void BaseSurface::lineAA(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
+{
+    line_aa(x1,y1,x2,y2,r,g,b);
+}
+void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
     int xPoint1, yPoint1, xPoint2, yPoint2;
     int dx, dy;
@@ -470,9 +595,14 @@ void BaseSurface::lineAA(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, u
     }
 }
 
-// This implementation seems far too verbose. Need to make this more
+// TODO: This implementation seems far too verbose. Need to make this more
 // compact.
-void BaseSurface::fastLine(int x1, int y1, int x2, int y2, \
+void BaseSurface::fastLine(int x1, int y1, int x2, int y2,
+                           uint8_t r, uint8_t g, uint8_t b)
+{
+    fast_line(x1, y1, x2, y2, r, g, b);
+}
+void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
                            uint8_t r, uint8_t g, uint8_t b)
 {
     int xPoint1, yPoint1, xPoint2, yPoint2;
@@ -598,9 +728,14 @@ void BaseSurface::fastLine(int x1, int y1, int x2, int y2, \
     }
 }
 
-// This implementation seems far too verbose. Need to make this more
+// TODO: This implementation seems far too verbose. Need to make this more
 // compact.
-void BaseSurface::fastLineAA(int x1, int y1, int x2, int y2, \
+void BaseSurface::fastLineAA(int x1, int y1, int x2, int y2,
+                             uint8_t r, uint8_t g, uint8_t b)
+{
+    fast_line_aa(x1,y1,x2,y2,r,g,b);
+}
+void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
                              uint8_t r, uint8_t g, uint8_t b)
 {
     int xPoint1, yPoint1, xPoint2, yPoint2;
@@ -745,6 +880,10 @@ void BaseSurface::fastLineAA(int x1, int y1, int x2, int y2, \
 
 void BaseSurface::fillRect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b)
 {
+    fill_rect(x, y, w, h, r, g, b);
+}
+void BaseSurface::fill_rect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b)
+{
     SDL_Rect tmp;
 
     tmp.x = static_cast<int16_t>(x);
@@ -800,6 +939,10 @@ void BaseSurface::print(int x, int y, Uint32 value, Font& font)
 // -----------------------------------------------------------------------------
 
 void BaseSurface::drawChar(int x, int y, char c, Uint32 color)
+{
+    draw_char(x,y,c,color);
+}
+void BaseSurface::draw_char(int x, int y, char c, Uint32 color)
 {
     extern unsigned char fontdata[8 * 256];
 

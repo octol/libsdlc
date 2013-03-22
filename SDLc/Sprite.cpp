@@ -26,14 +26,6 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Sprite::Sprite()
-{
-}
-
-Sprite::~Sprite()
-{
-}
-
 // -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
@@ -50,48 +42,73 @@ void Sprite::update(float frametime)
     setY(getY() + (getYVel() * frametime));
 
     // update animation
-    if (animTicks == 0)     // first frame
-        animTicks = SDL_GetTicks();
+    if (anim_ticks_ == 0)     // first frame
+        anim_ticks_ = SDL_GetTicks();
 
-    else if (SDL_GetTicks() - animTicks > animSpeed) {
-        currentFrame++;
-        if (currentFrame > totalFrames) {
-            currentFrame = 1;
-            currentIteration++;
+    else if (SDL_GetTicks() - anim_ticks_ > anim_speed_) {
+        current_frame_++;
+        if (current_frame_ > total_frames_) {
+            current_frame_ = 1;
+            current_iteration_++;
 
-            if (currentIteration >= totalIterations) {
-                m_animationActive = false;
-                currentIteration = 0;
-                animTicks = 0;
+            if (current_iteration_ >= total_iterations_) {
+                animation_active_ = false;
+                current_iteration_ = 0;
+                anim_ticks_ = 0;
             }
         }
-        animTicks = SDL_GetTicks();
+        anim_ticks_ = SDL_GetTicks();
     }
 }
 
 void Sprite::initAnimation(int speed, int frames, int iterations)
 {
-    animSpeed = speed;
-    totalFrames = frames;
-    totalIterations = iterations;
+    anim_speed_ = speed;
+    total_frames_ = frames;
+    total_iterations_ = iterations;
 
-    setWidth(data->w / totalFrames);
-    m_animationActive = true;
+    setWidth(data->w / total_frames_);
+    animation_active_ = true;
+}
+
+void Sprite::init_animation(int speed, int frames, int iterations)
+{
+    anim_speed_ = speed;
+    total_frames_ = frames;
+    total_iterations_ = iterations;
+
+    setWidth(data->w / total_frames_);
+    animation_active_ = true;
 }
 
 void Sprite::setCurrentAnimFrame(int num)
 {
-    currentFrame = num;
+    current_frame_ = num;
+}
+
+void Sprite::set_current_anim_frame(int num)
+{
+    current_frame_ = num;
 }
 
 void Sprite::resetAnimTimer()
 {
-    animTicks = SDL_GetTicks();
+    anim_ticks_ = SDL_GetTicks();
+}
+
+void Sprite::reset_anim_timer()
+{
+    anim_ticks_ = SDL_GetTicks();
 }
 
 bool Sprite::animationActive() const
 {
-    return m_animationActive;
+    return animation_active_;
+}
+
+bool Sprite::animation_active() const
+{
+    return animation_active_;
 }
 
 float Sprite::setX(float value)
@@ -104,7 +121,7 @@ float Sprite::setX(float value)
             value = 0;
         }
     }
-    return (m_x = value);
+    return x_ = value;
 }
 
 float Sprite::setY(float value)
@@ -117,7 +134,33 @@ float Sprite::setY(float value)
             value = 0;
         }
     }
-    return (m_y = value);
+    return y_ = value;
+}
+
+float Sprite::set_x(float value)
+{
+    SDL_Surface* screen = SDL_GetVideoSurface();
+    if (lockedToScreen()) {
+        if (value > (screen->w - getWidth())) {
+            value = (float)(screen->w - getWidth());
+        } else if (value < 0) {
+            value = 0;
+        }
+    }
+    return x_ = value;
+}
+
+float Sprite::set_y(float value)
+{
+    SDL_Surface* screen = SDL_GetVideoSurface();
+    if (lockedToScreen()) {
+        if (value > (screen->h - getHeight())) {
+            value = (float)(screen->h - getHeight());
+        } else if (value < 0) {
+            value = 0;
+        }
+    }
+    return y_ = value;
 }
 
 SDL_Rect Sprite::getRect() const
@@ -132,7 +175,31 @@ SDL_Rect Sprite::getRect() const
     return rect;
 }
 
+SDL_Rect Sprite::rect() const
+{
+    SDL_Rect rect;
+
+    rect.x = (int16_t)getX();
+    rect.y = (int16_t)getY();
+    rect.w = (uint16_t)getWidth();
+    rect.h = (uint16_t)getHeight();
+
+    return rect;
+}
+
 SDL_Rect Sprite::getReducedRect() const
+{
+    SDL_Rect rect = getRect();
+
+    rect.x = rect.x + (int16_t)((float)rect.w * 0.25f);
+    rect.y = rect.y + (int16_t)((float)rect.h * 0.25f);
+    rect.w = (int16_t)(rect.w * 0.5f);
+    rect.h = (int16_t)(rect.h * 0.5f);
+
+    return rect;
+}
+
+SDL_Rect Sprite::reduced_rect() const
 {
     SDL_Rect rect = getRect();
 

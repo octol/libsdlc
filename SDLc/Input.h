@@ -28,13 +28,17 @@ enum AUTOFIRE_KEYSTATE { AUTOFIRE, NO_AUTOFIRE };
 class Input {
 public:
     void update();
+    bool key_pressed(int key, AUTOFIRE_KEYSTATE autofire);
+    bool mouse_button_pressed();
+
+    // DEPRECATED
     bool keyPressed(int key, AUTOFIRE_KEYSTATE autofire);
     bool mouseButtonPressed();
 
 private:
-    SDL_Event event;
-    bool pressDetected = false;
-    unsigned char* keyAutofire = nullptr;
+    SDL_Event event_;
+    bool press_detected_ = false;
+    unsigned char* key_autofire_ = nullptr;
 };
 } // namespace sdlc
 #endif // SDLC_INPUT_H
