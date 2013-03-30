@@ -4,7 +4,6 @@ Plugins:
 
 General:
 - Get rid of sdlinited dependency
-- Change the variable naming convention
 - Can we get rid of Misc.h/cpp ?
 - Give Sound and Music common base class.
 - Change the enums to the new c++11 variant (Define.h and Input.h).
@@ -15,10 +14,9 @@ General:
 - Rule of five in Font class
 - Rule of five in Music class
 - Rule of five in Sound class
-- Use uint8_t etc instead of Uint8
 
 BaseSurface
-- printSurfaceInfo() Should probably return ostream instead of printing directly
+- print_surface_info() Should probably return ostream instead of printing directly
 - Print functions could be cleaned up.
 - Line functions are far to verbose.
 
@@ -26,7 +24,7 @@ Surface
 - Remove all references to SDL_GetVideoSurface();
 
 Sprite
-- change to "composition" instead of "inheritance"
+- Change to "composition" instead of "inheritance"
 
 Mixer
 - Decide how global functions such as volume and fadeout best is treated.
@@ -34,4 +32,4 @@ Mixer
 
 Timer
 - Limit the amount that the frame time can increase / decrease per step.
-- Make sure all code uses Timer:getTicks() instead of SDL_GetTicks()
+- Make sure all code uses Timer:ticks() instead of SDL_GetTicks()

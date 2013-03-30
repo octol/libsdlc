@@ -3,6 +3,11 @@ NEWS
 
 This file contains verious news and updates regarding the development of SDLc.
 
+* Sat, 30 Mar 2013 21:40:16 +0000: Jon Haggblad <jon@haeggblad.com>
+
+    The migration is now complete. Should be able to focus on structural
+    issues from now on.
+
 * Wed, 20 Mar 2013 07:34:26 +0000: Jon Haggblad <jon@haeggblad.com>
 
     Started the migration to the new naming convention.
