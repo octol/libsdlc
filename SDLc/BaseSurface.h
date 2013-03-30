@@ -56,27 +56,17 @@ public:
     void set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b);  
     void blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
     void get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const; 
-    void setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b);  
-    void blendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
-    void getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const; 
 
     // These are 16 bit only.
     void fast_set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b); 
     void fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
     void fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const; 
-    void fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b); 
-    void fastBlendPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
-    void fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const; 
 
     // These are 32 bit only.
     void set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
     void fast_set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
     void get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const; 
     void fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const;
-    void setPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
-    void fastSetPix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a); 
-    void getPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const; 
-    void fastGetPix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const;
 
     void line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
     void line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
@@ -173,11 +163,11 @@ inline
 void BaseSurface::fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     uint8_t red = 0, green = 0, blue = 0;
-    fastGetPix(x, y, &red, &green, &blue);
+    fast_get_pix(x, y, &red, &green, &blue);
     red = ((a * (r - red)) >> 8) + red;
     green = ((a * (g - green)) >> 8) + green;
     blue = ((a * (b - blue)) >> 8) + blue;
-    fastSetPix(x, y, red, green, blue);
+    fast_set_pix(x, y, red, green, blue);
 }
 
 inline

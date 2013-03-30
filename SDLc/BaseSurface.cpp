@@ -124,13 +124,13 @@ void BaseSurface::blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8
 {
     // fÃ€rgny = ((A/255) * fÃ€rg) + (((255-A)/255) * fÃ€rggammal)
     uint8_t red, green, blue;
-    getPix(x, y, &red, &green, &blue);
+    get_pix(x, y, &red, &green, &blue);
 
     red = ((a * (r - red)) >> 8) + red;
     green = ((a * (g - green)) >> 8) + green;
     blue = ((a * (b - blue)) >> 8) + blue;
 
-    setPix(x, y, red, green, blue);
+    set_pix(x, y, red, green, blue);
 }
 
 #ifndef INLINE_FASTPIX
@@ -138,13 +138,13 @@ void BaseSurface::fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, 
 {
     // new color = ((A/255) * color) + (((255-A)/255) * old color)
     uint8_t red = 0, green = 0, blue = 0;
-    fastGetPix(x, y, &red, &green, &blue);
+    fast_get_pix(x, y, &red, &green, &blue);
 
     red = ((a * (r - red)) >> 8) + red;
     green = ((a * (g - green)) >> 8) + green;
     blue = ((a * (b - blue)) >> 8) + blue;
 
-    fastSetPix(x, y, red, green, blue);
+    fast_set_pix(x, y, red, green, blue);
 }
 #endif
 
@@ -226,7 +226,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
         dy = yPoint2 - yPoint1;
         rValue = ((dx - dy) / 2);
 
-        setPix(xPoint1, yPoint1, r, g, b);
+        set_pix(xPoint1, yPoint1, r, g, b);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue + dy;
@@ -234,7 +234,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
                 rValue = rValue - dx;
                 yPoint1 = yPoint1 + 1;
             }
-            setPix(xPoint1, yPoint1, r, g, b);
+            set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -255,7 +255,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
         dy = yPoint2 - yPoint1;
         rValue = ((dy - dx) / 2);
 
-        setPix(xPoint1, yPoint1, r, g, b);
+        set_pix(xPoint1, yPoint1, r, g, b);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue + dx;
@@ -263,7 +263,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
                 rValue = rValue - dy;
                 xPoint1 = xPoint1 + 1;
             }
-            setPix(xPoint1, yPoint1, r, g, b);
+            set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -284,7 +284,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
         dy = yPoint2 - yPoint1;
         rValue = ((dx - dy) / 2);
 
-        setPix(xPoint1, yPoint1, r, g, b);
+        set_pix(xPoint1, yPoint1, r, g, b);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue - dy;
@@ -292,7 +292,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
                 rValue = rValue - dx;
                 yPoint1 = yPoint1 - 1;
             }
-            setPix(xPoint1, yPoint1, r, g, b);
+            set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -313,7 +313,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
         dy = yPoint2 - yPoint1;
         rValue = ((dy - dx) / 2);
 
-        setPix(xPoint1, yPoint1, r, g, b);
+        set_pix(xPoint1, yPoint1, r, g, b);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue - dx;
@@ -321,7 +321,7 @@ void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uin
                 rValue = rValue - dy;
                 xPoint1 = xPoint1 - 1;
             }
-            setPix(xPoint1, yPoint1, r, g, b);
+            set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
 }
@@ -355,8 +355,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
         rValue = ((dx - dy) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        blendPix(xPoint1, yPoint1, r, g, b, alpha);
-        blendPix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
+        blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+        blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue + dy;
@@ -365,8 +365,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
                 yPoint1 = yPoint1 + 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            blendPix(xPoint1, yPoint1, r, g, b, alpha);
-            blendPix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
+            blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+            blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -388,8 +388,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
         rValue = ((dy - dx) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        blendPix(xPoint1, yPoint1, r, g, b, alpha);
-        blendPix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
+        blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+        blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue + dx;
@@ -398,8 +398,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
                 xPoint1 = xPoint1 + 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            blendPix(xPoint1, yPoint1, r, g, b, alpha);
-            blendPix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
+            blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+            blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -421,8 +421,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
         rValue = ((dx - dy) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        blendPix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-        blendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+        blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+        blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue - dy;
@@ -431,8 +431,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
                 yPoint1 = yPoint1 - 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            blendPix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-            blendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+            blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+            blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -454,8 +454,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
         rValue = ((dy - dx) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        blendPix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-        blendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+        blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+        blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue - dx;
@@ -464,8 +464,8 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
                 xPoint1 = xPoint1 - 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            blendPix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-            blendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+            blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+            blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
 }
@@ -498,7 +498,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
         dy = yPoint2 - yPoint1;
         rValue = ((dx - dy) / 2);
 
-        fastSetPix(xPoint1, yPoint1, r, g, b);
+        fast_set_pix(xPoint1, yPoint1, r, g, b);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue + dy;
@@ -506,7 +506,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
                 rValue = rValue - dx;
                 yPoint1 = yPoint1 + 1;
             }
-            fastSetPix(xPoint1, yPoint1, r, g, b);
+            fast_set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -527,7 +527,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
         dy = yPoint2 - yPoint1;
         rValue = ((dy - dx) / 2);
 
-        fastSetPix(xPoint1, yPoint1, r, g, b);
+        fast_set_pix(xPoint1, yPoint1, r, g, b);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue + dx;
@@ -535,7 +535,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
                 rValue = rValue - dy;
                 xPoint1 = xPoint1 + 1;
             }
-            fastSetPix(xPoint1, yPoint1, r, g, b);
+            fast_set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -556,7 +556,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
         dy = yPoint2 - yPoint1;
         rValue = ((dx - dy) / 2);
 
-        fastSetPix(xPoint1, yPoint1, r, g, b);
+        fast_set_pix(xPoint1, yPoint1, r, g, b);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue - dy;
@@ -564,7 +564,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
                 rValue = rValue - dx;
                 yPoint1 = yPoint1 - 1;
             }
-            fastSetPix(xPoint1, yPoint1, r, g, b);
+            fast_set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -585,7 +585,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
         dy = yPoint2 - yPoint1;
         rValue = ((dy - dx) / 2);
 
-        fastSetPix(xPoint1, yPoint1, r, g, b);
+        fast_set_pix(xPoint1, yPoint1, r, g, b);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue - dx;
@@ -593,7 +593,7 @@ void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
                 rValue = rValue - dy;
                 xPoint1 = xPoint1 - 1;
             }
-            fastSetPix(xPoint1, yPoint1, r, g, b);
+            fast_set_pix(xPoint1, yPoint1, r, g, b);
         }
     }
 }
@@ -628,8 +628,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
         rValue = ((dx - dy) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        fastBlendPix(xPoint1, yPoint1, r, g, b, alpha);
-        fastBlendPix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
+        fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+        fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue + dy;
@@ -638,8 +638,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
                 yPoint1 = yPoint1 + 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            fastBlendPix(xPoint1, yPoint1, r, g, b, alpha);
-            fastBlendPix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
+            fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+            fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -661,8 +661,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
         rValue = ((dy - dx) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        fastBlendPix(xPoint1, yPoint1, r, g, b, alpha);
-        fastBlendPix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
+        fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+        fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue + dx;
@@ -671,8 +671,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
                 xPoint1 = xPoint1 + 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            fastBlendPix(xPoint1, yPoint1, r, g, b, alpha);
-            fastBlendPix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
+            fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+            fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -694,8 +694,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
         rValue = ((dx - dy) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        fastBlendPix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-        fastBlendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+        fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+        fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
             rValue = rValue - dy;
@@ -704,8 +704,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
                 yPoint1 = yPoint1 - 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            fastBlendPix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-            fastBlendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+            fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+            fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -727,8 +727,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
         rValue = ((dy - dx) / 2);
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        fastBlendPix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-        fastBlendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+        fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+        fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
             rValue = rValue - dx;
@@ -737,8 +737,8 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
                 xPoint1 = xPoint1 - 1;
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            fastBlendPix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-            fastBlendPix(xPoint1, yPoint1, r, g, b, 255 - alpha);
+            fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+            fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
 }
