@@ -52,24 +52,9 @@ public:
     int width() const;
     int height() const;
 
-    // DEPRECATED
-    void loadRaw(const std::string path);
-    void loadAlpha(const std::string path);
-    void loadColorkey(const std::string path);
-
-    void enablePerPixelAlpha();
-    void setColorKey();
-
-    int getWidth() const;
-    int getHeight() const;
-
 protected:
     int set_width(int w);
     int set_height(int h);
-
-    // DEPRECATED
-    int setWidth(int w);
-    int setHeight(int h);
 
 private:
     SDL_Surface* internal_load(std::string path);
@@ -104,30 +89,6 @@ inline
 int Surface::set_height(int h) 
 {
     return height_ = h;
-}
-
-inline
-int Surface::getWidth() const
-{
-    return width_;
-}
-
-inline
-int Surface::getHeight() const
-{
-    return height_;
-}
-
-inline
-int Surface::setWidth(int w) 
-{
-    return (width_ = w);
-}
-
-inline
-int Surface::setHeight(int h) 
-{
-    return (height_ = h);
 }
 } // namespace sdlc
 #endif // SDLC_SURFACE_H

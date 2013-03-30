@@ -22,12 +22,4 @@ namespace sdlc {
 
 bool sdlinited = false;
 
-int bound(int value, int boundary1, int boundary2)
-{
-    if (value < boundary1)
-        value = boundary1;
-    else if (value > boundary2)
-        value = boundary2;
-    return value;
-}
 } // namespace sdlc

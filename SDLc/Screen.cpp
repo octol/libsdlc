@@ -60,7 +60,7 @@ void Screen::close()
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-void Screen::printVideoInfo()
+void Screen::print_video_info()
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
     std::cout << std::endl;
@@ -94,7 +94,7 @@ void Screen::set_caption(std::string title)
     SDL_WM_SetCaption(title.c_str(), NULL);
 }
 
-void Screen::updateArea(int x, int y, int w, int h)
+void Screen::update_area(int x, int y, int w, int h)
 {
     if ((x + w) > 0 && x < data->w && (y + h) > 0 && y < data->h) {
         if (x < 0) {
@@ -111,12 +111,12 @@ void Screen::updateArea(int x, int y, int w, int h)
         if (h > (data->h - y))
             h = (data->h - y);
 
-        updateR[updateI].x = x;
-        updateR[updateI].y = y;
-        updateR[updateI].w = w;
-        updateR[updateI].h = h;
+        update_r_[update_i_].x = x;
+        update_r_[update_i_].y = y;
+        update_r_[update_i_].w = w;
+        update_r_[update_i_].h = h;
 
-        updateI++;
+        update_i_++;
     }
 }
 
@@ -124,16 +124,16 @@ void Screen::flip()
 {
     // flip screen
     int i;
-    for (i = 0; i < updateI; i++) {
-        SDL_UpdateRect(data, updateR[i].x, updateR[i].y, 
-                       updateR[i].w, updateR[i].h);
+    for (i = 0; i < update_i_; i++) {
+        SDL_UpdateRect(data, update_r_[i].x, update_r_[i].y, 
+                       update_r_[i].w, update_r_[i].h);
     }
-    updateI = 0;
+    update_i_ = 0;
 }
 
-void Screen::flipAll()
+void Screen::flip_all()
 {
     SDL_Flip(data);
-    updateI = 0;
+    update_i_ = 0;
 }
 } // namespace sdlc

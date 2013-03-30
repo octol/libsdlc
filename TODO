@@ -3,7 +3,6 @@ Plugins:
 - YouCompleteMe
 
 General:
-- Introduce sdlc namespace
 - Get rid of sdlinited dependency
 - Change the variable naming convention
 - Can we get rid of Misc.h/cpp ?
@@ -16,7 +15,7 @@ General:
 - Rule of five in Font class
 - Rule of five in Music class
 - Rule of five in Sound class
-- SDLc.h / libsdlc.h that includes all headers.
+- Use uint8_t etc instead of Uint8
 
 BaseSurface
 - printSurfaceInfo() Should probably return ostream instead of printing directly

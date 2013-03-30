@@ -39,10 +39,6 @@ public:
     int channel() const;
     int set_channel(int value);
     
-    // DEPRECATED
-    int getChannel() const;
-    int setChannel(int value);
-
 private:
     Mix_Chunk* sound_ = nullptr;
     int channel_ = -1;
@@ -61,18 +57,6 @@ int Sound::channel() const
 
 inline
 int Sound::set_channel(int value)
-{
-    return channel_ = value;
-}
-
-inline
-int Sound::getChannel() const
-{
-    return channel_;
-}
-
-inline
-int Sound::setChannel(int value)
 {
     return channel_ = value;
 }

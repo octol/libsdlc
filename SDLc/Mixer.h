@@ -29,17 +29,17 @@ public:
     bool init();
     void close();
 
-    int setMusicVolume(int value);
-    int getMusicVolume() const;
-    int setSoundVolume(int value);
-    int getSoundVolume() const;
+    int set_music_volume(int value);
+    int music_volume() const;
+    int set_sound_volume(int value);
+    int sound_volume() const;
 
     int fade_out_music(int ms);
 
 private:
-    bool initialised = false;
-    int musicVolume = 128;
-    int soundVolume = 128;
+    bool initialised_ = false;
+    int music_volume_ = 128;
+    int sound_volume_ = 128;
 };
 } // namespace sdlc
 #endif // SDLC_MIXER_H

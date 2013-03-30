@@ -35,7 +35,7 @@ Mixer::Mixer()
 
 Mixer::~Mixer()
 {
-    if (initialised)
+    if (initialised_)
         close();
 }
 
@@ -61,7 +61,7 @@ bool Mixer::init()
         std::cerr << "Mixer::init(): " << SDL_GetError() << std::endl;
         return false;
     }
-    initialised = true;
+    initialised_ = true;
     return true;
 }
 
@@ -71,43 +71,44 @@ void Mixer::close()
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-int Mixer::setMusicVolume(int value)
+int Mixer::set_music_volume(int value)
 {
-    musicVolume = value;
-    if (musicVolume > 128)
-        musicVolume = 128;
-    else if (musicVolume < 0)
-        musicVolume = 0;
+    music_volume_ = value;
+    if (music_volume_ > 128)
+        music_volume_ = 128;
+    else if (music_volume_ < 0)
+        music_volume_ = 0;
 
-    Mix_VolumeMusic(musicVolume);
-    return musicVolume;
+    Mix_VolumeMusic(music_volume_);
+    return music_volume_;
 }
 
-int Mixer::getMusicVolume() const
+int Mixer::music_volume() const
 {
-    return musicVolume;
+    return music_volume_;
 }
 
-int Mixer::setSoundVolume(int value)
+int Mixer::set_sound_volume(int value)
 {
-    soundVolume = value;
-    if (soundVolume > 128)
-        soundVolume = 128;
-    else if (soundVolume < 0)
-        soundVolume = 0;
+    sound_volume_ = value;
+    if (sound_volume_ > 128)
+        sound_volume_ = 128;
+    else if (sound_volume_ < 0)
+        sound_volume_ = 0;
 
-    Mix_Volume(-1, soundVolume);
-    return soundVolume;
+    Mix_Volume(-1, sound_volume_);
+    return sound_volume_;
 }
 
-int Mixer::getSoundVolume() const
+int Mixer::sound_volume() const
 {
-    return soundVolume;
+    return sound_volume_;
 }
 
 int Mixer::fade_out_music(int ms)
 {
-    return Mix_FadeOutMusic(3000);
+    //return Mix_FadeOutMusic(3000);
+    return Mix_FadeOutMusic(ms);
 }
 } // namespace sdlc
 

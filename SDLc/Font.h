@@ -33,11 +33,12 @@ public:
     virtual ~Font();
 
     void load(const std::string path);
-    Surface* getChar(char c) const;
+    Surface* get_char(char c) const;
 
 private:
-    Surface* gfx[29][3];
-    Surface* blank = nullptr;
+    // TODO: use stdlib container?
+    Surface* gfx_[29][3];
+    Surface* blank_ = nullptr;
 };
 } // namespace sdlc
 #endif // SDLC_FONT_H

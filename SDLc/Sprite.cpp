@@ -38,8 +38,8 @@ void Sprite::update(const Timer& timer)
 void Sprite::update(float frametime)
 {
     // update position
-    setX(getX() + (getXVel() * frametime));
-    setY(getY() + (getYVel() * frametime));
+    set_x(x() + (x_vel() * frametime));
+    set_y(y() + (y_vel() * frametime));
 
     // update animation
     if (anim_ticks_ == 0)     // first frame
@@ -61,29 +61,14 @@ void Sprite::update(float frametime)
     }
 }
 
-void Sprite::initAnimation(int speed, int frames, int iterations)
-{
-    anim_speed_ = speed;
-    total_frames_ = frames;
-    total_iterations_ = iterations;
-
-    setWidth(data->w / total_frames_);
-    animation_active_ = true;
-}
-
 void Sprite::init_animation(int speed, int frames, int iterations)
 {
     anim_speed_ = speed;
     total_frames_ = frames;
     total_iterations_ = iterations;
 
-    setWidth(data->w / total_frames_);
+    set_width(data->w / total_frames_);
     animation_active_ = true;
-}
-
-void Sprite::setCurrentAnimFrame(int num)
-{
-    current_frame_ = num;
 }
 
 void Sprite::set_current_anim_frame(int num)
@@ -91,19 +76,9 @@ void Sprite::set_current_anim_frame(int num)
     current_frame_ = num;
 }
 
-void Sprite::resetAnimTimer()
-{
-    anim_ticks_ = SDL_GetTicks();
-}
-
 void Sprite::reset_anim_timer()
 {
     anim_ticks_ = SDL_GetTicks();
-}
-
-bool Sprite::animationActive() const
-{
-    return animation_active_;
 }
 
 bool Sprite::animation_active() const
@@ -111,38 +86,12 @@ bool Sprite::animation_active() const
     return animation_active_;
 }
 
-float Sprite::setX(float value)
-{
-    SDL_Surface* screen = SDL_GetVideoSurface();
-    if (lockedToScreen()) {
-        if (value > (screen->w - getWidth())) {
-            value = (float)(screen->w - getWidth());
-        } else if (value < 0) {
-            value = 0;
-        }
-    }
-    return x_ = value;
-}
-
-float Sprite::setY(float value)
-{
-    SDL_Surface* screen = SDL_GetVideoSurface();
-    if (lockedToScreen()) {
-        if (value > (screen->h - getHeight())) {
-            value = (float)(screen->h - getHeight());
-        } else if (value < 0) {
-            value = 0;
-        }
-    }
-    return y_ = value;
-}
-
 float Sprite::set_x(float value)
 {
     SDL_Surface* screen = SDL_GetVideoSurface();
-    if (lockedToScreen()) {
-        if (value > (screen->w - getWidth())) {
-            value = (float)(screen->w - getWidth());
+    if (locked_to_screen()) {
+        if (value > (screen->w - width())) {
+            value = (float)(screen->w - width());
         } else if (value < 0) {
             value = 0;
         }
@@ -153,9 +102,9 @@ float Sprite::set_x(float value)
 float Sprite::set_y(float value)
 {
     SDL_Surface* screen = SDL_GetVideoSurface();
-    if (lockedToScreen()) {
-        if (value > (screen->h - getHeight())) {
-            value = (float)(screen->h - getHeight());
+    if (locked_to_screen()) {
+        if (value > (screen->h - height())) {
+            value = (float)(screen->h - height());
         } else if (value < 0) {
             value = 0;
         }
@@ -163,45 +112,21 @@ float Sprite::set_y(float value)
     return y_ = value;
 }
 
-SDL_Rect Sprite::getRect() const
-{
-    SDL_Rect rect;
-
-    rect.x = (int16_t)getX();
-    rect.y = (int16_t)getY();
-    rect.w = (uint16_t)getWidth();
-    rect.h = (uint16_t)getHeight();
-
-    return rect;
-}
-
 SDL_Rect Sprite::rect() const
 {
     SDL_Rect rect;
 
-    rect.x = (int16_t)getX();
-    rect.y = (int16_t)getY();
-    rect.w = (uint16_t)getWidth();
-    rect.h = (uint16_t)getHeight();
-
-    return rect;
-}
-
-SDL_Rect Sprite::getReducedRect() const
-{
-    SDL_Rect rect = getRect();
-
-    rect.x = rect.x + (int16_t)((float)rect.w * 0.25f);
-    rect.y = rect.y + (int16_t)((float)rect.h * 0.25f);
-    rect.w = (int16_t)(rect.w * 0.5f);
-    rect.h = (int16_t)(rect.h * 0.5f);
+    rect.x = (int16_t)x();
+    rect.y = (int16_t)y();
+    rect.w = (uint16_t)width();
+    rect.h = (uint16_t)height();
 
     return rect;
 }
 
 SDL_Rect Sprite::reduced_rect() const
 {
-    SDL_Rect rect = getRect();
+    SDL_Rect rect = Sprite::rect();
 
     rect.x = rect.x + (int16_t)((float)rect.w * 0.25f);
     rect.y = rect.y + (int16_t)((float)rect.h * 0.25f);
@@ -213,8 +138,8 @@ SDL_Rect Sprite::reduced_rect() const
 
 bool Sprite::overlap(const Sprite& other)
 {
-    const SDL_Rect rect1 = getRect();
-    const SDL_Rect rect2 = other.getRect();
+    const SDL_Rect rect1 = rect();
+    const SDL_Rect rect2 = other.rect();
 
     if (overlap(rect1, rect2))
         return true;

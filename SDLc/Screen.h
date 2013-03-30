@@ -30,19 +30,19 @@ public:
 
     void init(int w, int h, int bpp, int type);
     void close();
-    void printVideoInfo();
+    void print_video_info();
     int show_cursor(bool toggle);
     void set_caption(std::string title);
 
-    // Use either UpdateArea() + Flip() or just FlipAll()
-    void updateArea(int x, int y, int w, int h);
+    // Use either update_area() + flip() or just flip_all()
+    void update_area(int x, int y, int w, int h);
     void flip();
-    void flipAll();
+    void flip_all();
 
 private:
-    int depth = 0;
-    int updateI = 0;            // used by UpdateArea() and Flip()
-    SDL_Rect updateR[256];      // used by UpdateArea() and Flip()
+    //int depth_ = 0;
+    int update_i_ = 0;            // used by update_area() and flip()
+    SDL_Rect update_r_[256];      // used by update_area() and flip()
 };
 } // namespace sdlc
 #endif // SDLC_SCREEN_H

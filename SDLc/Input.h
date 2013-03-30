@@ -31,10 +31,6 @@ public:
     bool key_pressed(int key, AUTOFIRE_KEYSTATE autofire);
     bool mouse_button_pressed();
 
-    // DEPRECATED
-    bool keyPressed(int key, AUTOFIRE_KEYSTATE autofire);
-    bool mouseButtonPressed();
-
 private:
     SDL_Event event_;
     bool press_detected_ = false;

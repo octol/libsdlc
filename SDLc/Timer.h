@@ -71,7 +71,7 @@ float Timer::fps()
 inline
 float Timer::frame_time() const 
 {
-    return (float)frame_ticks_ / 1000.0f;
+    return static_cast<float>(frame_ticks_) / 1000.0f;
 }
 } // namespace sdlc
 #endif // SDLC_TIMER_H

@@ -65,35 +65,12 @@ public:
     // collision functions
     bool overlap(const Sprite& other);
 
-    // DEPRECATED
-    void initAnimation(int speed, int frames, int iterations);
-    void setCurrentAnimFrame(int num);  // set current frame
-    void resetAnimTimer();              // reset the animation timer
-    bool animationActive() const;
-
-    float getX() const;
-    float getY() const;
-    float setX(float value);
-    float setY(float value);
-    void setPos(float x, float y);
-
-    float getXVel();
-    float setXVel(float value);
-    float getYVel();
-    float setYVel(float value);
-    void  setVel(float x, float y);
-
-    bool lockedToScreen();
-    bool lockedToScreen(bool value);
-
-    SDL_Rect getRect() const;
-    SDL_Rect getReducedRect() const;
-
 protected:
     bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2);
 
 private:
     // Animation data
+    // TODO: group into struct
     int total_frames_ = 1;
     int current_frame_ = 1;
     int total_iterations_ = 0; 
@@ -103,6 +80,7 @@ private:
     bool animation_active_ = false; // if the animation is running
 
     // Sprite data
+    // TODO: group into struct
     float x_ = 0; 
     float y_ = 0;
     float x_vel_ = 0;
@@ -113,25 +91,6 @@ private:
 // -----------------------------------------------------------------------------
 // Inlines
 // -----------------------------------------------------------------------------
-
-inline
-float Sprite::getX() const 
-{
-    return x_;
-}
-
-inline
-float Sprite::getY() const 
-{
-    return y_;
-}
-
-inline
-void Sprite::setPos(float x, float y) 
-{
-    setX(x);
-    setY(y);
-}
 
 inline
 float Sprite::x() const 
@@ -153,21 +112,9 @@ void Sprite::set_pos(float x, float y)
 }
 
 inline
-float Sprite::getXVel() 
-{
-    return x_vel_;
-}
-
-inline
 float Sprite::x_vel() 
 {
     return x_vel_;
-}
-
-inline
-float Sprite::setXVel(float value)  
-{
-    return x_vel_ = value;
 }
 
 inline
@@ -177,34 +124,15 @@ float Sprite::set_x_vel(float value)
 }
 
 inline
-float Sprite::getYVel()         
-{
-    return y_vel_;
-}
-
-inline
 float Sprite::y_vel()         
 {
     return y_vel_;
 }
 
 inline
-float Sprite::setYVel(float value)  
-{
-    return y_vel_ = value;
-}
-
-inline
 float Sprite::set_y_vel(float value)  
 {
     return y_vel_ = value;
-}
-
-inline
-void Sprite::setVel(float x, float y)  
-{
-    setXVel(x);
-    setYVel(y);
 }
 
 inline
@@ -215,21 +143,9 @@ void Sprite::set_vel(float x, float y)
 }
 
 inline
-bool Sprite::lockedToScreen()       
-{
-    return locked_to_screen_;
-}
-
-inline
 bool Sprite::locked_to_screen()       
 {
     return locked_to_screen_;
-}
-
-inline
-bool Sprite::lockedToScreen(bool value) 
-{
-    return locked_to_screen_ = value;
 }
 
 inline

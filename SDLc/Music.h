@@ -37,8 +37,8 @@ public:
     void play(int iterations);
 
 private:
-    Mix_Music* music = nullptr;
-    bool loaded = false;
+    Mix_Music* music_ = nullptr;
+    bool loaded_ = false;
 };
 } // namespace sdlc
 #endif // SDLC_MUSIC_H

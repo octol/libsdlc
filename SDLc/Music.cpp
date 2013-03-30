@@ -44,31 +44,32 @@ Music::~Music()
 
 void Music::load(const std::string path)
 {
-    music = Mix_LoadMUS(path.c_str());
-    if (music == NULL) {
+    music_ = Mix_LoadMUS(path.c_str());
+    if (music_ == NULL) {
         std::cerr << "Music::load() " << SDL_GetError() << std::endl;
     }
 
-    loaded = true;
+    loaded_ = true;
 }
 
 void Music::link(Music* object)
 {
-    music = object->music;
+    music_ = object->music_;
 }
 
 void Music::unload()
 {
-    if (loaded) {
-        Mix_HaltMusic();
-        Mix_FreeMusic(music);
-        music = 0;
+    if (loaded_) {
+        //Mix_HaltMusic();
+        Mix_FreeMusic(music_);
+        music_ = nullptr;
+        loaded_ = false;
     }
 }
 
 void Music::play(int iterations)
 {
-    Mix_PlayMusic(music, iterations);
-    mixer->setMusicVolume(mixer->getMusicVolume());
+    Mix_PlayMusic(music_, iterations);
+    mixer->set_music_volume(mixer->music_volume());
 }
 } // namespace sdlc

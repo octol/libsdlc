@@ -23,7 +23,15 @@ namespace sdlc {
 
 extern bool sdlinited;
 
-int bound(int value, int boundary1, int boundary2);
+template<typename T>
+T bound(T value, T boundary1, T boundary2)
+{   
+    if (value < boundary1)
+        value = boundary1;
+    else if (value > boundary2)
+        value = boundary2;
+    return value;
+}
 
 } // namespace sdlc
 #endif // SDLC_MISC_H

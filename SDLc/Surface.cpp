@@ -47,8 +47,8 @@ void Surface::alloc(int w, int h, int bpp, int type)
     data = SDL_DisplayFormat(surface);
     SDL_FreeSurface(surface);
 
-    setWidth(data->w);
-    setHeight(data->h);
+    set_width(data->w);
+    set_height(data->h);
     loaded_ = true;
 }
 
@@ -81,14 +81,14 @@ void Surface::load(const std::string path)
     uint8_t r[4], g[4], b[4], a[4];
 
     Surface surface;
-    surface.loadAlpha(path);
-    int w = surface.getWidth();
-    int h = surface.getHeight();
+    surface.load_alpha(path);
+    int w = surface.width();
+    int h = surface.height();
     surface.lock();
-    surface.getPix(0, 0, &r[0], &g[0], &b[0], &a[0]);
-    surface.getPix(w - 1, 0, &r[1], &g[1], &b[1], &a[1]);
-    surface.getPix(0, h - 1, &r[2], &g[2], &b[2], &a[2]);
-    surface.getPix(w - 1, h - 1, &r[3], &g[3], &b[3], &a[3]);
+    surface.get_pix(0, 0, &r[0], &g[0], &b[0], &a[0]);
+    surface.get_pix(w - 1, 0, &r[1], &g[1], &b[1], &a[1]);
+    surface.get_pix(0, h - 1, &r[2], &g[2], &b[2], &a[2]);
+    surface.get_pix(w - 1, h - 1, &r[3], &g[3], &b[3], &a[3]);
     surface.unlock();
 
     int i;
@@ -103,17 +103,10 @@ void Surface::load(const std::string path)
     }
 
     if (pinkfound)
-        loadColorkey(path);
+        load_color_key(path);
     else if (alphafound)
-        loadAlpha(path);
-    else loadRaw(path);
-}
-
-void Surface::loadRaw(const std::string path)
-{
-    SDL_Surface* surface = internal_load(path);
-    data = SDL_DisplayFormat(surface);
-    SDL_FreeSurface(surface);
+        load_alpha(path);
+    else load_raw(path);
 }
 
 void Surface::load_raw(const std::string path)
@@ -123,24 +116,11 @@ void Surface::load_raw(const std::string path)
     SDL_FreeSurface(surface);
 }
 
-void Surface::loadAlpha(const std::string path)
-{
-    SDL_Surface* surface = internal_load(path);
-    data = SDL_DisplayFormatAlpha(surface);
-    SDL_FreeSurface(surface);
-}
-
 void Surface::load_alpha(const std::string path)
 {
     SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormatAlpha(surface);
     SDL_FreeSurface(surface);
-}
-
-void Surface::loadColorkey(const std::string path)
-{
-    loadRaw(path);
-    setColorKey();
 }
 
 void Surface::load_color_key(const std::string path)
@@ -177,22 +157,7 @@ void Surface::enable_per_pixel_alpha()
     data = surface;
 }
 
-void Surface::enablePerPixelAlpha()
-{
-    SDL_Surface* surface;
-    surface = SDL_DisplayFormatAlpha(data);
-    SDL_FreeSurface(data);
-    data = surface;
-}
-
 void Surface::set_color_key()
-{
-    SDL_Surface* screen = SDL_GetVideoSurface();
-    SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-                    SDL_MapRGB(screen->format, 255, 0, 255));
-}
-
-void Surface::setColorKey()
 {
     SDL_Surface* screen = SDL_GetVideoSurface();
     SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 

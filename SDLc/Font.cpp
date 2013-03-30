@@ -30,15 +30,15 @@ Font::Font()
 {
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 29; j++)
-            gfx[j][i] = nullptr;
+            gfx_[j][i] = nullptr;
 }
 
 Font::~Font()
 {
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 29; j++)
-            delete gfx[j][i];
-    delete blank;
+            delete gfx_[j][i];
+    delete blank_;
 }
 
 // -----------------------------------------------------------------------------
@@ -48,37 +48,36 @@ Font::~Font()
 void Font::load(const std::string path)
 {
     Surface src;
-    src.loadRaw(path);
+    src.load_raw(path);
 
-    int width = ((src.getWidth() - 25) / 29);
-    int height = ((src.getHeight() - 2) / 3);
+    int width = ((src.width() - 25) / 29);
+    int height = ((src.height() - 2) / 3);
 
     // set the rectangles around each font
     int i = 0, j = 0;
-    SDL_Rect srcRect;
+    SDL_Rect src_rect;
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 29; j++) {
-            srcRect.x = j * (width + 1);
-            srcRect.y = i * (height + 1);
-            srcRect.w = width;
-            srcRect.h = height;
+            src_rect.x = j * (width + 1);
+            src_rect.y = i * (height + 1);
+            src_rect.w = width;
+            src_rect.h = height;
 
-            gfx[j][i] = new Surface;
-            gfx[j][i]->alloc(width, height);
-            gfx[j][i]->setColorKey();
-            gfx[j][i]->blit(0, 0, src, srcRect);
+            gfx_[j][i] = new Surface;
+            gfx_[j][i]->alloc(width, height);
+            gfx_[j][i]->set_color_key();
+            gfx_[j][i]->blit(0, 0, src, src_rect);
         }
     }
 
-    blank = new Surface;
-    blank->alloc(width, height);
-    blank->setColorKey();
-    blank->fillRect(0, 0, width, height, 255, 0, 255);
+    blank_ = new Surface;
+    blank_->alloc(width, height);
+    blank_->set_color_key();
+    blank_->fill_rect(0, 0, width, height, 255, 0, 255);
 }
 
-Surface* Font::getChar(char c) const
+Surface* Font::get_char(char c) const
 {
-    //Surface* character = 0;
     int i = 0;
     int j = 0;
 
@@ -112,13 +111,13 @@ Surface* Font::getChar(char c) const
     } else if (c == ')') {
         i = 7; j = 2;
     } else if (c == ' ') {
-        return blank;
+        return blank_;
     } else {
         std::cout << "warning: undefined char passed to Font::getChar()" 
                   << std::endl;
-        return blank;
+        return blank_;
     }
-    return gfx[i][j];
+    return gfx_[i][j];
 }
 } // namespace sdlc
 
