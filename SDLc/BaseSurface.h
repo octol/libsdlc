@@ -19,6 +19,12 @@
 #ifndef SDLC_BASE_SURFACE_H
 #define SDLC_BASE_SURFACE_H
 
+// -----------------------------------------------------------------------------
+// Base class containing a raw SDL surface as well as drawing primitives.
+// This class is never meant to be instantiated, and as such does not
+// provide any functions to initialize or load the (SDL) surface.
+// -----------------------------------------------------------------------------
+
 #include <string>
 #include "SDL.h"
 
