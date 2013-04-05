@@ -42,9 +42,6 @@ class Surface;
 
 class BaseSurface {
 public:
-    BaseSurface() {};
-    BaseSurface(const BaseSurface& base_surface) = delete;
-    const BaseSurface& operator=(const BaseSurface& base_surface) = delete;
     virtual ~BaseSurface() {};
 
     // TODO: add function suitable for std::cout
@@ -102,6 +99,13 @@ public:
     // Almost all functions in the class work with this data. We make no
     // attempt to hide it, as we want to allow direct manipulation.
     SDL_Surface* data = nullptr;
+
+protected:
+    BaseSurface() {};
+    BaseSurface(const BaseSurface& base_surface) = delete;
+    BaseSurface(BaseSurface&& rhs) = delete;
+    const BaseSurface& operator=(const BaseSurface& rhs) = delete;
+    const BaseSurface& operator=(BaseSurface&& rhs) = delete;
 
 private:
     void draw_char(int x, int y, char c, uint32_t color);   // used by print()
