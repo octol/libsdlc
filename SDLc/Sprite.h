@@ -21,6 +21,8 @@
 
 #include "Surface.h"
 
+// TODO: should probably switch to composition here.
+
 namespace sdlc {
 
 class Timer;

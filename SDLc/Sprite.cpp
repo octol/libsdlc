@@ -42,10 +42,9 @@ void Sprite::update(float frametime)
     set_y(y() + (y_vel() * frametime));
 
     // update animation
-    if (anim_ticks_ == 0)     // first frame
+    if (anim_ticks_ == 0) {    // first frame
         anim_ticks_ = SDL_GetTicks();
-
-    else if (SDL_GetTicks() - anim_ticks_ > anim_speed_) {
+    } else if (SDL_GetTicks() - anim_ticks_ > anim_speed_) {
         current_frame_++;
         if (current_frame_ > total_frames_) {
             current_frame_ = 1;
