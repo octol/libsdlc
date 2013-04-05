@@ -19,11 +19,13 @@
 #ifndef SDLC_SCREEN_H
 #define SDLC_SCREEN_H
 
+#include <array>
 #include "BaseSurface.h"
 
 namespace sdlc {
 
 // TODO: move to composition.
+
 class Screen : public BaseSurface {
 public:
     virtual ~Screen();
@@ -40,9 +42,9 @@ public:
     void flip_all();
 
 private:
-    //int depth_ = 0;
-    int update_i_ = 0;            // used by update_area() and flip()
-    SDL_Rect update_r_[256];      // used by update_area() and flip()
+    // data needed by update_area() and flip().
+    int update_i_ = 0;
+    std::array<SDL_Rect,256> update_r_;
 };
 } // namespace sdlc
 #endif // SDLC_SCREEN_H
