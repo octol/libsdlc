@@ -23,6 +23,10 @@
 
 namespace sdlc {
 
+// -----------------------------------------------------------------------------
+// Member functions
+// -----------------------------------------------------------------------------
+
 void BaseSurface::print_surface_info() const
 {
     printf("flags: %x\n", data->flags);
@@ -35,7 +39,6 @@ void BaseSurface::print_surface_info() const
 
 void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
 {
-    //SDL_Rect dst_rect = { x, y, rect.w, rect.h };
     SDL_Rect dst_rect;
 
     dst_rect.x = static_cast<int16_t>(x);
@@ -43,10 +46,8 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
     dst_rect.w = rect.w;
     dst_rect.h = rect.h;
 
-    if (SDL_BlitSurface(src, &rect, data, &dst_rect) != 0) {
-        std::cerr << "Error: couldn't blit surface to screen: "
-                  << SDL_GetError() << std::endl;
-    }
+    if (SDL_BlitSurface(src, &rect, data, &dst_rect) != 0) 
+        std::cerr << "Error: blit to screen: " << SDL_GetError() << std::endl;
 }
 
 void BaseSurface::blit(int x, int y, SDL_Surface* src)
@@ -58,10 +59,8 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src)
     dst_rect.w = static_cast<uint16_t>(data->w);
     dst_rect.h = static_cast<uint16_t>(data->h);
 
-    if (SDL_BlitSurface(src, NULL, data, &dst_rect) != 0) {
-        std::cerr << "Error: couldn't blit surface to screen: "
-                  << SDL_GetError() << std::endl;
-    }
+    if (SDL_BlitSurface(src, NULL, data, &dst_rect) != 0) 
+        std::cerr << "Error: blit to screen: " << SDL_GetError() << std::endl;
 }
 
 void BaseSurface::blit(Sprite& sprite)
@@ -69,7 +68,7 @@ void BaseSurface::blit(Sprite& sprite)
     SDL_Rect src_rect;
 
     src_rect.x = static_cast<int16_t>((sprite.current_frame_ - 1) 
-                                    * sprite.width());
+                                      * sprite.width());
     src_rect.y = 0;
     src_rect.w = static_cast<uint16_t>(sprite.width());
     src_rect.h = static_cast<uint16_t>(sprite.height());
@@ -80,11 +79,11 @@ void BaseSurface::blit(Sprite& sprite)
 void BaseSurface::set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
     uint32_t color = SDL_MapRGB(data->format, r, g, b);
-    if (data->format->BitsPerPixel > 16)
-//      *((uint32_t *)data->pixels + y * data->pitch / 4 + x) = color;
+    if (data->format->BitsPerPixel > 16) {
         *((uint32_t*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
-//  else *((uint16_t *)data->pixels + y * data->pitch / 2 + x) = color;
-    else *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
+    } else {
+        *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
+    }
 }
 
 void BaseSurface::set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
@@ -122,7 +121,7 @@ void BaseSurface::fast_set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, ui
 
 void BaseSurface::blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-    // fÃ€rgny = ((A/255) * fÃ€rg) + (((255-A)/255) * fÃ€rggammal)
+    // new color = ((A/255) * color) + (((255-A)/255) * old color)
     uint8_t red, green, blue;
     get_pix(x, y, &red, &green, &blue);
 
@@ -151,11 +150,11 @@ void BaseSurface::fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, 
 void BaseSurface::get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
 {
     uint32_t pixel;
-    if (data->format->BitsPerPixel > 16)
-//      pixel = *((uint32_t*)data->pixels + y * data->pitch / 4 + x);
+    if (data->format->BitsPerPixel > 16) {
         pixel = *((uint32_t*)data->pixels + ((y * data->pitch) >> 2) + x);
-//  else pixel = *((uint16_t*)data->pixels + y * data->pitch / 2 + x);
-    else pixel = *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x);
+    } else { 
+        pixel = *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x);
+    }
     SDL_GetRGB(pixel, data->format, r, g, b);
 }
 
