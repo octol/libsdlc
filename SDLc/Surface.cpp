@@ -16,6 +16,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <cassert>
 #include <iostream>
 #include "Screen.h"
 #include "Surface.h"
@@ -26,9 +27,82 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
+Surface::Surface() : ref_count(new int(0))
+{
+}
+
+// Copy
+Surface::Surface(const Surface& surface) 
+    : BaseSurface(),
+      ref_count(surface.ref_count),
+      width_(surface.width_),
+      height_(surface.height_)
+{
+    data = surface.data;
+    ++(*ref_count); 
+}
+
+// Move
+Surface::Surface(Surface&& surface)
+    : ref_count(surface.ref_count),
+      width_(surface.width_),
+      height_(surface.height_)
+{
+    data = surface.data;
+
+    surface.data = nullptr;
+    surface.ref_count = new int(0);
+    surface.width_ = 0;
+    surface.height_ = 0;
+}
+
+// Assignment
+Surface& Surface::operator=(const Surface& rhs)
+{
+    if (this != &rhs) {
+        ref_count = rhs.ref_count;
+        width_ = rhs.width_;
+        height_ = rhs.height_;
+        data = rhs.data;
+        ++(*ref_count); 
+    }
+    return *this;
+}
+
+// Move assignment
+Surface& Surface::operator=(Surface&& rhs)
+{
+    if (this != &rhs) {
+        ref_count = rhs.ref_count;
+        width_ = rhs.width_;
+        height_ = rhs.height_;
+        data = rhs.data;
+
+        rhs.data = nullptr;
+        rhs.ref_count = new int(0);
+        rhs.width_ = 0;
+        rhs.height_ = 0;
+    }
+    return *this;
+}
+
 Surface::~Surface()
 {
-    unload();
+    --(*ref_count);
+
+    // Note that *ref_count can be < 0 if we initialise without Surface data
+    // and then call unload.
+    
+    // Last reference
+    if (*ref_count <= 0) {
+        SDL_FreeSurface(data);
+        delete ref_count;
+        data = nullptr;
+        ref_count = nullptr;
+    }
+
+    data = nullptr;
+    ref_count = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -37,6 +111,9 @@ Surface::~Surface()
 
 void Surface::alloc(int w, int h, int bpp, int type)
 {
+    // Free any previous data
+    reset();
+
     SDL_Surface* screen = SDL_GetVideoSurface();
     SDL_Surface* surface = SDL_CreateRGBSurface(type, w, h, bpp, 
                                                 screen->format->Rmask, 
@@ -45,11 +122,13 @@ void Surface::alloc(int w, int h, int bpp, int type)
                                                 screen->format->Amask);
 
     data = SDL_DisplayFormat(surface);
+    if (data) 
+        *ref_count = 1;
+
     SDL_FreeSurface(surface);
 
     set_width(data->w);
     set_height(data->h);
-    loaded_ = true;
 }
 
 void Surface::alloc(int w, int h, int bpp)
@@ -59,13 +138,11 @@ void Surface::alloc(int w, int h, int bpp)
     if (screen->flags == SDL_SWSURFACE || 
         screen->flags == (SDL_SWSURFACE | SDL_FULLSCREEN)) {
         alloc(w, h, bpp, SDL_SWSURFACE);
-
     } else if (screen->flags == SDL_HWSURFACE || 
                screen->flags == (SDL_HWSURFACE | SDL_FULLSCREEN) || 
-               screen->flags == (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN))
+               screen->flags == (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) {
         alloc(w, h, bpp, SDL_HWSURFACE);
-
-    else {
+    } else {
         std::cout << "Surface::alloc() Undefined videomode" << std::endl;
     }
 }
@@ -91,11 +168,9 @@ void Surface::load(const std::string path)
     surface.get_pix(w - 1, h - 1, &r[3], &g[3], &b[3], &a[3]);
     surface.unlock();
 
-    int i;
     bool pinkfound = false;
     bool alphafound = false;
-    for (i = 0; i < 4; i++) {
-        //if(r[i] == 255 && g[i] == 0 && b[i] == 255)
+    for (int i = 0; i < 4; i++) {
         if (r[i] >= 248 && g[i] == 0 && b[i] >= 248)
             pinkfound = true;
         if (a[i] != 255)
@@ -111,15 +186,25 @@ void Surface::load(const std::string path)
 
 void Surface::load_raw(const std::string path)
 {
+    reset();
     SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormat(surface);
+    if (data) {
+        assert(ref_count);
+        *ref_count = 1;
+    }
     SDL_FreeSurface(surface);
 }
 
 void Surface::load_alpha(const std::string path)
 {
+    reset();
     SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormatAlpha(surface);
+    if (data) {
+        assert(ref_count);
+        *ref_count = 1;
+    }
     SDL_FreeSurface(surface);
 }
 
@@ -129,39 +214,42 @@ void Surface::load_color_key(const std::string path)
     set_color_key();
 }
 
-void Surface::link(SDL_Surface* src)
-{
-    data = src;
-    width_ = data->w;
-    height_ = data->h;
-}
-
-void Surface::link(Surface* src)
-{
-    link(src->data);
-}
-
-void Surface::unload()
-{
-    if (loaded_) {
-        SDL_FreeSurface(data);
-        loaded_ = false;
-    }
-}
-
-void Surface::enable_per_pixel_alpha()
-{
-    SDL_Surface* surface;
-    surface = SDL_DisplayFormatAlpha(data);
-    SDL_FreeSurface(data);
-    data = surface;
-}
-
 void Surface::set_color_key()
 {
     SDL_Surface* screen = SDL_GetVideoSurface();
     SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
                     SDL_MapRGB(screen->format, 255, 0, 255));
+}
+
+void Surface::reset()
+{
+    --(*ref_count);
+    
+    // Note that *ref_count can be < 0 after decrementing if we initialise
+    // without Surface data and then call reset.
+    if (*ref_count <= 0) {
+        SDL_FreeSurface(data);
+        delete ref_count;
+    }
+
+    // Restore plain constructor state.
+    data = nullptr;
+    ref_count = new int(0);
+    width_ = 0;
+    height_ = 0;
+}
+
+Surface* Surface::enable_per_pixel_alpha() const
+{
+    SDL_Surface* data_alpha = SDL_DisplayFormatAlpha(data);
+    
+    Surface* surface_alpha = new Surface;
+    surface_alpha->data = data_alpha;
+    *(surface_alpha->ref_count) = 1;
+
+    surface_alpha->width_ = surface_alpha->data->w;
+    surface_alpha->height_ = surface_alpha->data->h;
+    return surface_alpha;
 }
 
 // -----------------------------------------------------------------------------
@@ -184,7 +272,6 @@ SDL_Surface* Surface::internal_load(std::string path)
 
     width_ = surface->w;
     height_ = surface->h;
-    loaded_ = true;
 
     return surface;
 }

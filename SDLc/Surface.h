@@ -29,10 +29,13 @@
 
 namespace sdlc {
 
-// TODO: move to composition.
 class Surface : public BaseSurface {
 public:
-    Surface() {};
+    Surface();
+    Surface(const Surface& surface);
+    Surface(Surface&& surface);
+    Surface& operator=(const Surface& rhs);
+    Surface& operator=(Surface&& rhs);
     virtual ~Surface();
 
     void alloc(int w, int h, int bpp, int type);
@@ -42,12 +45,10 @@ public:
     void load_raw(const std::string path);
     void load_alpha(const std::string path);
     void load_color_key(const std::string path);
-    void link(SDL_Surface* src);  // remove this ?
-    void link(Surface* src);
-    void unload();
-
-    void enable_per_pixel_alpha();
     void set_color_key();
+    void reset();
+
+    Surface* enable_per_pixel_alpha() const;
 
     int width() const;
     int height() const;
@@ -58,7 +59,10 @@ protected:
 
 private:
     SDL_Surface* internal_load(std::string path);
-    bool loaded_ = false;
+
+    // Used for reference counting SDL_Surface* data.
+    int *ref_count = nullptr;
+
     int width_ = 0;
     int height_ = 0;
 };
