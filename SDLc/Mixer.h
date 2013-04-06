@@ -23,11 +23,10 @@ namespace sdlc {
 
 class Mixer {
 public:
-    Mixer();  
-    virtual ~Mixer();
-
-    bool init();
+    int init();
+    int open();
     void close();
+    void quit();
 
     int set_music_volume(int value);
     int music_volume() const;

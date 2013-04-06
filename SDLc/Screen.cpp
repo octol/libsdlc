@@ -24,27 +24,17 @@
 namespace sdlc {
 
 // -----------------------------------------------------------------------------
-// Construction/Destruction
-// -----------------------------------------------------------------------------
-
-Screen::~Screen()
-{
-    close();
-}
-
-// -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
 
-void Screen::init(int w, int h, int bpp, int type)
+int Screen::init()
 {
-    if (sdlinited == false) {
-        SDL_Init(SDL_INIT_VIDEO);
-        atexit(SDL_Quit);
-        sdlinited = true;
-    } else {
-        SDL_InitSubSystem(SDL_INIT_VIDEO);
-    }
+    return SDL_Init(SDL_INIT_VIDEO);
+}
+
+void Screen::open(int w, int h, int bpp, int type)
+{
+    SDL_InitSubSystem(SDL_INIT_VIDEO);
 
     data = SDL_SetVideoMode(w, h, bpp, type);
     if (data == NULL) {
@@ -52,12 +42,16 @@ void Screen::init(int w, int h, int bpp, int type)
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
         exit(2);
     }
-    SDL_Delay(100);
 }
 
 void Screen::close()
 {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
+
+void Screen::quit()
+{
+    SDL_Quit();
 }
 
 void Screen::print_video_info()

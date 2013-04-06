@@ -3,6 +3,7 @@ Plugins:
 - YouCompleteMe
 
 General:
+- Init/Quit of SDL subsystems
 - Get rid of sdlinited dependency
 - Can we get rid of Misc.h/cpp ?
 - Give Sound and Music common base class.

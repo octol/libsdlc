@@ -32,14 +32,17 @@ Surface::Surface() : ref_count(new int(0))
 }
 
 // Copy
-Surface::Surface(const Surface& surface) 
-    : BaseSurface(),
-      ref_count(surface.ref_count),
-      width_(surface.width_),
-      height_(surface.height_)
+Surface::Surface(const Surface& surface) : Surface()
 {
-    data = surface.data;
-    ++(*ref_count); 
+    if (*surface.ref_count > 0) {
+        data = surface.data;
+        delete ref_count;
+        ref_count = surface.ref_count;
+        width_ = surface.width_;
+        height_ = surface.height_;
+
+        ++(*ref_count); 
+    }
 }
 
 // Move
@@ -59,11 +62,17 @@ Surface::Surface(Surface&& surface)
 // Assignment
 Surface& Surface::operator=(const Surface& rhs)
 {
-    if (this != &rhs) {
+    if (this != &rhs && *rhs.ref_count > 0) {
+        if (--(*ref_count) <= 0) {
+            SDL_FreeSurface(data);
+            delete ref_count;
+        }
+
+        data = rhs.data;
         ref_count = rhs.ref_count;
         width_ = rhs.width_;
         height_ = rhs.height_;
-        data = rhs.data;
+
         ++(*ref_count); 
     }
     return *this;
@@ -73,10 +82,15 @@ Surface& Surface::operator=(const Surface& rhs)
 Surface& Surface::operator=(Surface&& rhs)
 {
     if (this != &rhs) {
+        if (--(*ref_count) <= 0) {
+            SDL_FreeSurface(data);
+            delete ref_count;
+        }
+
+        data = rhs.data;
         ref_count = rhs.ref_count;
         width_ = rhs.width_;
         height_ = rhs.height_;
-        data = rhs.data;
 
         rhs.data = nullptr;
         rhs.ref_count = new int(0);
@@ -88,13 +102,10 @@ Surface& Surface::operator=(Surface&& rhs)
 
 Surface::~Surface()
 {
-    --(*ref_count);
-
     // Note that *ref_count can be < 0 if we initialise without Surface data
     // and then call unload.
-    
-    // Last reference
-    if (*ref_count <= 0) {
+    if (--(*ref_count) <= 0) {
+        // Last reference
         SDL_FreeSurface(data);
         delete ref_count;
         data = nullptr;
@@ -223,11 +234,9 @@ void Surface::set_color_key()
 
 void Surface::reset()
 {
-    --(*ref_count);
-    
     // Note that *ref_count can be < 0 after decrementing if we initialise
     // without Surface data and then call reset.
-    if (*ref_count <= 0) {
+    if (--(*ref_count) <= 0) {
         SDL_FreeSurface(data);
         delete ref_count;
     }

@@ -25,11 +25,12 @@ namespace sdlc {
 
 class Timer {
 public:
-    Timer();
-    virtual ~Timer();
+    virtual ~Timer() {};
 
     int init();
+    int open();
     void close();
+    void quit();
 
     // Updates the fps and frametime.
     void update(uint32_t frame_time_wait);

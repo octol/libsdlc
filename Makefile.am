@@ -17,7 +17,6 @@ libsdlc_@LIBSDLC_API_VERSION@_la_SOURCES = SDLc/Surface.cpp \
 					   SDLc/BaseSurface.cpp \
 					   SDLc/Font.cpp \
 					   SDLc/Fontdata.cpp \
-					   SDLc/Misc.cpp \
 					   SDLc/Input.cpp \
 					   SDLc/Particle.cpp \
 					   SDLc/Screen.cpp \

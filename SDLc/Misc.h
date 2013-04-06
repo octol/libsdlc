@@ -21,8 +21,6 @@
 
 namespace sdlc {
 
-extern bool sdlinited;
-
 template<typename T>
 T bound(T value, T boundary1, T boundary2)
 {   

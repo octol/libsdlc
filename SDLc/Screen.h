@@ -28,10 +28,13 @@ namespace sdlc {
 
 class Screen : public BaseSurface {
 public:
-    virtual ~Screen();
+    virtual ~Screen() {};
 
-    void init(int w, int h, int bpp, int type);
+    int init();
+    void open(int w, int h, int bpp, int type);
     void close();
+    void quit();
+
     void print_video_info();
     int show_cursor(bool toggle);
     void set_caption(std::string title);

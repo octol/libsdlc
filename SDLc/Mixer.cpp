@@ -25,50 +25,43 @@
 namespace sdlc {
 
 // -----------------------------------------------------------------------------
-// Construction/Destruction
-// -----------------------------------------------------------------------------
-
-Mixer::Mixer()
-{
-    // Important that we do not initialise in the constructor.
-}
-
-Mixer::~Mixer()
-{
-    if (initialised_)
-        close();
-}
-
-// -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
 
-bool Mixer::init()
+int Mixer::init()
 {
-    if (sdlinited == false) {
-        SDL_Init(SDL_INIT_AUDIO);
-        atexit(SDL_Quit);
-        sdlinited = true;
-    } else {
-        SDL_InitSubSystem(SDL_INIT_AUDIO);
-    }
+    return SDL_Init(SDL_INIT_AUDIO);
+}
+
+int Mixer::open()
+{
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
 
 //  if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 
 //                   MIX_DEFAULT_CHANNELS, 4096))
 //  if(Mix_OpenAudio(11025, AUDIO_U8, 1, 512))
-    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024)) {
+
+    int r = 0;
+    if ((r = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024))) {
         SDL_QuitSubSystem(SDL_INIT_AUDIO);
-        std::cerr << "Mixer::init(): " << SDL_GetError() << std::endl;
-        return false;
+        std::cerr << "Mixer::open(): " << SDL_GetError() << std::endl;
+    } else {
+        initialised_ = true;
     }
-    initialised_ = true;
-    return true;
+
+    return r;
 }
 
 void Mixer::close()
 {
     Mix_CloseAudio();
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    initialised_ = false;
+}
+
+void Mixer::quit()
+{
+    SDL_Quit();
 }
 
 int Mixer::set_music_volume(int value)
