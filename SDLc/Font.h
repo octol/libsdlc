@@ -20,6 +20,8 @@
 #define SDLC_FONT_H
 
 #include <string>
+#include <array>
+#include <memory>
 
 namespace sdlc {
 
@@ -27,18 +29,16 @@ class Surface;
 
 class Font {
 public:
-    Font();
-    Font(const Font& font) = delete;
-    Font& operator=(const Font& font) = delete;
-    virtual ~Font();
+    Font() = default;
+    explicit Font(std::string path);
 
     void load(const std::string path);
     Surface* get_char(char c) const;
 
 private:
-    // TODO: use stdlib container?
-    Surface* gfx_[29][3];
-    Surface* blank_ = nullptr;
+    unsigned int map(int i, int j) const;
+
+    std::array<std::shared_ptr<sdlc::Surface>,256> gfx_;
 };
 } // namespace sdlc
 #endif // SDLC_FONT_H

@@ -44,9 +44,6 @@ class BaseSurface {
 public:
     virtual ~BaseSurface() {};
 
-    // TODO: add function suitable for std::cout
-    void print_surface_info() const;
-
     void lock();
     void unlock();
     void blit(int x, int y, SDL_Surface* src, SDL_Rect rect);
@@ -242,5 +239,12 @@ int BaseSurface::depth() const
 {
     return data->format->BitsPerPixel;
 }
+
+// -----------------------------------------------------------------------------
+// Free functions
+// -----------------------------------------------------------------------------
+
+std::ostream& operator<<(std::ostream&, const BaseSurface&);
+
 } // namespace sdlc
 #endif // SDLC_BASE_SURFACE_H

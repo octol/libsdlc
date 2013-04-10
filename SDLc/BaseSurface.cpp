@@ -27,16 +27,6 @@ namespace sdlc {
 // Member functions
 // -----------------------------------------------------------------------------
 
-void BaseSurface::print_surface_info() const
-{
-    printf("flags: %x\n", data->flags);
-    printf("data->w: %d\n", data->w);
-    printf("data->h: %d\n", data->h);
-    printf("data->pitch: %d\n", data->pitch);
-    printf("data->format->BitsPerPixel: %d\n", data->format->BitsPerPixel);
-    printf("data->format->BytesPerPixel: %d\n", data->format->BytesPerPixel);
-}
-
 void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
 {
     SDL_Rect dst_rect;
@@ -759,7 +749,6 @@ void BaseSurface::print(int x, int y, const std::string text,
 {
     lock();
     uint32_t color = SDL_MapRGB(data->format, r, g, b);
-    //char* cursor = &text[0];
     const char* cursor = text.c_str();
     std::string::size_type length = text.length();
 
@@ -840,4 +829,23 @@ void BaseSurface::draw_char(int x, int y, char c, uint32_t color)
         xTmp = xTmp - 8;
     }
 }
+
+// -----------------------------------------------------------------------------
+// Free functions
+// -----------------------------------------------------------------------------
+
+std::ostream& operator<<(std::ostream& os, const BaseSurface& surface)
+{
+    os.setf(std::ios::hex, std::ios::basefield);
+    os << "flags: " << (int)surface.data->flags << std::endl;
+    os.unsetf(std::ios::hex);
+    os << "data->w: " << surface.data->w << std::endl;
+    os << "data->h: " << surface.data->h << std::endl;
+    os << "data->pitch: " << surface.data->pitch << std::endl;
+    os << "data->format->BitsPerPixel: " << surface.data->format->BitsPerPixel << std::endl;
+    os << "data->format->BytesPerPixel: " << surface.data->format->BytesPerPixel;
+
+    return os;
+}
+
 } // namespace sdlc

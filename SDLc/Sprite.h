@@ -19,9 +19,13 @@
 #ifndef SDLC_SPRITE_H
 #define SDLC_SPRITE_H
 
-#include "Surface.h"
+// -----------------------------------------------------------------------------
+// Adds movement (position and velocity) and animation functionality to the 
+// Surface class.
+// -----------------------------------------------------------------------------
 
-// TODO: should probably switch to composition here.
+#include "Surface.h"
+#include <iostream>
 
 namespace sdlc {
 
@@ -31,7 +35,8 @@ class Sprite : public Surface {
     friend class BaseSurface;
 
 public:
-    Sprite() = default;
+    Sprite();
+    explicit Sprite(std::string path);
     virtual ~Sprite() {};
 
     // Main functions
@@ -52,27 +57,32 @@ public:
     float set_y(float value);
     void set_pos(float x, float y);
 
-    float x_vel();
-    float y_vel();
+    float x_vel() const;
+    float y_vel() const;
     float set_x_vel(float value);
     float set_y_vel(float value);
     void  set_vel(float x, float y);
 
-    bool locked_to_screen();
+    bool locked_to_screen() const;
     bool set_locked_to_screen(bool value);
 
     SDL_Rect rect() const;
     SDL_Rect reduced_rect() const;
   
     // collision functions
-    bool overlap(const Sprite& other);
-
-protected:
-    bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2);
+    bool overlap(const Sprite& other) const;
 
 private:
+    bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2) const;
+
+    // Sprite data
+    float x_ = 0; 
+    float y_ = 0;
+    float x_vel_ = 0;
+    float y_vel_ = 0;
+    bool locked_to_screen_ = false;
+
     // Animation data
-    // TODO: group into struct
     int total_frames_ = 1;
     int current_frame_ = 1;
     int total_iterations_ = 0; 
@@ -80,14 +90,6 @@ private:
     unsigned int anim_speed_ = 0;
     unsigned int anim_ticks_ = 0;
     bool animation_active_ = false; // if the animation is running
-
-    // Sprite data
-    // TODO: group into struct
-    float x_ = 0; 
-    float y_ = 0;
-    float x_vel_ = 0;
-    float y_vel_ = 0;
-    bool locked_to_screen_ = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -114,7 +116,7 @@ void Sprite::set_pos(float x, float y)
 }
 
 inline
-float Sprite::x_vel() 
+float Sprite::x_vel() const
 {
     return x_vel_;
 }
@@ -126,7 +128,7 @@ float Sprite::set_x_vel(float value)
 }
 
 inline
-float Sprite::y_vel()         
+float Sprite::y_vel() const   
 {
     return y_vel_;
 }
@@ -145,7 +147,7 @@ void Sprite::set_vel(float x, float y)
 }
 
 inline
-bool Sprite::locked_to_screen()       
+bool Sprite::locked_to_screen() const
 {
     return locked_to_screen_;
 }

@@ -27,8 +27,9 @@ enum AUTOFIRE_KEYSTATE { AUTOFIRE, NO_AUTOFIRE };
 
 class Input {
 public:
-    void update();
+    int update();
     bool key_pressed(int key, AUTOFIRE_KEYSTATE autofire);
+    bool key_pressed(int key);
     bool mouse_button_pressed();
 
 private:

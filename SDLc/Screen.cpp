@@ -16,6 +16,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <ostream>
 #include <iostream>
 #include "Sprite.h"
 #include "Misc.h"
@@ -54,30 +55,6 @@ void Screen::quit()
     SDL_Quit();
 }
 
-void Screen::print_video_info()
-{
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
-    std::cout << std::endl;
-
-    std::cout << "hw_available: "   << info->hw_available        << std::endl;
-    std::cout << "wm_available: "   << info->wm_available        << std::endl;
-    std::cout << "UnusedBits1: "    << info->UnusedBits1         << std::endl;
-    std::cout << "UnusedBits2: "    << info->UnusedBits2         << std::endl;
-    std::cout << "blit_hw: "        << info->blit_hw             << std::endl;
-    std::cout << "blit_hw_CC: "     << info->blit_hw_CC          << std::endl;
-    std::cout << "blit_hw_A: "      << info->blit_hw_A           << std::endl;
-    std::cout << "blit_sw: "        << info->blit_sw             << std::endl;
-    std::cout << "blit_sw_CC: "     << info->blit_sw_CC          << std::endl;
-    std::cout << "blit_sw_A: "      << info->blit_sw_A           << std::endl;
-    std::cout << "blit_fill: "      << info->blit_fill           << std::endl;
-    std::cout << "UnusedBits3: "    << info->UnusedBits3         << std::endl;
-    std::cout << "video_mem: "      << info->video_mem           << std::endl;
-    std::cout << "BitsPerPixel: "   << info->vfmt->BitsPerPixel  << std::endl;
-    std::cout << "BytesPerPixel: "  << info->vfmt->BytesPerPixel << std::endl;
-
-    std::cout << std::endl;
-}
-
 int Screen::show_cursor(bool toggle)
 {
     return SDL_ShowCursor(toggle);
@@ -110,6 +87,7 @@ void Screen::update_area(int x, int y, int w, int h)
         update_r_[update_i_].w = w;
         update_r_[update_i_].h = h;
 
+        assert(update_i_ < 255);
         update_i_++;
     }
 }
@@ -117,8 +95,7 @@ void Screen::update_area(int x, int y, int w, int h)
 void Screen::flip()
 {
     // flip screen
-    int i;
-    for (i = 0; i < update_i_; i++) {
+    for (int i = 0; i < update_i_; i++) {
         SDL_UpdateRect(data, update_r_[i].x, update_r_[i].y, 
                        update_r_[i].w, update_r_[i].h);
     }
@@ -130,4 +107,42 @@ void Screen::flip_all()
     SDL_Flip(data);
     update_i_ = 0;
 }
+
+// -----------------------------------------------------------------------------
+// Static functions
+// -----------------------------------------------------------------------------
+
+SDL_Surface* Screen::video_surface()
+{
+    return SDL_GetVideoSurface();
+}
+
+// -----------------------------------------------------------------------------
+// Free functions
+// -----------------------------------------------------------------------------
+
+std::ostream& operator<<(std::ostream& os, const Screen& screen)
+{
+    (void)(screen);
+    const SDL_VideoInfo* info = SDL_GetVideoInfo();
+    
+    os << "hw_available: "   << info->hw_available        << std::endl;
+    os << "wm_available: "   << info->wm_available        << std::endl;
+    os << "UnusedBits1: "    << info->UnusedBits1         << std::endl;
+    os << "UnusedBits2: "    << info->UnusedBits2         << std::endl;
+    os << "blit_hw: "        << info->blit_hw             << std::endl;
+    os << "blit_hw_CC: "     << info->blit_hw_CC          << std::endl;
+    os << "blit_hw_A: "      << info->blit_hw_A           << std::endl;
+    os << "blit_sw: "        << info->blit_sw             << std::endl;
+    os << "blit_sw_CC: "     << info->blit_sw_CC          << std::endl;
+    os << "blit_sw_A: "      << info->blit_sw_A           << std::endl;
+    os << "blit_fill: "      << info->blit_fill           << std::endl;
+    os << "UnusedBits3: "    << info->UnusedBits3         << std::endl;
+    os << "video_mem: "      << info->video_mem           << std::endl;
+    os << "BitsPerPixel: "   << info->vfmt->BitsPerPixel  << std::endl;
+    os << "BytesPerPixel: "  << info->vfmt->BytesPerPixel;
+
+    return os;
+}
+
 } // namespace sdlc

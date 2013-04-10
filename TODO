@@ -3,26 +3,19 @@ Plugins:
 - YouCompleteMe
 
 General:
-- Init/Quit of SDL subsystems
-- Get rid of sdlinited dependency
-- Can we get rid of Misc.h/cpp ?
+- Can we get rid of Misc.h ?
 - Give Sound and Music common base class.
 - Change the enums to the new c++11 variant (Define.h and Input.h).
 - Change the data structure in Font.cpp to use unicode compatible modern
   chars/strings.
 - Consolidate SDL_ calls to interfaces.
-- Rule of five in Surface classes.
 - Rule of five in Font class
 - Rule of five in Music class
 - Rule of five in Sound class
 
 BaseSurface
-- print_surface_info() Should probably return ostream instead of printing directly
 - Print functions could be cleaned up.
 - Line functions are far to verbose.
-
-Surface
-- Remove all references to SDL_GetVideoSurface();
 
 Sprite
 - Change to "composition" instead of "inheritance"
@@ -34,3 +27,6 @@ Mixer
 Timer
 - Limit the amount that the frame time can increase / decrease per step.
 - Make sure all code uses Timer:ticks() instead of SDL_GetTicks()
+
+Font
+- Return smart pointer or reference from get_char?

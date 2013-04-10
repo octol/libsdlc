@@ -19,14 +19,15 @@
 #ifndef SDLC_SCREEN_H
 #define SDLC_SCREEN_H
 
+#include <cassert>
 #include <array>
 #include "BaseSurface.h"
 
 namespace sdlc {
 
-// TODO: move to composition.
+class Screen final : public BaseSurface {
+    friend class Surface;
 
-class Screen : public BaseSurface {
 public:
     virtual ~Screen() {};
 
@@ -35,7 +36,6 @@ public:
     void close();
     void quit();
 
-    void print_video_info();
     int show_cursor(bool toggle);
     void set_caption(std::string title);
 
@@ -48,6 +48,12 @@ private:
     // data needed by update_area() and flip().
     int update_i_ = 0;
     std::array<SDL_Rect,256> update_r_;
+
+    // internal function to wrap SDL_GetVideoSurface()
+    static SDL_Surface* video_surface();
 };
+
+std::ostream& operator<<(std::ostream&, const Screen&);
+
 } // namespace sdlc
 #endif // SDLC_SCREEN_H

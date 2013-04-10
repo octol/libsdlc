@@ -31,6 +31,11 @@ Surface::Surface() : ref_count(new int(0))
 {
 }
 
+Surface::Surface(std::string path) : Surface()
+{
+    load(path);
+}
+
 // Copy
 Surface::Surface(const Surface& surface) : Surface()
 {
@@ -125,7 +130,7 @@ void Surface::alloc(int w, int h, int bpp, int type)
     // Free any previous data
     reset();
 
-    SDL_Surface* screen = SDL_GetVideoSurface();
+    SDL_Surface* screen = Screen::video_surface();
     SDL_Surface* surface = SDL_CreateRGBSurface(type, w, h, bpp, 
                                                 screen->format->Rmask, 
                                                 screen->format->Gmask,
@@ -144,7 +149,7 @@ void Surface::alloc(int w, int h, int bpp, int type)
 
 void Surface::alloc(int w, int h, int bpp)
 {
-    SDL_Surface* screen = SDL_GetVideoSurface();
+    SDL_Surface* screen = Screen::video_surface();
 
     if (screen->flags == SDL_SWSURFACE || 
         screen->flags == (SDL_SWSURFACE | SDL_FULLSCREEN)) {
@@ -160,7 +165,7 @@ void Surface::alloc(int w, int h, int bpp)
 
 void Surface::alloc(int w, int h)
 {
-    SDL_Surface* screen = SDL_GetVideoSurface();
+    SDL_Surface* screen = Screen::video_surface();
     alloc(w, h, screen->format->BitsPerPixel);
 }
 
@@ -227,7 +232,7 @@ void Surface::load_color_key(const std::string path)
 
 void Surface::set_color_key()
 {
-    SDL_Surface* screen = SDL_GetVideoSurface();
+    SDL_Surface* screen = Screen::video_surface();
     SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
                     SDL_MapRGB(screen->format, 255, 0, 255));
 }

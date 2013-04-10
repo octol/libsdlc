@@ -32,6 +32,7 @@ namespace sdlc {
 class Surface : public BaseSurface {
 public:
     Surface();
+    explicit Surface(std::string path);
     Surface(const Surface& surface);
     Surface(Surface&& surface);
     Surface& operator=(const Surface& rhs);
@@ -53,8 +54,6 @@ public:
     int width() const;
     int height() const;
 
-    int *ref_count = nullptr;
-
 protected:
     int set_width(int w);
     int set_height(int h);
@@ -63,6 +62,7 @@ private:
     SDL_Surface* internal_load(std::string path);
 
     // Used for reference counting SDL_Surface* data.
+    int *ref_count = nullptr;
 
     int width_ = 0;
     int height_ = 0;

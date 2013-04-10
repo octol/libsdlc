@@ -26,19 +26,9 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Font::Font()
+Font::Font(const std::string path) : Font()
 {
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 29; j++)
-            gfx_[j][i] = nullptr;
-}
-
-Font::~Font()
-{
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 29; j++)
-            delete gfx_[j][i];
-    delete blank_;
+    load(path);
 }
 
 // -----------------------------------------------------------------------------
@@ -54,28 +44,33 @@ void Font::load(const std::string path)
     int height = ((src.height() - 2) / 3);
 
     // set the rectangles around each font
-    int i = 0, j = 0;
     SDL_Rect src_rect;
-    for (i = 0; i < 3; i++) {
-        for (j = 0; j < 29; j++) {
-            src_rect.x = j * (width + 1);
-            src_rect.y = i * (height + 1);
+    for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < 29; i++) {
+            src_rect.x = i * (width + 1);
+            src_rect.y = j * (height + 1);
             src_rect.w = width;
             src_rect.h = height;
 
-            gfx_[j][i] = new Surface;
-            gfx_[j][i]->alloc(width, height);
-            gfx_[j][i]->set_color_key();
-            gfx_[j][i]->blit(0, 0, src, src_rect);
+            gfx_.at(map(i,j)) = std::shared_ptr<sdlc::Surface>(new sdlc::Surface);
+            gfx_.at(map(i,j))->alloc(width, height);
+            gfx_.at(map(i,j))->set_color_key();
+            gfx_.at(map(i,j))->blit(0, 0, src, src_rect);
         }
     }
 
-    blank_ = new Surface;
-    blank_->alloc(width, height);
-    blank_->set_color_key();
-    blank_->fill_rect(0, 0, width, height, 255, 0, 255);
+    // space is after the last character
+    gfx_.at(map(8,2)) = std::shared_ptr<sdlc::Surface>(new sdlc::Surface);
+    gfx_.at(map(8,2))->alloc(width, height);
+    gfx_.at(map(8,2))->set_color_key();
+    gfx_.at(map(8,2))->fill_rect(0, 0, width, height, 255, 0, 255);
 }
 
+// a-z :26
+// 0-9 :10
+// . , ! ? : = ( ) :8
+// blank
+// total: 45
 Surface* Font::get_char(char c) const
 {
     int i = 0;
@@ -111,14 +106,31 @@ Surface* Font::get_char(char c) const
     } else if (c == ')') {
         i = 7; j = 2;
     } else if (c == ' ') {
-        return blank_;
+        return gfx_.at(map(8,2)).get();
     } else {
-        std::cout << "warning: undefined char passed to Font::getChar()" 
-                  << std::endl;
-        return blank_;
+        std::cout << "warning: Font::get_char() undefined char" << std::endl;
+        return gfx_.at(map(8,2)).get();
     }
-    return gfx_[i][j];
+    return gfx_[map(i,j)].get();
 }
+
+unsigned int Font::map(int i, int j) const
+{
+    int offset = 0;
+
+    // alpha: j = 0
+    if (j == 0)
+        offset += 0;
+    // numeric: j = 1
+    if (j == 1)
+        offset += 26;
+    // other: j = 2
+    if (j == 2)
+        offset += 26 + 10;
+
+    return i + offset;
+}
+
 } // namespace sdlc
 
 

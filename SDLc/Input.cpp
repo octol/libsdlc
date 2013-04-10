@@ -20,15 +20,18 @@
 
 namespace sdlc {
 
-void Input::update()
+int Input::update()
 {
     // for regular input
     press_detected_ = false;
-    while (SDL_PollEvent(&event_))
+    int update_state;
+    while ((update_state = SDL_PollEvent(&event_)))
         press_detected_ = true;
 
     // for autofire
     key_autofire_ = SDL_GetKeyState(NULL);
+
+    return update_state;
 }
 
 bool Input::key_pressed(int key, AUTOFIRE_KEYSTATE autofire)
@@ -48,6 +51,11 @@ bool Input::key_pressed(int key, AUTOFIRE_KEYSTATE autofire)
             return false;
         }
     }
+}
+
+bool Input::key_pressed(int key) 
+{
+    return key_pressed(key, NO_AUTOFIRE);
 }
 
 bool Input::mouse_button_pressed()
