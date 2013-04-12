@@ -26,6 +26,12 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
+Font::Font()
+{
+    for (auto& i : gfx_) 
+        i = std::make_shared<sdlc::Surface>();
+}
+
 Font::Font(const std::string path) : Font()
 {
     load(path);
@@ -43,7 +49,9 @@ void Font::load(const std::string path)
     int width = ((src.width() - 25) / 29);
     int height = ((src.height() - 2) / 3);
 
-    // set the rectangles around each font
+    // Set the rectangles around each font
+    // The two-dimensional loop is due to the way the format of the font
+    // image.
     SDL_Rect src_rect;
     for (int j = 0; j < 3; j++) {
         for (int i = 0; i < 29; i++) {
@@ -52,27 +60,28 @@ void Font::load(const std::string path)
             src_rect.w = width;
             src_rect.h = height;
 
-            gfx_.at(map(i,j)) = std::shared_ptr<sdlc::Surface>(new sdlc::Surface);
             gfx_.at(map(i,j))->alloc(width, height);
             gfx_.at(map(i,j))->set_color_key();
             gfx_.at(map(i,j))->blit(0, 0, src, src_rect);
         }
     }
 
-    // space is after the last character
-    gfx_.at(map(8,2)) = std::shared_ptr<sdlc::Surface>(new sdlc::Surface);
+    // Space is after the last character as it is now part of the font
+    // image.
     gfx_.at(map(8,2))->alloc(width, height);
     gfx_.at(map(8,2))->set_color_key();
     gfx_.at(map(8,2))->fill_rect(0, 0, width, height, 255, 0, 255);
 }
 
-// a-z :26
-// 0-9 :10
-// . , ! ? : = ( ) :8
-// blank
-// total: 45
+// TODO: This can be made more elegant
 Surface* Font::get_char(char c) const
 {
+    // a-z :26
+    // 0-9 :10
+    // . , ! ? : = ( ) :8
+    // blank
+    // total: 45
+
     int i = 0;
     int j = 0;
 
@@ -122,11 +131,13 @@ unsigned int Font::map(int i, int j) const
     if (j == 0)
         offset += 0;
     // numeric: j = 1
-    if (j == 1)
+    else if (j == 1)
         offset += 26;
     // other: j = 2
-    if (j == 2)
+    else if (j == 2)
         offset += 26 + 10;
+    else 
+        std::cerr << "Font:map() unexpected input" << std::endl;
 
     return i + offset;
 }

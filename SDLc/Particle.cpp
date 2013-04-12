@@ -38,7 +38,7 @@ void Particle::update(const Timer& timer)
     set_alpha(alpha() - (fade_speed() * timer.frame_time()));
 }
 
-bool Particle::inside(float x1, float x2, float y1, float y2)
+bool Particle::inside(float x1, float x2, float y1, float y2) const
 {
     return x() >= x1 && x() <= x2 && y() >= y1 && y() <= y2;
 }

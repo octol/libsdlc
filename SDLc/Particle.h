@@ -19,6 +19,8 @@
 #ifndef SDLC_PARTICLE_H
 #define SDLC_PARTICLE_H
 
+#include "Misc.h"
+
 namespace sdlc {
 
 class Timer;
@@ -52,23 +54,27 @@ public:
     int set_b(int value);
     int set_g(int value);
 
-    bool inside(float x1, float x2, float y1, float y2);
+    bool inside(float x1, float x2, float y1, float y2) const;
 
-    // This is because the particles are in preallocated arrays
+    // This is useful if the particles exist in preallocated arrays
     bool active() const;
     bool active(bool value);
 
 private:
+    bool active_ = false;
+
+    // position
     float x_ = 0;
     float y_ = 0;
     float x_vel_ = 0;
     float y_vel_ = 0;
+
+    // color
     float fade_speed_ = 0;
     int r_ = 0;
     int g_ = 0;
     int b_ = 0;
     float alpha_ = 255;
-    bool active_ = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -132,9 +138,7 @@ float Particle::alpha() const
 inline
 float Particle::set_alpha(float value)
 {
-    if (value > 255)     value = 255;
-    else if (value < 0)  value = 0;
-    return (alpha_ = value);
+    return alpha_ = bound(value, 0.0f, 255.0f);
 }
 
 inline
@@ -170,25 +174,19 @@ int Particle::b() const
 inline
 int Particle::set_r(int value)
 {
-    if (value > 255)     value = 255;
-    else if (value < 0)  value = 0;
-    return r_ = value;
+    return r_ = bound(value, 0, 255);
 }
 
 inline
 int Particle::set_g(int value)
 {
-    if (value > 255)     value = 255;
-    else if (value < 0)  value = 0;
-    return g_ = value;
+    return g_ = bound(value, 0, 255);
 }
 
 inline
 int Particle::set_b(int value)
 {
-    if (value > 255)     value = 255;
-    else if (value < 0)  value = 0;
-    return b_ = value;
+    return b_ = bound(value, 0, 255);
 }
 
 inline

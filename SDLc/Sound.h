@@ -26,14 +26,16 @@ namespace sdlc {
 
 class Sound final {
 public:
-    Sound() {};
-    Sound(const Sound& sound) = delete;
-    Sound& operator=(Sound& sound) = delete;
+    Sound();
+    explicit Sound(const std::string path);
+    Sound(const Sound& sound);
+    Sound(Sound&& sound);
+    Sound& operator=(const Sound& sound);
+    Sound& operator=(Sound&& sound);
     ~Sound();
 
-    void load(std::string path);
-    void link(Sound* object);
-    void unload();
+    void load(const std::string path);
+    void reset();
     void play(int iterations);
 
     int channel() const;
@@ -41,8 +43,8 @@ public:
     
 private:
     Mix_Chunk* sound_ = nullptr;
+    int* ref_count_ = nullptr;
     int channel_ = -1;
-    bool loaded_ = false;
 };
 
 // -----------------------------------------------------------------------------

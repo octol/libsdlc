@@ -3,18 +3,17 @@ Plugins:
 - YouCompleteMe
 
 General:
+- Probably just make a global sdlc::init() function instead
 - Can we get rid of Misc.h ?
 - Give Sound and Music common base class.
 - Change the enums to the new c++11 variant (Define.h and Input.h).
 - Change the data structure in Font.cpp to use unicode compatible modern
   chars/strings.
 - Consolidate SDL_ calls to interfaces.
-- Rule of five in Font class
 - Rule of five in Music class
 - Rule of five in Sound class
 
 BaseSurface
-- Print functions could be cleaned up.
 - Line functions are far to verbose.
 
 Sprite
@@ -30,3 +29,4 @@ Timer
 
 Font
 - Return smart pointer or reference from get_char?
+

@@ -29,7 +29,7 @@ class Surface;
 
 class Font {
 public:
-    Font() = default;
+    Font();
     explicit Font(std::string path);
 
     void load(const std::string path);

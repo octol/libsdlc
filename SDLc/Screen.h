@@ -25,16 +25,20 @@
 
 namespace sdlc {
 
+int init();
+int init(uint32_t flags);
+void quit();
+
 class Screen final : public BaseSurface {
     friend class Surface;
 
 public:
-    virtual ~Screen() {};
+    Screen();
+    Screen(int w, int h, int bpp, int type);
+    virtual ~Screen();
 
-    int init();
     void open(int w, int h, int bpp, int type);
     void close();
-    void quit();
 
     int show_cursor(bool toggle);
     void set_caption(std::string title);

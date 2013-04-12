@@ -28,41 +28,19 @@ namespace sdlc {
 // Member Functions
 // -----------------------------------------------------------------------------
 
-int Mixer::init()
+Mixer::Mixer()
 {
-    return SDL_Init(SDL_INIT_AUDIO);
+    open();
 }
 
-int Mixer::open()
+Mixer::~Mixer()
 {
-    SDL_InitSubSystem(SDL_INIT_AUDIO);
-
-//  if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 
-//                   MIX_DEFAULT_CHANNELS, 4096))
-//  if(Mix_OpenAudio(11025, AUDIO_U8, 1, 512))
-
-    int r = 0;
-    if ((r = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024))) {
-        SDL_QuitSubSystem(SDL_INIT_AUDIO);
-        std::cerr << "Mixer::open(): " << SDL_GetError() << std::endl;
-    } else {
-        initialised_ = true;
-    }
-
-    return r;
+    close();
 }
 
-void Mixer::close()
-{
-    Mix_CloseAudio();
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
-    initialised_ = false;
-}
-
-void Mixer::quit()
-{
-    SDL_Quit();
-}
+// -----------------------------------------------------------------------------
+// Member Functions
+// -----------------------------------------------------------------------------
 
 int Mixer::set_music_volume(int value)
 {
@@ -83,11 +61,7 @@ int Mixer::music_volume() const
 
 int Mixer::set_sound_volume(int value)
 {
-    sound_volume_ = value;
-    if (sound_volume_ > 128)
-        sound_volume_ = 128;
-    else if (sound_volume_ < 0)
-        sound_volume_ = 0;
+    sound_volume_ = bound(value, 0, 128);
 
     Mix_Volume(-1, sound_volume_);
     return sound_volume_;
@@ -103,5 +77,34 @@ int Mixer::fade_out_music(int ms)
     //return Mix_FadeOutMusic(3000);
     return Mix_FadeOutMusic(ms);
 }
+
+// -----------------------------------------------------------------------------
+// Private functions
+// -----------------------------------------------------------------------------
+
+int Mixer::open()
+{
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
+
+//  if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 
+//                   MIX_DEFAULT_CHANNELS, 4096))
+//  if(Mix_OpenAudio(11025, AUDIO_U8, 1, 512))
+
+    int r = 0;
+    if ((r = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024))) {
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+        std::cerr << "Mixer::open(): " << SDL_GetError() << std::endl;
+    } 
+
+    return r;
+}
+
+void Mixer::close()
+{
+    Mix_CloseAudio();
+    if (SDL_WasInit(SDL_INIT_AUDIO) == SDL_INIT_AUDIO)
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+}
+
 } // namespace sdlc
 

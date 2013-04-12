@@ -20,22 +20,93 @@
 #include "Mixer.h"
 #include "Music.h"
 
-// TODO: in which namespace should mixer be?
-extern sdlc::Mixer* mixer;
-
 namespace sdlc {
 
 // -----------------------------------------------------------------------------
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Music::Music()
+Music::Music() : ref_count_(new int(0))
 {
+}
+
+Music::Music(const std::string path)
+{
+    load(path);
+}
+
+// Copy
+Music::Music(const Music& music) : Music()
+{
+    if (*music.ref_count_> 0) {
+        music_ = music.music_;
+        delete ref_count_;
+        ref_count_ = music.ref_count_;
+
+        ++(*ref_count_); 
+    }
+}
+
+// Move
+Music::Music(Music&& music) : ref_count_(music.ref_count_)
+{
+    music_ = music.music_;
+
+    music.music_ = nullptr;
+    music.ref_count_ = new int(0);
+}
+
+// Assignment
+Music& Music::operator=(const Music& rhs)
+{
+    if (this != &rhs && *rhs.ref_count_> 0) {
+        if (--(*ref_count_) <= 0) {
+            Mix_FreeMusic(music_);
+            delete ref_count_;
+        }
+
+        music_ = rhs.music_;
+        ref_count_ = rhs.ref_count_;
+
+        ++(*ref_count_); 
+    }
+    return *this;
+}
+
+// Move assignment
+Music& Music::operator=(Music&& rhs)
+{
+    if (this != &rhs) {
+        if (--(*ref_count_) <= 0) {
+            Mix_FreeMusic(music_);
+            delete ref_count_;
+        }
+
+        music_ = rhs.music_;
+        ref_count_ = rhs.ref_count_;
+
+        rhs.music_ = nullptr;
+        rhs.ref_count_ = new int(0);
+    }
+    return *this;
 }
 
 Music::~Music()
 {
-    unload();
+    //unload();
+    
+    // Note that *ref_count_ can be < 0 if we initialise without data
+    // and then call unload.
+    if (--(*ref_count_) <= 0) {
+        // Last reference
+        Mix_FreeMusic(music_);
+        delete ref_count_;
+        music_ = nullptr;
+        ref_count_ = nullptr;
+    }
+
+    music_ = nullptr;
+    ref_count_ = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -44,32 +115,31 @@ Music::~Music()
 
 void Music::load(const std::string path)
 {
+    reset();
     music_ = Mix_LoadMUS(path.c_str());
-    if (music_ == NULL) {
+    if (music_ == NULL) 
         std::cerr << "Music::load() " << SDL_GetError() << std::endl;
-    }
-
-    loaded_ = true;
 }
 
-void Music::link(Music* object)
+void Music::reset()
 {
-    music_ = object->music_;
-}
-
-void Music::unload()
-{
-    if (loaded_) {
-        //Mix_HaltMusic();
+    // Note that *ref_count_ can be < 0 after decrementing if we initialise
+    // without data and then call reset.
+    if (--(*ref_count_) <= 0) {
         Mix_FreeMusic(music_);
-        music_ = nullptr;
-        loaded_ = false;
+        delete ref_count_;
     }
+
+    // Restore plain constructor state.
+    music_ = nullptr;
+    ref_count_ = new int(0);
 }
 
 void Music::play(int iterations)
 {
     Mix_PlayMusic(music_, iterations);
-    mixer->set_music_volume(mixer->music_volume());
+
+    // TODO: set volume in other way?
+    //mixer->set_music_volume(mixer->music_volume());
 }
 } // namespace sdlc

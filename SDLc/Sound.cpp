@@ -25,9 +25,85 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
+Sound::Sound() : ref_count_(new int(0))
+{
+}
+
+Sound::Sound(const std::string path) 
+{
+    load(path);
+}
+
+// Copy
+Sound::Sound(const Sound& sound) : Sound()
+{
+    if (*sound.ref_count_ > 0) {
+        sound_ = sound.sound_;
+        delete ref_count_;
+        ref_count_ = sound.ref_count_;
+
+        ++(*ref_count_); 
+    }
+}
+
+// Move
+Sound::Sound(Sound&& sound) : ref_count_(sound.ref_count_)
+{
+    sound_ = sound.sound_;
+
+    sound.sound_ = nullptr;
+    sound.ref_count_ = new int(0);
+}
+
+// Assignment
+Sound& Sound::operator=(const Sound& rhs)
+{
+    if (this != &rhs && *rhs.ref_count_ > 0) {
+        if (--(*ref_count_) <= 0) {
+            Mix_FreeChunk(sound_);
+            delete ref_count_;
+        }
+
+        sound_ = rhs.sound_;
+        ref_count_ = rhs.ref_count_;
+
+        ++(*ref_count_); 
+    }
+    return *this;
+}
+
+// Move assignment
+Sound& Sound::operator=(Sound&& rhs)
+{
+    if (this != &rhs) {
+        if (--(*ref_count_) <= 0) {
+            Mix_FreeChunk(sound_);
+            delete ref_count_;
+        }
+
+        sound_ = rhs.sound_;
+        ref_count_ = rhs.ref_count_;
+
+        rhs.sound_ = nullptr;
+        rhs.ref_count_ = new int(0);
+    }
+    return *this;
+}
+
 Sound::~Sound()
 {
-    unload();
+    // Note that *ref_count_ can be < 0 if we initialise without Sound 
+    // and then call reset.
+    if (--(*ref_count_) <= 0) {
+        // Last reference
+        Mix_FreeChunk(sound_);
+        delete ref_count_;
+        sound_ = nullptr;
+        ref_count_ = nullptr;
+    }
+
+    sound_ = nullptr;
+    ref_count_ = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -36,24 +112,24 @@ Sound::~Sound()
 
 void Sound::load(std::string path)
 {
+    reset();
     sound_ = Mix_LoadWAV(path.c_str());
-    if (sound_ == NULL) {
+    if (sound_ == NULL) 
         std::cerr << "Sound::load() " << SDL_GetError() << std::endl;
-    }
-    loaded_ = true;
 }
 
-void Sound::link(Sound* object)
+void Sound::reset()
 {
-    sound_ = object->sound_;
-}
-
-void Sound::unload()
-{
-    if (loaded_) {
+    // Note that *ref_count_ can be < 0 after decrementing if we initialise
+    // without Sound and then call reset.
+    if (--(*ref_count_) <= 0) {
         Mix_FreeChunk(sound_);
-        sound_ = nullptr;
+        delete ref_count_;
     }
+
+    // Restore plain constructor state.
+    sound_ = nullptr;
+    ref_count_ = new int(0);
 }
 
 void Sound::play(int iterations)

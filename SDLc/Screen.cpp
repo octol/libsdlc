@@ -25,13 +25,45 @@
 namespace sdlc {
 
 // -----------------------------------------------------------------------------
-// Member Functions
+// Free functions
 // -----------------------------------------------------------------------------
 
-int Screen::init()
+int init()
 {
-    return SDL_Init(SDL_INIT_VIDEO);
+    return SDL_Init(0);
 }
+
+int init(uint32_t flags)
+{
+    return SDL_Init(flags);
+}
+
+void quit()
+{
+    SDL_Quit();
+}
+
+// -----------------------------------------------------------------------------
+// Construction/Destruction
+// -----------------------------------------------------------------------------
+
+Screen::Screen()
+{
+}
+
+Screen::Screen(int w, int h, int bpp, int type)
+{
+    open(w, h, bpp, type);
+}
+
+Screen::~Screen()
+{
+    close();
+}
+
+// -----------------------------------------------------------------------------
+// Member Functions
+// -----------------------------------------------------------------------------
 
 void Screen::open(int w, int h, int bpp, int type)
 {
@@ -47,12 +79,8 @@ void Screen::open(int w, int h, int bpp, int type)
 
 void Screen::close()
 {
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-}
-
-void Screen::quit()
-{
-    SDL_Quit();
+    if (SDL_WasInit(SDL_INIT_VIDEO) == SDL_INIT_VIDEO) 
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 int Screen::show_cursor(bool toggle)

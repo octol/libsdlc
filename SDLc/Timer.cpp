@@ -23,29 +23,27 @@
 namespace sdlc {
 
 // -----------------------------------------------------------------------------
+// Construction / Destruction
+// -----------------------------------------------------------------------------
+
+Timer::Timer()
+{
+    open();
+}
+
+Timer::~Timer()
+{
+    close();
+}
+
+// -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
 
-int Timer::init()
-{
-    return SDL_Init(SDL_INIT_TIMER);
-}
-
-int Timer::open()
-{
-    initialised_ = true;
-    return SDL_InitSubSystem(SDL_INIT_TIMER);
-}
-
 void Timer::close()
 {
-    SDL_QuitSubSystem(SDL_INIT_TIMER);
-    initialised_ = false;
-}
-
-void Timer::quit()
-{
-    SDL_Quit();
+    if (SDL_WasInit(SDL_INIT_TIMER) == SDL_INIT_TIMER) 
+        SDL_QuitSubSystem(SDL_INIT_TIMER);
 }
 
 void Timer::update(uint32_t frame_time_wait)
@@ -87,4 +85,10 @@ void Timer::delay(uint32_t ms)
 {
     SDL_Delay(ms);
 }
+
+int Timer::open()
+{
+    return SDL_InitSubSystem(SDL_INIT_TIMER);
+}
+
 } // namespace sdlc

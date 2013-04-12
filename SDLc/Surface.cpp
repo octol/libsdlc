@@ -27,7 +27,7 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Surface::Surface() : ref_count(new int(0))
+Surface::Surface() : ref_count_(new int(0))
 {
 }
 
@@ -39,27 +39,27 @@ Surface::Surface(std::string path) : Surface()
 // Copy
 Surface::Surface(const Surface& surface) : Surface()
 {
-    if (*surface.ref_count > 0) {
+    if (*surface.ref_count_ > 0) {
         data = surface.data;
-        delete ref_count;
-        ref_count = surface.ref_count;
+        delete ref_count_;
+        ref_count_ = surface.ref_count_;
         width_ = surface.width_;
         height_ = surface.height_;
 
-        ++(*ref_count); 
+        ++(*ref_count_); 
     }
 }
 
 // Move
 Surface::Surface(Surface&& surface)
-    : ref_count(surface.ref_count),
+    : ref_count_(surface.ref_count_),
       width_(surface.width_),
       height_(surface.height_)
 {
     data = surface.data;
 
     surface.data = nullptr;
-    surface.ref_count = new int(0);
+    surface.ref_count_ = new int(0);
     surface.width_ = 0;
     surface.height_ = 0;
 }
@@ -67,18 +67,18 @@ Surface::Surface(Surface&& surface)
 // Assignment
 Surface& Surface::operator=(const Surface& rhs)
 {
-    if (this != &rhs && *rhs.ref_count > 0) {
-        if (--(*ref_count) <= 0) {
+    if (this != &rhs && *rhs.ref_count_ > 0) {
+        if (--(*ref_count_) <= 0) {
             SDL_FreeSurface(data);
-            delete ref_count;
+            delete ref_count_;
         }
 
         data = rhs.data;
-        ref_count = rhs.ref_count;
+        ref_count_ = rhs.ref_count_;
         width_ = rhs.width_;
         height_ = rhs.height_;
 
-        ++(*ref_count); 
+        ++(*ref_count_); 
     }
     return *this;
 }
@@ -87,18 +87,18 @@ Surface& Surface::operator=(const Surface& rhs)
 Surface& Surface::operator=(Surface&& rhs)
 {
     if (this != &rhs) {
-        if (--(*ref_count) <= 0) {
+        if (--(*ref_count_) <= 0) {
             SDL_FreeSurface(data);
-            delete ref_count;
+            delete ref_count_;
         }
 
         data = rhs.data;
-        ref_count = rhs.ref_count;
+        ref_count_ = rhs.ref_count_;
         width_ = rhs.width_;
         height_ = rhs.height_;
 
         rhs.data = nullptr;
-        rhs.ref_count = new int(0);
+        rhs.ref_count_ = new int(0);
         rhs.width_ = 0;
         rhs.height_ = 0;
     }
@@ -107,18 +107,18 @@ Surface& Surface::operator=(Surface&& rhs)
 
 Surface::~Surface()
 {
-    // Note that *ref_count can be < 0 if we initialise without Surface data
-    // and then call unload.
-    if (--(*ref_count) <= 0) {
+    // Note that *ref_count_ can be < 0 if we initialise without Surface data
+    // and then call reset.
+    if (--(*ref_count_) <= 0) {
         // Last reference
         SDL_FreeSurface(data);
-        delete ref_count;
+        delete ref_count_;
         data = nullptr;
-        ref_count = nullptr;
+        ref_count_ = nullptr;
     }
 
     data = nullptr;
-    ref_count = nullptr;
+    ref_count_ = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ void Surface::alloc(int w, int h, int bpp, int type)
 
     data = SDL_DisplayFormat(surface);
     if (data) 
-        *ref_count = 1;
+        *ref_count_ = 1;
 
     SDL_FreeSurface(surface);
 
@@ -206,8 +206,8 @@ void Surface::load_raw(const std::string path)
     SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormat(surface);
     if (data) {
-        assert(ref_count);
-        *ref_count = 1;
+        assert(ref_count_);
+        *ref_count_ = 1;
     }
     SDL_FreeSurface(surface);
 }
@@ -218,8 +218,8 @@ void Surface::load_alpha(const std::string path)
     SDL_Surface* surface = internal_load(path);
     data = SDL_DisplayFormatAlpha(surface);
     if (data) {
-        assert(ref_count);
-        *ref_count = 1;
+        assert(ref_count_);
+        *ref_count_ = 1;
     }
     SDL_FreeSurface(surface);
 }
@@ -239,16 +239,16 @@ void Surface::set_color_key()
 
 void Surface::reset()
 {
-    // Note that *ref_count can be < 0 after decrementing if we initialise
+    // Note that *ref_count_ can be < 0 after decrementing if we initialise
     // without Surface data and then call reset.
-    if (--(*ref_count) <= 0) {
+    if (--(*ref_count_) <= 0) {
         SDL_FreeSurface(data);
-        delete ref_count;
+        delete ref_count_;
     }
 
     // Restore plain constructor state.
     data = nullptr;
-    ref_count = new int(0);
+    ref_count_ = new int(0);
     width_ = 0;
     height_ = 0;
 }
@@ -259,7 +259,7 @@ Surface* Surface::enable_per_pixel_alpha() const
     
     Surface* surface_alpha = new Surface;
     surface_alpha->data = data_alpha;
-    *(surface_alpha->ref_count) = 1;
+    *(surface_alpha->ref_count_) = 1;
 
     surface_alpha->width_ = surface_alpha->data->w;
     surface_alpha->height_ = surface_alpha->data->h;

@@ -62,7 +62,7 @@ private:
     SDL_Surface* internal_load(std::string path);
 
     // Used for reference counting SDL_Surface* data.
-    int *ref_count = nullptr;
+    int *ref_count_ = nullptr;
 
     int width_ = 0;
     int height_ = 0;

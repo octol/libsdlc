@@ -19,6 +19,8 @@
 #ifndef SDLC_MISC_H
 #define SDLC_MISC_H
 
+#include <SDL.h>
+
 namespace sdlc {
 
 template<typename T>

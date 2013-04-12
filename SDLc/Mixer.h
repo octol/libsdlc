@@ -23,10 +23,8 @@ namespace sdlc {
 
 class Mixer {
 public:
-    int init();
-    int open();
-    void close();
-    void quit();
+    Mixer();
+    ~Mixer();
 
     int set_music_volume(int value);
     int music_volume() const;
@@ -36,7 +34,9 @@ public:
     int fade_out_music(int ms);
 
 private:
-    bool initialised_ = false;
+    int open();
+    void close();
+
     int music_volume_ = 128;
     int sound_volume_ = 128;
 };

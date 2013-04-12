@@ -27,18 +27,20 @@ namespace sdlc {
 class Music {
 public:
     Music();
-    Music(const Music& music) = delete;
-    Music& operator=(const Music& music) = delete;
+    explicit Music(const std::string path);
+    Music(const Music& music);
+    Music(Music&& music);
+    Music& operator=(const Music& music);
+    Music& operator=(Music&& music);
     virtual ~Music();
 
     void load(const std::string path);
-    void link(Music* object);
-    void unload();
+    void reset();
     void play(int iterations);
 
 private:
     Mix_Music* music_ = nullptr;
-    bool loaded_ = false;
+    int* ref_count_ = nullptr;
 };
 } // namespace sdlc
 #endif // SDLC_MUSIC_H
