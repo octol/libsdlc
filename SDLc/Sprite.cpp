@@ -34,6 +34,10 @@ Sprite::Sprite(std::string path) : Surface(path)
 { 
 }
 
+Sprite::Sprite(const Surface& surface) : Surface(surface)
+{
+}
+
 // -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
@@ -153,10 +157,6 @@ bool Sprite::overlap(const Sprite& other) const
     else return false;
 }
 
-// -----------------------------------------------------------------------------
-// Private Functions
-// -----------------------------------------------------------------------------
-
 bool Sprite::overlap(const SDL_Rect& rect1, const SDL_Rect& rect2) const
 {
     if ((rect1.x + rect1.w) > rect2.x && rect1.x < (rect2.x + rect2.w) && 
@@ -166,4 +166,9 @@ bool Sprite::overlap(const SDL_Rect& rect1, const SDL_Rect& rect2) const
         return false;
     }
 }
+
+// -----------------------------------------------------------------------------
+// Private Functions
+// -----------------------------------------------------------------------------
+
 } // namespace sdlc

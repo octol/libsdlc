@@ -37,6 +37,7 @@ class Sprite : public Surface {
 public:
     Sprite();
     explicit Sprite(std::string path);
+    Sprite(const Surface& surface);
     virtual ~Sprite() {};
 
     // Main functions
@@ -71,10 +72,9 @@ public:
   
     // collision functions
     bool overlap(const Sprite& other) const;
-
-private:
     bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2) const;
 
+private:
     // Sprite data
     float x_ = 0; 
     float y_ = 0;
