@@ -42,11 +42,11 @@ public:
     void alloc(int w, int h, int bpp, int type);
     void alloc(int w, int h, int bpp);
     void alloc(int w, int h);
-    void load(const std::string path);
-    void load_raw(const std::string path);
-    void load_alpha(const std::string path);
-    void load_color_key(const std::string path);
-    void set_color_key();
+    int load(const std::string path);
+    int load_raw(const std::string path);
+    int load_alpha(const std::string path);
+    int load_color_key(const std::string path);
+    int set_color_key();
     void reset();
 
     Surface* enable_per_pixel_alpha() const;

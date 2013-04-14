@@ -169,12 +169,14 @@ void Surface::alloc(int w, int h)
     alloc(w, h, screen->format->BitsPerPixel);
 }
 
-void Surface::load(const std::string path)
+int Surface::load(const std::string path)
 {
     uint8_t r[4], g[4], b[4], a[4];
 
     Surface surface;
-    surface.load_alpha(path);
+    if (surface.load_alpha(path)) 
+        return -1;
+
     int w = surface.width();
     int h = surface.height();
     surface.lock();
@@ -198,43 +200,57 @@ void Surface::load(const std::string path)
     else if (alphafound)
         load_alpha(path);
     else load_raw(path);
+
+    return 0;
 }
 
-void Surface::load_raw(const std::string path)
+int Surface::load_raw(const std::string path)
 {
     reset();
     SDL_Surface* surface = internal_load(path);
+    if (!surface) 
+        return -1;
+
     data = SDL_DisplayFormat(surface);
     if (data) {
         assert(ref_count_);
         *ref_count_ = 1;
     }
+
     SDL_FreeSurface(surface);
+    return 0;
 }
 
-void Surface::load_alpha(const std::string path)
+int Surface::load_alpha(const std::string path)
 {
     reset();
     SDL_Surface* surface = internal_load(path);
+    if (!surface) 
+        return -1;
+    
     data = SDL_DisplayFormatAlpha(surface);
     if (data) {
         assert(ref_count_);
         *ref_count_ = 1;
     }
+
     SDL_FreeSurface(surface);
+    return 0;
 }
 
-void Surface::load_color_key(const std::string path)
+int Surface::load_color_key(const std::string path)
 {
-    load_raw(path);
-    set_color_key();
+    if (load_raw(path))
+        return -1;
+    
+    return set_color_key();
 }
 
-void Surface::set_color_key()
+int Surface::set_color_key()
 {
     SDL_Surface* screen = Screen::video_surface();
-    SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-                    SDL_MapRGB(screen->format, 255, 0, 255));
+    return SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
+                SDL_MapRGB(screen->format, 255, 0, 255));
 }
 
 void Surface::reset()
@@ -281,11 +297,12 @@ SDL_Surface* Surface::internal_load(std::string path)
     surface = IMG_Load(path.c_str());
 #endif
 
-    if (surface == NULL)
+    if (surface == NULL) {
         std::cerr << "Surface::internal_load() " << SDL_GetError() << std::endl;
-
-    width_ = surface->w;
-    height_ = surface->h;
+    } else {
+        width_ = surface->w;
+        height_ = surface->h;
+    }
 
     return surface;
 }
