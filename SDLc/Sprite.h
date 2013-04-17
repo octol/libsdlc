@@ -54,7 +54,7 @@ public:
     bool animation_active() const;
     
     // Sprite data
-    std::string name = "Unknown sdlc::Sprite";
+    std::string tag = "Unknown sdlc::Sprite";
     float x() const;
     float y() const;
     float set_x(float value);
