@@ -46,12 +46,12 @@ public:
 
     // Main functions
     void update(const Timer& timer);
-    void update(float frametime);
+    void update(unsigned int ticks, float frametime);
 
     // Sprite animation stuff
     void init_animation(int speed, int frames, int iterations);
-    void set_current_anim_frame(int num);   // set current frame
-    void reset_anim_timer();                // reset the animation timer
+    void set_current_anim_frame(int num);       // set current frame
+    void reset_anim_timer(const Timer& timer);  // reset the animation timer
     bool animation_active() const;
     
     // Sprite data

@@ -70,10 +70,10 @@ Sprite::Sprite(int w, int h) : Surface(w, h)
 
 void Sprite::update(const Timer& timer)
 {
-    update(timer.frame_time());
+    update(timer.ticks(), timer.frame_time());
 }
 
-void Sprite::update(float frametime)
+void Sprite::update(unsigned int ticks, float frametime)
 {
     // update position
     set_x(x() + (x_vel() * frametime));
@@ -81,8 +81,8 @@ void Sprite::update(float frametime)
 
     // update animation
     if (anim_ticks_ == 0) {    // first frame
-        anim_ticks_ = SDL_GetTicks();
-    } else if (SDL_GetTicks() - anim_ticks_ > anim_speed_) {
+        anim_ticks_ = ticks;
+    } else if (ticks - anim_ticks_ > anim_speed_) {
         current_frame_++;
         if (current_frame_ > total_frames_) {
             current_frame_ = 1;
@@ -94,7 +94,7 @@ void Sprite::update(float frametime)
                 anim_ticks_ = 0;
             }
         }
-        anim_ticks_ = SDL_GetTicks();
+        anim_ticks_ = ticks;
     }
 }
 
@@ -113,9 +113,9 @@ void Sprite::set_current_anim_frame(int num)
     current_frame_ = num;
 }
 
-void Sprite::reset_anim_timer()
+void Sprite::reset_anim_timer(const Timer& timer)
 {
-    anim_ticks_ = SDL_GetTicks();
+    anim_ticks_ = timer.ticks();
 }
 
 bool Sprite::animation_active() const
