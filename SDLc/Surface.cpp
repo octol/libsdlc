@@ -346,8 +346,9 @@ int Surface::load_color_key(const std::string path)
 int Surface::set_color_key()
 {
     SDL_Surface* screen = Screen::video_surface();
+
     return SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-                SDL_MapRGB(screen->format, 255, 0, 255));
+                           SDL_MapRGB(screen->format, 255, 0, 255));
 }
 
 void Surface::reset()
