@@ -3,7 +3,6 @@ Plugins:
 - YouCompleteMe
 
 General:
-- Probably just make a global sdlc::init() function instead
 - Can we get rid of Misc.h ?
 - Give Sound and Music common base class.
 - Change the enums to the new c++11 variant (Define.h and Input.h).
@@ -16,9 +15,6 @@ General:
 
 BaseSurface
 - Line functions are far to verbose.
-
-Sprite
-- Change to "composition" instead of "inheritance"
 
 Mixer
 - Decide how global functions such as volume and fadeout best is treated.

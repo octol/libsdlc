@@ -19,6 +19,10 @@
 #ifndef SDLC_SURFACE_H
 #define SDLC_SURFACE_H
 
+// -----------------------------------------------------------------------------
+// Reference counted Surface. Adds memory management on top of BaseSurface.
+// -----------------------------------------------------------------------------
+
 #define USE_SDL_IMAGE
 
 #include "BaseSurface.h"
@@ -37,11 +41,16 @@ public:
     Surface(int w, int h, int bpp);
     Surface(int w, int h);
 
+    // Copy/move the surface using the same underlying data
     Surface(const Surface& surface);
     Surface(Surface&& surface);
     Surface& operator=(const Surface& rhs);
     Surface& operator=(Surface&& rhs);
     virtual ~Surface();
+
+    // Make the current object independent from other Surfaces by duplicting
+    // the underlying data.
+    int make_independent_copy();
 
     void alloc(int w, int h, int bpp, int type);
     void alloc(int w, int h, int bpp);

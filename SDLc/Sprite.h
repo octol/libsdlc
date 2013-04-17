@@ -35,6 +35,7 @@ class Sprite : public Surface {
     friend class BaseSurface;
 
 public:
+    // TODO: add constructors that copy the sprite data.
     Sprite();
     explicit Sprite(std::string path);
     Sprite(const Surface& surface);
@@ -65,7 +66,7 @@ public:
     float y_vel() const;
     float set_x_vel(float value);
     float set_y_vel(float value);
-    void  set_vel(float x, float y);
+    void set_vel(float x, float y);
 
     bool locked_to_screen() const;
     bool set_locked_to_screen(bool value);

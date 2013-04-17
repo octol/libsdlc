@@ -187,6 +187,21 @@ Surface::~Surface()
 // Member Functions
 // -----------------------------------------------------------------------------
 
+int Surface::make_independent_copy()
+{
+    SDL_Surface* new_data = SDL_DisplayFormat(data);
+    if (new_data) {
+        reset();                // Remove our current refence.
+        data = new_data;        // Replace with new data
+        *ref_count_ = 1;        // Set reference counting
+        set_width(data->w);
+        set_height(data->h);
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
 void Surface::alloc(int w, int h, int bpp, int type)
 {
 #ifdef DEBUG_LOG

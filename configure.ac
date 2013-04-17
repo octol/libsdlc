@@ -42,8 +42,12 @@ CXXFLAGS="-g -Og -std=gnu++11"
 CXXFLAGS="$CXXFLAGS -Wpedantic -Wall -W -Wextra"
 CXXFLAGS="$CXXFLAGS -Wcast-qual -Wwrite-strings"
 CXXFLAGS="$CXXFLAGS -Weffc++"
-CXXFLAGS="$CXXFLAGS -Wshadow"
-CXXFLAGS="$CXXFLAGS -Wconversion" 
+#CXXFLAGS="$CXXFLAGS -Wshadow"
+#CXXFLAGS="$CXXFLAGS -Wconversion" 
+CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"
+CXXFLAGS="$CXXFLAGS -fsanitize=address"
+CXXFLAGS="$CXXFLAGS -fno-inline"
+CXXFLAGS="$CXXFLAGS -fdiagnostics-color=auto"
 
 #-------------------------------------------------------------------------------
 # Configure pthreads.
