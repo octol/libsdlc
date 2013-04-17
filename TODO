@@ -12,6 +12,7 @@ General:
 - Consolidate SDL_ calls to interfaces.
 - Rule of five in Music class
 - Rule of five in Sound class
+- Make Surface exception safe
 
 BaseSurface
 - Line functions are far to verbose.
