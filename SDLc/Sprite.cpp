@@ -177,26 +177,21 @@ SDL_Rect Sprite::reduced_rect() const
 
 bool Sprite::overlap(const Sprite& other) const
 {
-    const SDL_Rect rect1 = rect();
-    const SDL_Rect rect2 = other.rect();
-
-    if (overlap(rect1, rect2))
-        return true;
-    else return false;
+    return sdlc::overlap(rect(), other.rect());
 }
 
-bool Sprite::overlap(const SDL_Rect& rect1, const SDL_Rect& rect2) const
+// -----------------------------------------------------------------------------
+// Private functions
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Free functions
+// -----------------------------------------------------------------------------
+
+bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2)
 {
-    if ((rect1.x + rect1.w) > rect2.x && rect1.x < (rect2.x + rect2.w) && 
-        (rect1.y + rect1.h) > rect2.y && rect1.y < (rect2.y + rect2.h)) {
-        return true;
-    } else {
-        return false;
-    }
+    return ((rect1.x + rect1.w) > rect2.x && rect1.x < (rect2.x + rect2.w) && 
+            (rect1.y + rect1.h) > rect2.y && rect1.y < (rect2.y + rect2.h));
 }
-
-// -----------------------------------------------------------------------------
-// Private Functions
-// -----------------------------------------------------------------------------
 
 } // namespace sdlc

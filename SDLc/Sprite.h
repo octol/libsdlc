@@ -75,7 +75,6 @@ public:
   
     // collision functions
     bool overlap(const Sprite& other) const;
-    bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2) const;
 
 private:
     // Sprite data
@@ -94,6 +93,8 @@ private:
     unsigned int anim_ticks_ = 0;
     bool animation_active_ = false; // if the animation is running
 };
+
+bool overlap(const SDL_Rect& rect1, const SDL_Rect& rect2);
 
 // -----------------------------------------------------------------------------
 // Inlines
