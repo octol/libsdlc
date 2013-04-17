@@ -29,17 +29,35 @@ namespace sdlc {
 
 Surface::Surface() : ref_count_(new int(0))
 {
+#ifdef DEBUG_LOG
+    std::cerr << "init (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data << std::endl;
+#endif
 }
 
 Surface::Surface(std::string path) : Surface()
 {
+#ifdef DEBUG_LOG
+    std::cerr << "loading " << path << " (" << this << ")" << std::endl;
+#endif
     load(path);
+#ifdef DEBUG_LOG
+    std::cerr << "  data is now: " << data << std::endl;
+#endif
 }
 
 // Copy
 Surface::Surface(const Surface& surface) : Surface()
 {
+#ifdef DEBUG_LOG
+    std::cerr << "cc (" << this << ")";
+#endif
+
     if (*surface.ref_count_ > 0) {
+#ifdef DEBUG_LOG
+        std::cerr << " delete: " << ref_count_;
+#endif
         data = surface.data;
         delete ref_count_;
         ref_count_ = surface.ref_count_;
@@ -48,6 +66,11 @@ Surface::Surface(const Surface& surface) : Surface()
 
         ++(*ref_count_); 
     }
+
+#ifdef DEBUG_LOG
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data << std::endl;
+#endif
 }
 
 // Move
@@ -56,17 +79,24 @@ Surface::Surface(Surface&& surface)
       width_(surface.width_),
       height_(surface.height_)
 {
+#ifdef DEBUG_LOG
+    std::cerr << "move: (" << this << ")" << std::endl;
+#endif
     data = surface.data;
 
     surface.data = nullptr;
     surface.ref_count_ = new int(0);
     surface.width_ = 0;
     surface.height_ = 0;
+    assert(!(*ref_count_ <= 0 && data != nullptr));
 }
 
 // Assignment
 Surface& Surface::operator=(const Surface& rhs)
 {
+#ifdef DEBUG_LOG
+    std::cerr << "as: (" << this << ")" << std::endl;
+#endif
     if (this != &rhs && *rhs.ref_count_ > 0) {
         if (--(*ref_count_) <= 0) {
             SDL_FreeSurface(data);
@@ -86,6 +116,10 @@ Surface& Surface::operator=(const Surface& rhs)
 // Move assignment
 Surface& Surface::operator=(Surface&& rhs)
 {
+#ifdef DEBUG_LOG
+    std::cerr << "as move: (" << this << ")" << std::endl;
+    std::cerr << std::endl;
+#endif
     if (this != &rhs) {
         if (--(*ref_count_) <= 0) {
             SDL_FreeSurface(data);
@@ -101,21 +135,34 @@ Surface& Surface::operator=(Surface&& rhs)
         rhs.ref_count_ = new int(0);
         rhs.width_ = 0;
         rhs.height_ = 0;
+        assert(!(*rhs.ref_count_ <= 0 && rhs.data != nullptr));
     }
     return *this;
 }
 
 Surface::~Surface()
 {
+#ifdef DEBUG_LOG
+    std::cerr << "Destroying surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+#endif
+
     // Note that *ref_count_ can be < 0 if we initialise without Surface data
     // and then call reset.
     if (--(*ref_count_) <= 0) {
+#ifdef DEBUG_LOG
+        std::cerr << " (deleting)";
+#endif
         // Last reference
         SDL_FreeSurface(data);
         delete ref_count_;
         data = nullptr;
         ref_count_ = nullptr;
     }
+#ifdef DEBUG_LOG
+    std::cerr << std::endl;
+#endif
 
     data = nullptr;
     ref_count_ = nullptr;
@@ -127,6 +174,13 @@ Surface::~Surface()
 
 void Surface::alloc(int w, int h, int bpp, int type)
 {
+#ifdef DEBUG_LOG
+    std::cerr << "alloc surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
+
     // Free any previous data
     reset();
 
@@ -145,6 +199,14 @@ void Surface::alloc(int w, int h, int bpp, int type)
 
     set_width(data->w);
     set_height(data->h);
+    assert(!(*ref_count_ <= 0 && data != nullptr));
+
+#ifdef DEBUG_LOG
+    std::cerr << "  done alloc surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
 }
 
 void Surface::alloc(int w, int h, int bpp)
@@ -159,7 +221,7 @@ void Surface::alloc(int w, int h, int bpp)
                screen->flags == (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) {
         alloc(w, h, bpp, SDL_HWSURFACE);
     } else {
-        std::cout << "Surface::alloc() Undefined videomode" << std::endl;
+        std::cerr << "Surface::alloc() Undefined videomode" << std::endl;
     }
 }
 
@@ -171,9 +233,22 @@ void Surface::alloc(int w, int h)
 
 int Surface::load(const std::string path)
 {
+#ifdef DEBUG_LOG
+    std::cerr << "load (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
+
     uint8_t r[4], g[4], b[4], a[4];
 
+#ifdef DEBUG_LOG
+    std::cerr << "  temp: "; 
+#endif
     Surface surface;
+#ifdef DEBUG_LOG
+    std::cerr << "  (&surface)" << std::endl;
+#endif
     if (surface.load_alpha(path)) 
         return -1;
 
@@ -201,6 +276,13 @@ int Surface::load(const std::string path)
         load_alpha(path);
     else load_raw(path);
 
+    assert(!(*ref_count_ <= 0 && data != nullptr));
+#ifdef DEBUG_LOG
+    std::cerr << "  done load (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
     return 0;
 }
 
@@ -255,18 +337,37 @@ int Surface::set_color_key()
 
 void Surface::reset()
 {
+#ifdef DEBUG_LOG
+    std::cerr << "Reset surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+#endif
+ 
     // Note that *ref_count_ can be < 0 after decrementing if we initialise
     // without Surface data and then call reset.
     if (--(*ref_count_) <= 0) {
+#ifdef DEBUG_LOG
+        std::cerr << " (deleting)";
+#endif
         SDL_FreeSurface(data);
         delete ref_count_;
     }
+#ifdef DEBUG_LOG
+    std::cerr << std::endl;
+#endif
 
     // Restore plain constructor state.
     data = nullptr;
     ref_count_ = new int(0);
     width_ = 0;
     height_ = 0;
+#ifdef DEBUG_LOG
+    assert(!(*ref_count_ <= 0 && data != nullptr));
+    std::cerr << "  done reset surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
 }
 
 Surface* Surface::enable_per_pixel_alpha() const
