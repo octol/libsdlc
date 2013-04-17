@@ -71,7 +71,6 @@ Sprite::Sprite(int w, int h) : Surface(w, h)
 void Sprite::update(const Timer& timer)
 {
     update(timer.frame_time());
-    assert(!(*ref_count_ <= 0 && data != nullptr));
 }
 
 void Sprite::update(float frametime)
@@ -97,7 +96,6 @@ void Sprite::update(float frametime)
         }
         anim_ticks_ = SDL_GetTicks();
     }
-    assert(!(*ref_count_ <= 0 && data != nullptr));
 }
 
 void Sprite::init_animation(int speed, int frames, int iterations)
