@@ -52,6 +52,18 @@ Sprite::Sprite(const Surface& surface) : Surface(surface)
 #endif
 }
 
+Sprite::Sprite(int w, int h, int bpp, int type) : Surface(w, h, bpp, type)
+{
+}
+
+Sprite::Sprite(int w, int h, int bpp) : Surface(w, h, bpp)
+{
+}
+
+Sprite::Sprite(int w, int h) : Surface(w, h)
+{
+}
+
 // -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------

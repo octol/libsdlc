@@ -38,6 +38,9 @@ public:
     Sprite();
     explicit Sprite(std::string path);
     Sprite(const Surface& surface);
+    Sprite(int w, int h, int bpp, int type);
+    Sprite(int w, int h, int bpp);
+    Sprite(int w, int h);
     virtual ~Sprite() {};
 
     // Main functions
