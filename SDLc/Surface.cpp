@@ -47,6 +47,21 @@ Surface::Surface(std::string path) : Surface()
 #endif
 }
 
+Surface::Surface(int w, int h, int bpp, int type) : Surface()
+{
+    alloc(w, h, bpp, type);
+}
+
+Surface::Surface(int w, int h, int bpp) : Surface()
+{
+    alloc(w, h, bpp);
+}
+
+Surface::Surface(int w, int h) : Surface()
+{
+    alloc(w, h);
+}
+
 // Copy
 Surface::Surface(const Surface& surface) : Surface()
 {

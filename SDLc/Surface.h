@@ -33,6 +33,10 @@ class Surface : public BaseSurface {
 public:
     Surface();
     explicit Surface(std::string path);
+    Surface(int w, int h, int bpp, int type);
+    Surface(int w, int h, int bpp);
+    Surface(int w, int h);
+
     Surface(const Surface& surface);
     Surface(Surface&& surface);
     Surface& operator=(const Surface& rhs);
