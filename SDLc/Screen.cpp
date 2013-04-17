@@ -49,6 +49,12 @@ void quit()
 
 Screen::Screen()
 {
+    for (auto& i : update_r_) {
+        i.x = 0;
+        i.y = 0;
+        i.w = 0;
+        i.h = 0;
+    }
 }
 
 Screen::Screen(int w, int h, int bpp, int type)
