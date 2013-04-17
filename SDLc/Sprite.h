@@ -49,8 +49,8 @@ public:
 
     // Sprite animation stuff
     void init_animation(int speed, int frames, int iterations);
-    void set_current_anim_frame(int num);  // set current frame
-    void reset_anim_timer();              // reset the animation timer
+    void set_current_anim_frame(int num);   // set current frame
+    void reset_anim_timer();                // reset the animation timer
     bool animation_active() const;
     
     // Sprite data
