@@ -28,18 +28,22 @@ AC_PROG_INSTALL
 AC_TYPE_SIZE_T
 
 #-------------------------------------------------------------------------------
-# Check for C++11
+# Check for C++11.
 #-------------------------------------------------------------------------------
 #AC_LANG([C++])
 AC_LANG_PUSH([C++])
 AX_CXX_COMPILE_STDCXX_11
 AC_LANG_POP([C++])
 
-CXXFLAGS="$CXXFLAGS -pedantic -Wall -W -Wextra"
+#-------------------------------------------------------------------------------
+# Add development flags.
+#-------------------------------------------------------------------------------
+CXXFLAGS="-g -Og -std=gnu++11"
+CXXFLAGS="$CXXFLAGS -Wpedantic -Wall -W -Wextra"
 CXXFLAGS="$CXXFLAGS -Wcast-qual -Wwrite-strings"
 CXXFLAGS="$CXXFLAGS -Weffc++"
-#CXXFLAGS="$CXXFLAGS  -Wshadow"
-#CXXFLAGS="$CXXFLAGS -Wconversion" 
+CXXFLAGS="$CXXFLAGS -Wshadow"
+CXXFLAGS="$CXXFLAGS -Wconversion" 
 
 #-------------------------------------------------------------------------------
 # Configure pthreads.
