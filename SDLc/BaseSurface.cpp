@@ -53,7 +53,7 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src)
         std::cerr << "Error: blit to screen: " << SDL_GetError() << std::endl;
 }
 
-void BaseSurface::blit(Sprite& sprite)
+void BaseSurface::blit(const Sprite& sprite)
 {
 #ifdef DEBUG_LOG
     std::cerr << "blit: ";

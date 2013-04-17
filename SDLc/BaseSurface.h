@@ -50,7 +50,7 @@ public:
     void blit(int x, int y, SDL_Surface* src);
     void blit(int x, int y, BaseSurface& src, SDL_Rect rect);
     void blit(int x, int y, BaseSurface& src);
-    void blit(Sprite& sprite);
+    void blit(const Sprite& sprite);
 
     // Drawing primitives
     void set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b);  
