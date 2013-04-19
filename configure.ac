@@ -14,7 +14,7 @@ AM_INIT_AUTOMAKE
 LT_INIT([disable-static])
 
 AC_SUBST([LIBSDLC_SO_VERSION],[1:0:0])
-AC_SUBST([LIBSDLC_API_VERSION],[0.4])
+AC_SUBST([LIBSDLC_API_VERSION],[0.4.1])
 
 #-------------------------------------------------------------------------------
 # Checks for programs.
