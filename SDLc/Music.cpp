@@ -30,7 +30,7 @@ Music::Music() : ref_count_(new int(0))
 {
 }
 
-Music::Music(const std::string path)
+Music::Music(const std::string path) : Music()
 {
     load(path);
 }
