@@ -1,6 +1,20 @@
 Change Log
 ==========
 
+v0.4.1: Fri, 19 Apr 2013 07:33:29 +0100
+    * Minor bug fix with construtor in Sound and Music.
+
+v0.4.0: Wed, 17 Apr 2013 21:02:19 +0100
+    * Target compiler is now gcc-4.8.
+    * Removed calls to SDL_GetTicks().
+    * New open/close initialization convention.
+    * Stream functions for Surfaces.
+    * Improved error control for Surface load.
+    * Surface, Music, Sound objects now have reference counted data.
+    * Added make_independent_copy() function to Surface.
+    * New set of constructors for Surface, Music, Sound.
+    * Debug logging that can be turned on with #DEBUG_LOG
+
 v0.3.0: Sat, 30 Mar 2013 21:39:26 +0000: Jon Haggblad <jon@haeggblad.com>
     * Updated all functions to the new naming convention. Should mean that the
       interface is relatively stable (for now).

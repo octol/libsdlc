@@ -1,7 +1,18 @@
 NEWS
 ====
 
-This file contains verious news and updates regarding the development of SDLc.
+This file contains various news and updates regarding the development of SDLc.
+
+* Fri, 19 Apr 2013 07:46:25 +0100: Jon Haggblad <jon@haeggblad.com>
+
+    Surface, Music and Sound classes now have reference counted underlying
+    data. Hence a new make_independent_copy() function has been introduced for
+    the cases where you explicitly don't want to share data.
+    I've also moved over to using gcc-4.8, so the development compiler flags
+    have been slightly altered in configure.ac.
+
+    The initialization functions have been changed to map more closely to the
+    underlying SDL calls. This should make the process more transparent.
 
 * Sat, 30 Mar 2013 21:40:16 +0000: Jon Haggblad <jon@haeggblad.com>
 
