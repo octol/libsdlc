@@ -3,26 +3,24 @@ Plugins:
 - YouCompleteMe
 
 General:
-- Can we get rid of Misc.h ?
-- Give Sound and Music common base class.
 - Change the enums to the new c++11 variant (Define.h and Input.h).
 - Change the data structure in Font.cpp to use unicode compatible modern
   chars/strings.
-- Consolidate SDL_ calls to interfaces.
-- Rule of five in Music class
-- Rule of five in Sound class
+- Consolidate SDL_ calls to interfaces (for mocking/testing).
+
+Nice to have:
+- Give Sound and Music common base class.
 - Make Surface exception safe
+- Can we get rid of Misc.h ?
 
 BaseSurface
 - Line functions are far to verbose.
 
 Mixer
 - Decide how global functions such as volume and fadeout best is treated.
-- Currently uses extern Mixer
 
 Timer
 - Limit the amount that the frame time can increase / decrease per step.
-- Make sure all code uses Timer:ticks() instead of SDL_GetTicks()
 
 Font
 - Return smart pointer or reference from get_char?

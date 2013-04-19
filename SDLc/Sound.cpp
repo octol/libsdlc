@@ -29,7 +29,7 @@ Sound::Sound() : ref_count_(new int(0))
 {
 }
 
-Sound::Sound(const std::string path) 
+Sound::Sound(const std::string path) : Sound()
 {
     load(path);
 }

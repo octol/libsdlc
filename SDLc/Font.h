@@ -20,7 +20,6 @@
 #define SDLC_FONT_H
 
 #include <string>
-#include <array>
 #include <memory>
 
 namespace sdlc {
