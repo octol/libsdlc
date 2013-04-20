@@ -41,10 +41,12 @@ Font::Font(const std::string path) : Font()
 // Member Functions
 // -----------------------------------------------------------------------------
 
-void Font::load(const std::string path)
+int Font::load(const std::string path)
 {
     Surface src;
-    src.load_raw(path);
+    if (src.load_raw(path) == -1) {
+        return -1;
+    }
 
     int width = ((src.width() - 25) / 29);
     int height = ((src.height() - 2) / 3);
@@ -71,6 +73,8 @@ void Font::load(const std::string path)
     gfx_.at(map(8,2))->alloc(width, height);
     gfx_.at(map(8,2))->set_color_key();
     gfx_.at(map(8,2))->fill_rect(0, 0, width, height, 255, 0, 255);
+
+    return 0;
 }
 
 // TODO: This can be made more elegant
