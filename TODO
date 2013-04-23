@@ -2,7 +2,11 @@ Plugins:
 - Cscope
 - YouCompleteMe
 
+Things to do:
+-------------
+
 General:
+- Throw exceptions if loading fails.
 - Change the enums to the new c++11 variant (Define.h and Input.h).
 - Change the data structure in Font.cpp to use unicode compatible modern
   chars/strings.
@@ -10,8 +14,14 @@ General:
 
 Nice to have:
 - Give Sound and Music common base class.
-- Make Surface exception safe
-- Can we get rid of Misc.h ?
+- Make Surface new/delete exception safe
+- Can we get rid of Misc.h? (Rename?)
+
+Sprite
+- Constructors for copying other than Surface data.
+
+Open questions:
+---------------
 
 BaseSurface
 - Line functions are far to verbose.
