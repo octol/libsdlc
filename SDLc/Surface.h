@@ -55,11 +55,11 @@ public:
     void alloc(int w, int h, int bpp, int type);
     void alloc(int w, int h, int bpp);
     void alloc(int w, int h);
-    int load(const std::string path);
-    int load_raw(const std::string path);
-    int load_alpha(const std::string path);
-    int load_color_key(const std::string path);
-    int set_color_key();
+    void load(const std::string path);
+    void load_raw(const std::string path);
+    void load_alpha(const std::string path);
+    void load_color_key(const std::string path);
+    void set_color_key();
     void reset();
 
     Surface* enable_per_pixel_alpha() const;
@@ -67,12 +67,14 @@ public:
     int width() const;
     int height() const;
 
+    static void check_for_transparency(Surface& s, bool& pink, bool& alpha);
+
 protected:
     int set_width(int w);
     int set_height(int h);
 
 private:
-    SDL_Surface* internal_load(std::string path);
+    SDL_Surface* sdl_load(std::string path);
 
     // Used for reference counting SDL_Surface* data.
     int *ref_count_ = nullptr;

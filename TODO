@@ -12,10 +12,10 @@ General:
 - Change the data structure in Font.cpp to use unicode compatible modern
   chars/strings.
 - Consolidate SDL_ calls to interfaces (for mocking/testing).
+- Make Surface new/delete exception safe
 
 Nice to have:
 - Give Sound and Music common base class.
-- Make Surface new/delete exception safe
 - Can we get rid of Misc.h? (Rename?)
 
 Sprite
@@ -23,6 +23,10 @@ Sprite
 
 Open questions:
 ---------------
+
+Surface rework
+- Redo the function that checks for transparency
+- Implement internal_* load functions that does not call reset()
 
 BaseSurface
 - Line functions are far to verbose.

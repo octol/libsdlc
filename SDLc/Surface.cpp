@@ -18,6 +18,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <stdexcept>
 #include "Screen.h"
 #include "Surface.h"
 
@@ -222,9 +223,9 @@ void Surface::alloc(int w, int h, int bpp, int type)
                                                 screen->format->Amask);
 
     data = SDL_DisplayFormat(surface);
-    if (data) 
-        *ref_count_ = 1;
-
+    if (data == NULL) 
+        throw std::runtime_error("SDL_DisplayFormat() failed");
+    *ref_count_ = 1;
     SDL_FreeSurface(surface);
 
     set_width(data->w);
@@ -251,7 +252,7 @@ void Surface::alloc(int w, int h, int bpp)
                screen->flags == (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) {
         alloc(w, h, bpp, SDL_HWSURFACE);
     } else {
-        std::cerr << "Surface::alloc() Undefined videomode" << std::endl;
+        throw std::invalid_argument("Surface::alloc() undefined video mode");
     }
 }
 
@@ -261,7 +262,7 @@ void Surface::alloc(int w, int h)
     alloc(w, h, screen->format->BitsPerPixel);
 }
 
-int Surface::load(const std::string path)
+void Surface::load(const std::string path)
 {
 #ifdef DEBUG_LOG
     std::cerr << "load (" << this << ")";
@@ -270,7 +271,6 @@ int Surface::load(const std::string path)
     std::cerr << std::endl;
 #endif
 
-    uint8_t r[4], g[4], b[4], a[4];
 
 #ifdef DEBUG_LOG
     std::cerr << "  temp: "; 
@@ -279,26 +279,9 @@ int Surface::load(const std::string path)
 #ifdef DEBUG_LOG
     std::cerr << "  (&surface)" << std::endl;
 #endif
-    if (surface.load_alpha(path)) 
-        return -1;
-
-    int w = surface.width();
-    int h = surface.height();
-    surface.lock();
-    surface.get_pix(0, 0, &r[0], &g[0], &b[0], &a[0]);
-    surface.get_pix(w - 1, 0, &r[1], &g[1], &b[1], &a[1]);
-    surface.get_pix(0, h - 1, &r[2], &g[2], &b[2], &a[2]);
-    surface.get_pix(w - 1, h - 1, &r[3], &g[3], &b[3], &a[3]);
-    surface.unlock();
-
-    bool pinkfound = false;
-    bool alphafound = false;
-    for (int i = 0; i < 4; i++) {
-        if (r[i] >= 248 && g[i] == 0 && b[i] >= 248)
-            pinkfound = true;
-        if (a[i] != 255)
-            alphafound = true;
-    }
+    surface.load_alpha(path);
+    bool pinkfound = false, alphafound = false;
+    check_for_transparency(surface, pinkfound, alphafound);
 
     if (pinkfound)
         load_color_key(path);
@@ -313,57 +296,48 @@ int Surface::load(const std::string path)
     std::cerr << ", data: " << data;
     std::cerr << std::endl;
 #endif
-    return 0;
 }
 
-int Surface::load_raw(const std::string path)
+void Surface::load_raw(const std::string path)
 {
     reset();
-    SDL_Surface* surface = internal_load(path);
-    if (!surface) 
-        return -1;
+    SDL_Surface* surface = sdl_load(path);
 
     data = SDL_DisplayFormat(surface);
-    if (data) {
-        assert(ref_count_);
-        *ref_count_ = 1;
-    }
+    if (data == NULL) 
+        throw std::runtime_error("SDL_DisplayFormat() failed");
 
+    *ref_count_ = 1;
     SDL_FreeSurface(surface);
-    return 0;
 }
 
-int Surface::load_alpha(const std::string path)
+void Surface::load_alpha(const std::string path)
 {
     reset();
-    SDL_Surface* surface = internal_load(path);
-    if (!surface) 
-        return -1;
+    SDL_Surface* surface = sdl_load(path);
     
     data = SDL_DisplayFormatAlpha(surface);
-    if (data) {
-        assert(ref_count_);
-        *ref_count_ = 1;
-    }
+    if (data == NULL) 
+        throw std::runtime_error("SDL_DisplayFormatAlpha() failed");
 
+    *ref_count_ = 1;
     SDL_FreeSurface(surface);
-    return 0;
 }
 
-int Surface::load_color_key(const std::string path)
+void Surface::load_color_key(const std::string path)
 {
-    if (load_raw(path))
-        return -1;
-    
-    return set_color_key();
+    load_raw(path);
+    set_color_key();
 }
 
-int Surface::set_color_key()
+void Surface::set_color_key()
 {
     SDL_Surface* screen = Screen::video_surface();
 
-    return SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-                           SDL_MapRGB(screen->format, 255, 0, 255));
+    if (SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
+                        SDL_MapRGB(screen->format, 255, 0, 255)) == -1) {
+        throw std::runtime_error("SDL_SetColorKey() failed");
+    }
 }
 
 void Surface::reset()
@@ -415,10 +389,35 @@ Surface* Surface::enable_per_pixel_alpha() const
 }
 
 // -----------------------------------------------------------------------------
+// Static functions
+// -----------------------------------------------------------------------------
+
+void Surface::check_for_transparency(Surface& s, bool& pink, bool& alpha)
+{
+    uint8_t r[4], g[4], b[4], a[4];
+    int w = s.width();
+    int h = s.height();
+    s.lock();
+    s.get_pix(0, 0, &r[0], &g[0], &b[0], &a[0]);
+    s.get_pix(w - 1, 0, &r[1], &g[1], &b[1], &a[1]);
+    s.get_pix(0, h - 1, &r[2], &g[2], &b[2], &a[2]);
+    s.get_pix(w - 1, h - 1, &r[3], &g[3], &b[3], &a[3]);
+    s.unlock();
+
+    for (int i = 0; i < 4; i++) {
+        if (r[i] >= 248 && g[i] == 0 && b[i] >= 248)
+            pink = true;
+        if (a[i] != 255)
+            alpha = true;
+    }
+}
+
+
+// -----------------------------------------------------------------------------
 // Private Functions
 // -----------------------------------------------------------------------------
 
-SDL_Surface* Surface::internal_load(std::string path)
+SDL_Surface* Surface::sdl_load(std::string path)
 {
     SDL_Surface* surface;
 
@@ -430,7 +429,8 @@ SDL_Surface* Surface::internal_load(std::string path)
 #endif
 
     if (surface == NULL) {
-        std::cerr << "Surface::internal_load() " << SDL_GetError() << std::endl;
+        throw std::invalid_argument("Surface::sdl_load(): " 
+                                + std::string(SDL_GetError()));
     } else {
         width_ = surface->w;
         height_ = surface->h;
