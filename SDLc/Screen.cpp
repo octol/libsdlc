@@ -19,7 +19,6 @@
 #include <ostream>
 #include <iostream>
 #include "Sprite.h"
-#include "Misc.h"
 #include "Screen.h"
 
 namespace sdlc {

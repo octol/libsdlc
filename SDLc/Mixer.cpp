@@ -19,7 +19,6 @@
 #include <iostream>
 #include "SDL.h"
 #include "SDL_mixer.h"
-#include "Misc.h"
 #include "Mixer.h"
 
 namespace sdlc {
@@ -61,7 +60,7 @@ int Mixer::music_volume() const
 
 int Mixer::set_sound_volume(int value)
 {
-    sound_volume_ = bound(value, 0, 128);
+    sound_volume_ = std::min(std::max(value, 0), 128);
 
     Mix_Volume(-1, sound_volume_);
     return sound_volume_;

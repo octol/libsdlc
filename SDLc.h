@@ -35,6 +35,4 @@
 #include "SDLc/Music.h"
 #include "SDLc/Sound.h"
 
-#include "SDLc/Misc.h"
-
 #endif // SDLC_H

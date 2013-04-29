@@ -17,7 +17,6 @@
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SDL.h"
-#include "Misc.h"
 #include "Timer.h"
 
 namespace sdlc {
