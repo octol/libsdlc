@@ -64,23 +64,24 @@ Surface::Surface(int w, int h) : Surface()
 }
 
 // Copy
-Surface::Surface(const Surface& surface) : Surface()
+Surface::Surface(const Surface& surface)
 {
 #ifdef DEBUG_LOG
     std::cerr << "cc (" << this << ")";
 #endif
-
     if (*surface.ref_count_ > 0) {
 #ifdef DEBUG_LOG
         std::cerr << " delete: " << ref_count_;
 #endif
         data = surface.data;
-        delete ref_count_;
+        //delete ref_count_;
         ref_count_ = surface.ref_count_;
         width_ = surface.width_;
         height_ = surface.height_;
 
         ++(*ref_count_); 
+    } else {
+        ref_count_ = new int(0);
     }
 
 #ifdef DEBUG_LOG
@@ -221,6 +222,8 @@ void Surface::alloc(int w, int h, int bpp, int type)
                                                 screen->format->Gmask,
                                                 screen->format->Bmask,
                                                 screen->format->Amask);
+    if (surface == NULL)
+        throw std::runtime_error("SDL_CreateRGBSurface() failed");
 
     data = SDL_DisplayFormat(surface);
     if (data == NULL) 
@@ -283,11 +286,13 @@ void Surface::load(const std::string path)
     bool pinkfound = false, alphafound = false;
     check_for_transparency(surface, pinkfound, alphafound);
 
-    if (pinkfound)
+    if (pinkfound) {
         load_color_key(path);
-    else if (alphafound)
+    } else if (alphafound) {
         load_alpha(path);
-    else load_raw(path);
+    } else {
+        load_raw(path);
+    }
 
     assert(!(*ref_count_ <= 0 && data != nullptr));
 #ifdef DEBUG_LOG
@@ -363,9 +368,12 @@ void Surface::reset()
 
     // Restore plain constructor state.
     data = nullptr;
-    ref_count_ = new int(0);
+    ref_count_ = nullptr;
     width_ = 0;
     height_ = 0;
+
+    ref_count_ = new int(0);
+
 #ifdef DEBUG_LOG
     assert(!(*ref_count_ <= 0 && data != nullptr));
     std::cerr << "  done reset surface (" << this << ")";
@@ -429,7 +437,7 @@ SDL_Surface* Surface::sdl_load(std::string path)
 #endif
 
     if (surface == NULL) {
-        throw std::invalid_argument("Surface::sdl_load(): " 
+        throw std::runtime_error("Surface::sdl_load(): " 
                                 + std::string(SDL_GetError()));
     } else {
         width_ = surface->w;

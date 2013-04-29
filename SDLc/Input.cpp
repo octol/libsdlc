@@ -34,9 +34,9 @@ int Input::update()
     return update_state;
 }
 
-bool Input::key_pressed(int key, AUTOFIRE_KEYSTATE autofire)
+bool Input::key_pressed(int key, AutofireKeystate autofire)
 {
-    if (autofire == NO_AUTOFIRE) {
+    if (autofire == AutofireKeystate::off) {
         if (event_.type == SDL_KEYDOWN && press_detected_) {
             if (event_.key.keysym.sym == key)
                 return true;
@@ -55,7 +55,7 @@ bool Input::key_pressed(int key, AUTOFIRE_KEYSTATE autofire)
 
 bool Input::key_pressed(int key) 
 {
-    return key_pressed(key, NO_AUTOFIRE);
+    return key_pressed(key, AutofireKeystate::off);
 }
 
 bool Input::mouse_button_pressed()

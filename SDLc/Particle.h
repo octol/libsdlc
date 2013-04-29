@@ -19,7 +19,7 @@
 #ifndef SDLC_PARTICLE_H
 #define SDLC_PARTICLE_H
 
-#include "Misc.h"
+#include <algorithm>
 
 namespace sdlc {
 
@@ -138,7 +138,7 @@ float Particle::alpha() const
 inline
 float Particle::set_alpha(float value)
 {
-    return alpha_ = bound(value, 0.0f, 255.0f);
+    return alpha_ = std::min(std::max(value, 0.0f), 255.0f);
 }
 
 inline
@@ -174,19 +174,19 @@ int Particle::b() const
 inline
 int Particle::set_r(int value)
 {
-    return r_ = bound(value, 0, 255);
+    return r_ = std::min(std::max(value, 0), 255);
 }
 
 inline
 int Particle::set_g(int value)
 {
-    return g_ = bound(value, 0, 255);
+    return g_ = std::min(std::max(value, 0), 255);
 }
 
 inline
 int Particle::set_b(int value)
 {
-    return b_ = bound(value, 0, 255);
+    return b_ = std::min(std::max(value, 0), 255);
 }
 
 inline

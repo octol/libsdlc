@@ -41,7 +41,6 @@ nobase_libsdlc_include_HEADERS = SDLc.h \
 				 SDLc/Surface.h \
 				 SDLc/BaseSurface.h \
 				 SDLc/Font.h \
-				 SDLc/Misc.h \
 				 SDLc/Input.h \
 				 SDLc/Particle.h \
 				 SDLc/Screen.h \

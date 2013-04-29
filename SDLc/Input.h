@@ -23,12 +23,12 @@
 
 namespace sdlc {
 
-enum AUTOFIRE_KEYSTATE { AUTOFIRE, NO_AUTOFIRE };
+enum class AutofireKeystate { on, off };
 
 class Input {
 public:
     int update();
-    bool key_pressed(int key, AUTOFIRE_KEYSTATE autofire);
+    bool key_pressed(int key, AutofireKeystate autofire);
     bool key_pressed(int key);
     bool mouse_button_pressed();
 

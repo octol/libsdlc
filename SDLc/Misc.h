@@ -23,15 +23,13 @@
 
 namespace sdlc {
 
-template<typename T>
-T bound(T value, T boundary1, T boundary2)
-{   
-    if (value < boundary1)
-        value = boundary1;
-    else if (value > boundary2)
-        value = boundary2;
-    return value;
-}
+//template<typename T>
+//T bound(T value, T boundary1, T boundary2)
+//{
+    //return (value < boundary1) ? boundary1 : 
+           //(value > boundary2) ? boundary2 : 
+           //value;
+//}
 
 } // namespace sdlc
 #endif // SDLC_MISC_H

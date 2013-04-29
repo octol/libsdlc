@@ -17,7 +17,6 @@
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
-#include "Misc.h"
 #include "Font.h"
 #include "Sprite.h"
 
