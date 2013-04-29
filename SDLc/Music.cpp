@@ -17,6 +17,7 @@
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <stdexcept>
 #include "Mixer.h"
 #include "Music.h"
 
@@ -36,11 +37,10 @@ Music::Music(const std::string path) : Music()
 }
 
 // Copy
-Music::Music(const Music& music) : Music()
+Music::Music(const Music& music)
 {
     if (*music.ref_count_> 0) {
         music_ = music.music_;
-        delete ref_count_;
         ref_count_ = music.ref_count_;
 
         ++(*ref_count_); 
@@ -118,7 +118,7 @@ void Music::load(const std::string path)
     reset();
     music_ = Mix_LoadMUS(path.c_str());
     if (music_ == NULL) 
-        std::cerr << "Music::load() " << SDL_GetError() << std::endl;
+        throw std::runtime_error(SDL_GetError());
 }
 
 void Music::reset()
@@ -138,8 +138,5 @@ void Music::reset()
 void Music::play(int iterations)
 {
     Mix_PlayMusic(music_, iterations);
-
-    // TODO: set volume in other way?
-    //mixer->set_music_volume(mixer->music_volume());
 }
 } // namespace sdlc

@@ -17,6 +17,7 @@
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <stdexcept>
 #include "Surface.h"
 #include "Font.h"
 
@@ -117,8 +118,7 @@ Surface* Font::get_char(char c) const
     } else if (c == ' ') {
         return gfx_.at(map(8,2)).get();
     } else {
-        std::cout << "warning: Font::get_char() undefined char" << std::endl;
-        return gfx_.at(map(8,2)).get();
+        throw std::invalid_argument("Undefined character");
     }
     return gfx_[map(i,j)].get();
 }
@@ -128,16 +128,17 @@ unsigned int Font::map(int i, int j) const
     int offset = 0;
 
     // alpha: j = 0
-    if (j == 0)
+    if (j == 0) {
         offset += 0;
     // numeric: j = 1
-    else if (j == 1)
+    } else if (j == 1) {
         offset += 26;
     // other: j = 2
-    else if (j == 2)
+    } else if (j == 2) {
         offset += 26 + 10;
-    else 
-        std::cerr << "Font:map() unexpected input" << std::endl;
+    } else {
+        throw std::invalid_argument("Unexpected input");
+    }
 
     return i + offset;
 }

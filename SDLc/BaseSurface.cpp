@@ -36,7 +36,7 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
     dst_rect.h = rect.h;
 
     if (SDL_BlitSurface(src, &rect, data, &dst_rect) != 0) 
-        std::cerr << "Error: blit to screen: " << SDL_GetError() << std::endl;
+        throw std::runtime_error(SDL_GetError());
 }
 
 void BaseSurface::blit(int x, int y, SDL_Surface* src)
@@ -49,7 +49,7 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src)
     dst_rect.h = static_cast<uint16_t>(data->h);
 
     if (SDL_BlitSurface(src, NULL, data, &dst_rect) != 0) 
-        std::cerr << "Error: blit to screen: " << SDL_GetError() << std::endl;
+        throw std::runtime_error(SDL_GetError());
 }
 
 void BaseSurface::blit(const Sprite& sprite)

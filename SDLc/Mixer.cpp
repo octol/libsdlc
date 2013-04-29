@@ -17,6 +17,7 @@
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <stdexcept>
 #include "SDL.h"
 #include "SDL_mixer.h"
 #include "Mixer.h"
@@ -92,7 +93,7 @@ int Mixer::open()
     int r = 0;
     if ((r = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024))) {
         SDL_QuitSubSystem(SDL_INIT_AUDIO);
-        std::cerr << "Mixer::open(): " << SDL_GetError() << std::endl;
+        throw std::runtime_error(SDL_GetError());
     } 
 
     return r;
