@@ -3,6 +3,12 @@ NEWS
 
 This file contains various news and updates regarding the development of SDLc.
 
+* Mon, 29 Apr 2013 17:30:00 +0100L Jon Haggblad <jon@haeggblad.com>
+
+    0.4.2 is a minor release with just a few tweaks. Instead of printing error
+    messages to stderr, exceptions are now being thrown. The old enums
+    have been replaced with the new (in C++11) enum class type.
+
 * Fri, 19 Apr 2013 07:46:25 +0100: Jon Haggblad <jon@haeggblad.com>
 
     Surface, Music and Sound classes now have reference counted underlying

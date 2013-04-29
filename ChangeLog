@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v0.4.2: Mon, 29 Apr 2013 17:28:17 +0100
+    * Replaced error printing with throwing exceptions.
+    * Removed Misc.h
+    * Changed enum to enum class (c++11).
+
 v0.4.1: Fri, 19 Apr 2013 07:33:29 +0100
     * Minor bug fix with construtor in Sound and Music.
 
