@@ -18,6 +18,7 @@
 
 #include <ostream>
 #include <iostream>
+#include <stdexcept>
 #include "Sprite.h"
 #include "Screen.h"
 
@@ -76,9 +77,8 @@ void Screen::open(int w, int h, int bpp, int type)
 
     data = SDL_SetVideoMode(w, h, bpp, type);
     if (data == NULL) {
-        std::cerr << "Screen::init() " << SDL_GetError() << std::endl;
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
-        exit(2);
+        throw std::runtime_error(SDL_GetError());
     }
 }
 

@@ -17,6 +17,7 @@
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <stdexcept>
 #include "Sound.h"
 
 namespace sdlc {
@@ -115,7 +116,7 @@ void Sound::load(std::string path)
     reset();
     sound_ = Mix_LoadWAV(path.c_str());
     if (sound_ == NULL) 
-        std::cerr << "Sound::load() " << SDL_GetError() << std::endl;
+        throw std::runtime_error(SDL_GetError());
 }
 
 void Sound::reset()
