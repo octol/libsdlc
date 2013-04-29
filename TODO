@@ -8,7 +8,7 @@ TODO:
 Surface rework
 - Implement internal_* load functions that does not call reset()
 - Constructors for Surface::alloc/load should not delegate to default constructor.
-- Make Surface new/delete exception safe (maybe it already is?).
+- Check that Surface new/delete is exception safe.
 
 BaseSurface
 - Line functions are far to verbose.
