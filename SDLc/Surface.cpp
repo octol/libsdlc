@@ -32,22 +32,22 @@ Surface::Surface() : ref_count_(new std::size_t(1))
 {
 }
 
-Surface::Surface(std::string path) : ref_count_(new std::size_t(1))
+Surface::Surface(std::string path) : Surface()
 {
     unchecked_load(path);
 }
 
-Surface::Surface(int w, int h, int bpp, int type) : ref_count_(new std::size_t(1))
+Surface::Surface(int w, int h, int bpp, int type) : Surface()
 {
     unchecked_alloc(w, h, bpp, type);
 }
 
-Surface::Surface(int w, int h, int bpp) : ref_count_(new std::size_t(1))
+Surface::Surface(int w, int h, int bpp) : Surface()
 {
     unchecked_alloc(w, h, bpp);
 }
 
-Surface::Surface(int w, int h) : ref_count_(new std::size_t(1))
+Surface::Surface(int w, int h) : Surface()
 {
     unchecked_alloc(w, h);
 }
@@ -64,11 +64,11 @@ Surface::Surface(const Surface& surface)
 
 // Move
 Surface::Surface(Surface&& surface)
-    : ref_count_(surface.ref_count_),
+    : BaseSurface(surface.data),
+      ref_count_(surface.ref_count_),
       width_(surface.width_),
       height_(surface.height_)
 {
-    data = surface.data;
     surface.data = nullptr;
     surface.ref_count_ = new std::size_t(1);
     surface.width_ = 0;
@@ -79,7 +79,6 @@ Surface::Surface(Surface&& surface)
 Surface& Surface::operator=(const Surface& rhs)
 {
     if (this != &rhs) {
-        ++(*rhs.ref_count_);
         if (--(*ref_count_) == 0) {
             SDL_FreeSurface(data);
             delete ref_count_;
@@ -89,6 +88,8 @@ Surface& Surface::operator=(const Surface& rhs)
         ref_count_ = rhs.ref_count_;
         width_ = rhs.width_;
         height_ = rhs.height_;
+
+        ++(*rhs.ref_count_);
     }
     return *this;
 }

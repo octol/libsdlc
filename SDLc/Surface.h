@@ -85,7 +85,7 @@ private:
     void unchecked_load_color_key(std::string path);
 
     // Used for reference counting SDL_Surface* data.
-    std::size_t *ref_count_ = nullptr;
+    std::size_t* ref_count_ = nullptr;
 
     int width_ = 0;
     int height_ = 0;

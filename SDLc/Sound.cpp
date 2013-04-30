@@ -26,41 +26,38 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Sound::Sound() : ref_count_(new int(0))
+Sound::Sound() : ref_count_(new std::size_t(1))
 {
 }
 
 Sound::Sound(const std::string path) : Sound()
 {
-    load(path);
+    unchecked_load(path);
 }
 
 // Copy
-Sound::Sound(const Sound& sound) : Sound()
+Sound::Sound(const Sound& sound) 
+    : sound_(sound.sound_),
+      ref_count_(sound.ref_count_)
 {
-    if (*sound.ref_count_ > 0) {
-        sound_ = sound.sound_;
-        delete ref_count_;
-        ref_count_ = sound.ref_count_;
-
-        ++(*ref_count_); 
-    }
+    ++(*ref_count_); 
 }
 
 // Move
-Sound::Sound(Sound&& sound) : ref_count_(sound.ref_count_)
+Sound::Sound(Sound&& sound) 
+    : sound_(sound.sound_),
+      ref_count_(sound.ref_count_)
 {
-    sound_ = sound.sound_;
-
     sound.sound_ = nullptr;
-    sound.ref_count_ = new int(0);
+    sound.ref_count_ = nullptr;
+    sound.ref_count_ = new std::size_t(1);
 }
 
 // Assignment
 Sound& Sound::operator=(const Sound& rhs)
 {
-    if (this != &rhs && *rhs.ref_count_ > 0) {
-        if (--(*ref_count_) <= 0) {
+    if (this != &rhs) {
+        if (--(*ref_count_) == 0) {
             Mix_FreeChunk(sound_);
             delete ref_count_;
         }
@@ -77,7 +74,7 @@ Sound& Sound::operator=(const Sound& rhs)
 Sound& Sound::operator=(Sound&& rhs)
 {
     if (this != &rhs) {
-        if (--(*ref_count_) <= 0) {
+        if (--(*ref_count_) == 0) {
             Mix_FreeChunk(sound_);
             delete ref_count_;
         }
@@ -86,25 +83,18 @@ Sound& Sound::operator=(Sound&& rhs)
         ref_count_ = rhs.ref_count_;
 
         rhs.sound_ = nullptr;
-        rhs.ref_count_ = new int(0);
+        rhs.ref_count_ = nullptr;
+        rhs.ref_count_ = new std::size_t(1);
     }
     return *this;
 }
 
 Sound::~Sound()
 {
-    // Note that *ref_count_ can be < 0 if we initialise without Sound 
-    // and then call reset.
-    if (--(*ref_count_) <= 0) {
-        // Last reference
+    if (--(*ref_count_) == 0) {
         Mix_FreeChunk(sound_);
         delete ref_count_;
-        sound_ = nullptr;
-        ref_count_ = nullptr;
     }
-
-    sound_ = nullptr;
-    ref_count_ = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -114,27 +104,35 @@ Sound::~Sound()
 void Sound::load(std::string path)
 {
     reset();
-    sound_ = Mix_LoadWAV(path.c_str());
-    if (sound_ == NULL) 
-        throw std::runtime_error(SDL_GetError());
+    unchecked_load(path);
 }
 
 void Sound::reset()
 {
-    // Note that *ref_count_ can be < 0 after decrementing if we initialise
-    // without Sound and then call reset.
-    if (--(*ref_count_) <= 0) {
+    if (--(*ref_count_) == 0) {
         Mix_FreeChunk(sound_);
         delete ref_count_;
     }
 
     // Restore plain constructor state.
     sound_ = nullptr;
-    ref_count_ = new int(0);
+    ref_count_ = nullptr;
+    ref_count_ = new std::size_t(1);
 }
 
 void Sound::play(int iterations)
 {
     Mix_PlayChannel(channel_, sound_, iterations);
+}
+
+// -----------------------------------------------------------------------------
+// Private Functions
+// -----------------------------------------------------------------------------
+
+void Sound::unchecked_load(std::string path)
+{
+    sound_ = Mix_LoadWAV(path.c_str());
+    if (sound_ == NULL) 
+        throw std::runtime_error(SDL_GetError());
 }
 } // namespace sdlc

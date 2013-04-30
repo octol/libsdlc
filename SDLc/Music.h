@@ -34,13 +34,15 @@ public:
     Music& operator=(Music&& music);
     virtual ~Music();
 
-    void load(const std::string path);
+    void load(std::string path);
     void reset();
     void play(int iterations);
 
 private:
+    void unchecked_load(std::string path);
+
     Mix_Music* music_ = nullptr;
-    int* ref_count_ = nullptr;
+    std::size_t* ref_count_ = nullptr;
 };
 } // namespace sdlc
 #endif // SDLC_MUSIC_H

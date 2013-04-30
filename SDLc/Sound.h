@@ -42,8 +42,10 @@ public:
     int set_channel(int value);
     
 private:
+    void unchecked_load(const std::string path);
+
     Mix_Chunk* sound_ = nullptr;
-    int* ref_count_ = nullptr;
+    std::size_t* ref_count_ = nullptr;
     int channel_ = -1;
 };
 

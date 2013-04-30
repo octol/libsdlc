@@ -27,40 +27,38 @@ namespace sdlc {
 // Construction/Destruction
 // -----------------------------------------------------------------------------
 
-Music::Music() : ref_count_(new int(0))
+Music::Music() : ref_count_(new std::size_t(1))
 {
 }
 
 Music::Music(const std::string path) : Music()
 {
-    load(path);
+    unchecked_load(path);
 }
 
 // Copy
-Music::Music(const Music& music)
+Music::Music(const Music& music) 
+    : music_(music.music_), 
+      ref_count_(music.ref_count_)
 {
-    if (*music.ref_count_> 0) {
-        music_ = music.music_;
-        ref_count_ = music.ref_count_;
-
-        ++(*ref_count_); 
-    }
+    ++(*ref_count_); 
 }
 
 // Move
-Music::Music(Music&& music) : ref_count_(music.ref_count_)
+Music::Music(Music&& music) 
+    : music_(music.music_), 
+      ref_count_(music.ref_count_)
 {
-    music_ = music.music_;
-
     music.music_ = nullptr;
-    music.ref_count_ = new int(0);
+    music.ref_count_ = nullptr;
+    music.ref_count_ = new std::size_t(1);
 }
 
 // Assignment
 Music& Music::operator=(const Music& rhs)
 {
-    if (this != &rhs && *rhs.ref_count_> 0) {
-        if (--(*ref_count_) <= 0) {
+    if (this != &rhs) {
+        if (--(*ref_count_) == 0) {
             Mix_FreeMusic(music_);
             delete ref_count_;
         }
@@ -86,57 +84,56 @@ Music& Music::operator=(Music&& rhs)
         ref_count_ = rhs.ref_count_;
 
         rhs.music_ = nullptr;
-        rhs.ref_count_ = new int(0);
+        rhs.ref_count_ = nullptr;
+        rhs.ref_count_ = new std::size_t(0);
     }
     return *this;
 }
 
 Music::~Music()
 {
-    //unload();
-    
-    // Note that *ref_count_ can be < 0 if we initialise without data
-    // and then call unload.
-    if (--(*ref_count_) <= 0) {
-        // Last reference
+    if (--(*ref_count_) == 0) {
         Mix_FreeMusic(music_);
         delete ref_count_;
-        music_ = nullptr;
-        ref_count_ = nullptr;
     }
-
-    music_ = nullptr;
-    ref_count_ = nullptr;
 }
 
 // -----------------------------------------------------------------------------
 // Member Functions
 // -----------------------------------------------------------------------------
 
-void Music::load(const std::string path)
+void Music::load(std::string path)
 {
     reset();
-    music_ = Mix_LoadMUS(path.c_str());
-    if (music_ == NULL) 
-        throw std::runtime_error(SDL_GetError());
+    unchecked_load(path);
 }
 
 void Music::reset()
 {
-    // Note that *ref_count_ can be < 0 after decrementing if we initialise
-    // without data and then call reset.
-    if (--(*ref_count_) <= 0) {
+    if (--(*ref_count_) == 0) {
         Mix_FreeMusic(music_);
         delete ref_count_;
     }
 
     // Restore plain constructor state.
     music_ = nullptr;
-    ref_count_ = new int(0);
+    ref_count_ = nullptr;
+    ref_count_ = new std::size_t(0);
 }
 
 void Music::play(int iterations)
 {
     Mix_PlayMusic(music_, iterations);
+}
+
+// -----------------------------------------------------------------------------
+// Private Functions
+// -----------------------------------------------------------------------------
+
+void Music::unchecked_load(std::string path)
+{
+    music_ = Mix_LoadMUS(path.c_str());
+    if (music_ == NULL) 
+        throw std::runtime_error(SDL_GetError());
 }
 } // namespace sdlc
