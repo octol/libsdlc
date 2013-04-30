@@ -5,6 +5,7 @@ Plugins:
 TODO:
 -----
 
+- Go over all error suppressions.
 - Add Color class.
 - Add Position class (what about velocity?)
 

@@ -87,7 +87,7 @@ private:
     void unchecked_load(std::string path);
     void unchecked_load_raw(std::string path);
     void unchecked_load_alpha(std::string path);
-    void unchecked_load_colorkey(std::string path);
+    void unchecked_load_color_key(std::string path);
 
     // Used for reference counting SDL_Surface* data.
 #ifndef DEBUG_LOG

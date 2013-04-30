@@ -37,30 +37,30 @@ Surface::Surface() : ref_count_(new int(0))
 #endif
 }
 
-Surface::Surface(std::string path) : Surface()
+Surface::Surface(std::string path) : ref_count_(new int(1))
 {
 #ifdef DEBUG_LOG
     std::cerr << "loading " << path << " (" << this << ")" << std::endl;
 #endif
-    load(path);
+    unchecked_load(path);
 #ifdef DEBUG_LOG
     std::cerr << "  data is now: " << data << std::endl;
 #endif
 }
 
-Surface::Surface(int w, int h, int bpp, int type) : Surface()
+Surface::Surface(int w, int h, int bpp, int type) : ref_count_(new int(1))
 {
-    alloc(w, h, bpp, type);
+    unchecked_alloc(w, h, bpp, type);
 }
 
-Surface::Surface(int w, int h, int bpp) : Surface()
+Surface::Surface(int w, int h, int bpp) : ref_count_(new int(1))
 {
-    alloc(w, h, bpp);
+    unchecked_alloc(w, h, bpp);
 }
 
-Surface::Surface(int w, int h) : Surface()
+Surface::Surface(int w, int h) : ref_count_(new int(1))
 {
-    alloc(w, h);
+    unchecked_alloc(w, h);
 }
 
 // Copy
@@ -105,7 +105,6 @@ Surface::Surface(Surface&& surface)
     surface.ref_count_ = new int(0);
     surface.width_ = 0;
     surface.height_ = 0;
-    assert(!(*ref_count_ <= 0 && data != nullptr));
 }
 
 // Assignment
@@ -152,7 +151,6 @@ Surface& Surface::operator=(Surface&& rhs)
         rhs.ref_count_ = new int(0);
         rhs.width_ = 0;
         rhs.height_ = 0;
-        assert(!(*rhs.ref_count_ <= 0 && rhs.data != nullptr));
     }
     return *this;
 }
@@ -165,13 +163,12 @@ Surface::~Surface()
     std::cerr << ", data: " << data;
 #endif
 
-    // Note that *ref_count_ can be < 0 if we initialise without Surface data
-    // and then call reset.
+    // Note that --(*ref_count_) can be < 0 if we initialise without Surface
+    // data and then call reset.
     if (--(*ref_count_) <= 0) {
 #ifdef DEBUG_LOG
         std::cerr << " (deleting)";
 #endif
-        // Last reference
         SDL_FreeSurface(data);
         delete ref_count_;
         data = nullptr;
@@ -213,25 +210,8 @@ void Surface::alloc(int w, int h, int bpp, int type)
 
     // Free any previous data
     reset();
-
-    SDL_Surface* screen = Screen::video_surface();
-    SDL_Surface* surface = SDL_CreateRGBSurface(type, w, h, bpp, 
-                                                screen->format->Rmask, 
-                                                screen->format->Gmask,
-                                                screen->format->Bmask,
-                                                screen->format->Amask);
-    if (surface == NULL)
-        throw std::runtime_error("SDL_CreateRGBSurface() failed");
-
-    data = SDL_DisplayFormat(surface);
-    if (data == NULL) 
-        throw std::runtime_error("SDL_DisplayFormat() failed");
+    unchecked_alloc(w, h, bpp, type);
     *ref_count_ = 1;
-    SDL_FreeSurface(surface);
-
-    set_width(data->w);
-    set_height(data->h);
-    assert(!(*ref_count_ <= 0 && data != nullptr));
 
 #ifdef DEBUG_LOG
     std::cerr << "  done alloc surface (" << this << ")";
@@ -304,7 +284,7 @@ void Surface::load_alpha(const std::string path)
 void Surface::load_color_key(const std::string path)
 {
     reset();
-    unchecked_load_colorkey(path);
+    unchecked_load_color_key(path);
     *ref_count_ = 1;
 }
 
@@ -443,8 +423,7 @@ void Surface::unchecked_alloc(int w, int h, int bpp, int type)
 
     set_width(data->w);
     set_height(data->h);
-    assert(!(*ref_count_ <= 0 && data != nullptr));
-
+    
 #ifdef DEBUG_LOG
     std::cerr << "  done alloc surface (" << this << ")";
     std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
@@ -483,14 +462,13 @@ void Surface::unchecked_load(std::string path)
     check_for_transparency(surface, pinkfound, alphafound);
 
     if (pinkfound) {
-        load_color_key(path);
+        unchecked_load_color_key(path);
     } else if (alphafound) {
-        load_alpha(path);
+        unchecked_load_alpha(path);
     } else {
-        load_raw(path);
+        unchecked_load_raw(path);
     }
 
-    assert(!(*ref_count_ <= 0 && data != nullptr));
 #ifdef DEBUG_LOG
     std::cerr << "  done load (" << this << ")";
     std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
@@ -521,7 +499,7 @@ void Surface::unchecked_load_alpha(std::string path)
     }
 }
 
-void Surface::unchecked_load_colorkey(std::string path)
+void Surface::unchecked_load_color_key(std::string path)
 {
     unchecked_load_raw(path);
     set_color_key();
