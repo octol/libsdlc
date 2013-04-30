@@ -56,7 +56,7 @@ void BaseSurface::blit(const Sprite& sprite)
 {
 #ifdef DEBUG_LOG
     std::cerr << "blit: ";
-    std::cerr << sprite.name << " (" << &sprite << ")";
+    std::cerr << sprite.tag << " (" << &sprite << ")";
     std::cerr << ", ref: " << *sprite.ref_count_;
     std::cerr << " (" << sprite.ref_count_ << ")";
     std::cerr << ", data: " << sprite.data;

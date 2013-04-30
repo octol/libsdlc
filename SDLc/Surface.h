@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------
 
 #define USE_SDL_IMAGE
+#define DEBUG_LOG
 
 #include "BaseSurface.h"
 
@@ -50,7 +51,7 @@ public:
 
     // Make the current object independent from other Surfaces by duplicting
     // the underlying data.
-    int make_independent_copy();
+    void make_unique();
 
     void alloc(int w, int h, int bpp, int type);
     void alloc(int w, int h, int bpp);
@@ -73,11 +74,22 @@ protected:
     int set_width(int w);
     int set_height(int h);
 
+#ifdef DEBUG_LOG
+    int *ref_count_ = nullptr;
+#endif
+
 private:
     SDL_Surface* sdl_load(std::string path);
 
+    void unchecked_load(std::string path);
+    void unchecked_load_raw(std::string path);
+    void unchecked_load_alpha(std::string path);
+    void unchecked_load_colorkey(std::string path);
+
     // Used for reference counting SDL_Surface* data.
+#ifndef DEBUG_LOG
     int *ref_count_ = nullptr;
+#endif
 
     int width_ = 0;
     int height_ = 0;

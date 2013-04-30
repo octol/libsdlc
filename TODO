@@ -5,6 +5,9 @@ Plugins:
 TODO:
 -----
 
+- Add Color class.
+- Add Position class (what about velocity?)
+
 Surface rework
 - Implement internal_* load functions that does not call reset()
 - Constructors for Surface::alloc/load should not delegate to default constructor.

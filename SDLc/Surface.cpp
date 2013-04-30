@@ -189,19 +189,17 @@ Surface::~Surface()
 // Member Functions
 // -----------------------------------------------------------------------------
 
-int Surface::make_independent_copy()
+void Surface::make_unique()
 {
     SDL_Surface* new_data = SDL_DisplayFormat(data);
-    if (new_data) {
-        reset();                // Remove our current refence.
-        data = new_data;        // Replace with new data
-        *ref_count_ = 1;        // Set reference counting
-        set_width(data->w);
-        set_height(data->h);
-        return 0;
-    } else {
-        return -1;
-    }
+    if (!new_data)
+        throw std::runtime_error("SDL_DisplayFormat failed");
+
+    reset();                // Remove our current refence.
+    data = new_data;        // Replace with new data
+    *ref_count_ = 1;        // Set reference counting
+    set_width(data->w);
+    set_height(data->h);
 }
 
 void Surface::alloc(int w, int h, int bpp, int type)
@@ -272,10 +270,6 @@ void Surface::load(const std::string path)
     std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
     std::cerr << ", data: " << data;
     std::cerr << std::endl;
-#endif
-
-
-#ifdef DEBUG_LOG
     std::cerr << "  temp: "; 
 #endif
     Surface surface;
@@ -306,43 +300,31 @@ void Surface::load(const std::string path)
 void Surface::load_raw(const std::string path)
 {
     reset();
-    SDL_Surface* surface = sdl_load(path);
-
-    data = SDL_DisplayFormat(surface);
-    if (data == NULL) 
-        throw std::runtime_error("SDL_DisplayFormat() failed");
-
+    unchecked_load_raw(path);
     *ref_count_ = 1;
-    SDL_FreeSurface(surface);
 }
 
 void Surface::load_alpha(const std::string path)
 {
     reset();
-    SDL_Surface* surface = sdl_load(path);
-    
-    data = SDL_DisplayFormatAlpha(surface);
-    if (data == NULL) 
-        throw std::runtime_error("SDL_DisplayFormatAlpha() failed");
-
+    unchecked_load_alpha(path);
     *ref_count_ = 1;
-    SDL_FreeSurface(surface);
 }
 
 void Surface::load_color_key(const std::string path)
 {
-    load_raw(path);
-    set_color_key();
+    reset();
+    unchecked_load_colorkey(path);
+    *ref_count_ = 1;
 }
 
 void Surface::set_color_key()
 {
     SDL_Surface* screen = Screen::video_surface();
+    uint32_t c = SDL_MapRGB(screen->format, 255, 0, 255);
 
-    if (SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, 
-                        SDL_MapRGB(screen->format, 255, 0, 255)) == -1) {
+    if (SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, c) == -1) 
         throw std::runtime_error("SDL_SetColorKey() failed");
-    }
 }
 
 void Surface::reset()
@@ -436,14 +418,76 @@ SDL_Surface* Surface::sdl_load(std::string path)
     surface = IMG_Load(path.c_str());
 #endif
 
-    if (surface == NULL) {
+    if (surface == NULL) 
         throw std::runtime_error("Surface::sdl_load(): " 
                                 + std::string(SDL_GetError()));
-    } else {
-        width_ = surface->w;
-        height_ = surface->h;
-    }
+
+    width_ = surface->w;
+    height_ = surface->h;
 
     return surface;
 }
+
+void Surface::unchecked_load(std::string path)
+{
+#ifdef DEBUG_LOG
+    std::cerr << "load (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+    std::cerr << "  temp: "; 
+#endif
+    Surface surface;
+#ifdef DEBUG_LOG
+    std::cerr << "  (&surface)" << std::endl;
+#endif
+    surface.load_alpha(path);
+    bool pinkfound = false, alphafound = false;
+    check_for_transparency(surface, pinkfound, alphafound);
+
+    if (pinkfound) {
+        load_color_key(path);
+    } else if (alphafound) {
+        load_alpha(path);
+    } else {
+        load_raw(path);
+    }
+
+    assert(!(*ref_count_ <= 0 && data != nullptr));
+#ifdef DEBUG_LOG
+    std::cerr << "  done load (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
+}
+
+void Surface::unchecked_load_raw(std::string path)
+{
+    SDL_Surface* surface = sdl_load(path);
+    data = SDL_DisplayFormat(surface);
+    SDL_FreeSurface(surface);
+    if (data == NULL) {
+        data = nullptr;
+        throw std::runtime_error("SDL_DisplayFormat() failed");
+    }
+}
+
+void Surface::unchecked_load_alpha(std::string path)
+{
+    SDL_Surface* surface = sdl_load(path);
+    data = SDL_DisplayFormatAlpha(surface);
+    SDL_FreeSurface(surface);
+    if (data == NULL) {
+        data = nullptr;
+        throw std::runtime_error("SDL_DisplayFormatAlpha() failed");
+    }
+}
+
+void Surface::unchecked_load_colorkey(std::string path)
+{
+    unchecked_load_raw(path);
+    set_color_key();
+}
+
 } // namespace sdlc
