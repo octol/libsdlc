@@ -136,7 +136,6 @@ void Surface::make_unique()
 
     reset();                // Remove our current refence.
     data = new_data;        // Replace with new data
-    //*ref_count_ = 1;        // Set reference counting
     set_width(data->w);
     set_height(data->h);
 }
