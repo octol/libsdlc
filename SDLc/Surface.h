@@ -75,7 +75,7 @@ protected:
     int set_height(int h);
 
 #ifdef DEBUG_LOG
-    int *ref_count_ = nullptr;
+    std::size_t *ref_count_ = nullptr;
 #endif
 
 private:
@@ -91,7 +91,7 @@ private:
 
     // Used for reference counting SDL_Surface* data.
 #ifndef DEBUG_LOG
-    int *ref_count_ = nullptr;
+    std::size_t *ref_count_ = nullptr;
 #endif
 
     int width_ = 0;
