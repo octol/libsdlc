@@ -65,11 +65,11 @@ Surface::Surface(int w, int h) : ref_count_(new std::size_t(1))
 
 // Copy
 Surface::Surface(const Surface& surface)
-    : ref_count_(surface.ref_count_),
+    : BaseSurface(surface.data),
+      ref_count_(surface.ref_count_),
       width_(surface.width_),
       height_(surface.height_)
 {
-    data = surface.data;
     ++(*ref_count_);
 #ifdef DEBUG_LOG
     std::cerr << "cc (" << this << ")";

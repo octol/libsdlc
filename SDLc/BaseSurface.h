@@ -99,6 +99,7 @@ public:
 
 protected:
     BaseSurface() {};
+    BaseSurface(SDL_Surface* d) : data(d) {};
     BaseSurface(const BaseSurface& base_surface) = delete;
     BaseSurface(BaseSurface&& rhs) = delete;
     const BaseSurface& operator=(const BaseSurface& rhs) = delete;
