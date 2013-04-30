@@ -54,15 +54,6 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src)
 
 void BaseSurface::blit(const Sprite& sprite)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "blit: ";
-    std::cerr << sprite.tag << " (" << &sprite << ")";
-    std::cerr << ", ref: " << *sprite.ref_count_;
-    std::cerr << " (" << sprite.ref_count_ << ")";
-    std::cerr << ", data: " << sprite.data;
-    std::cerr << std::endl;
-#endif
-
     SDL_Rect src_rect;
 
     src_rect.x = static_cast<int16_t>((sprite.current_frame_ - 1) 

@@ -30,22 +30,11 @@ namespace sdlc {
 
 Surface::Surface() : ref_count_(new std::size_t(1))
 {
-#ifdef DEBUG_LOG
-    std::cerr << "init (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data << std::endl;
-#endif
 }
 
 Surface::Surface(std::string path) : ref_count_(new std::size_t(1))
 {
-#ifdef DEBUG_LOG
-    std::cerr << "loading " << path << " (" << this << ")" << std::endl;
-#endif
     unchecked_load(path);
-#ifdef DEBUG_LOG
-    std::cerr << "  data is now: " << data << std::endl;
-#endif
 }
 
 Surface::Surface(int w, int h, int bpp, int type) : ref_count_(new std::size_t(1))
@@ -71,11 +60,6 @@ Surface::Surface(const Surface& surface)
       height_(surface.height_)
 {
     ++(*ref_count_);
-#ifdef DEBUG_LOG
-    std::cerr << "cc (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data << std::endl;
-#endif
 }
 
 // Move
@@ -84,9 +68,6 @@ Surface::Surface(Surface&& surface)
       width_(surface.width_),
       height_(surface.height_)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "move: (" << this << ")" << std::endl;
-#endif
     data = surface.data;
     surface.data = nullptr;
     surface.ref_count_ = new std::size_t(1);
@@ -97,9 +78,6 @@ Surface::Surface(Surface&& surface)
 // Assignment
 Surface& Surface::operator=(const Surface& rhs)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "as: (" << this << ")" << std::endl;
-#endif
     if (this != &rhs) {
         ++(*rhs.ref_count_);
         if (--(*ref_count_) == 0) {
@@ -118,10 +96,6 @@ Surface& Surface::operator=(const Surface& rhs)
 // Move assignment
 Surface& Surface::operator=(Surface&& rhs)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "as move: (" << this << ")" << std::endl;
-    std::cerr << std::endl;
-#endif
     if (this != &rhs) {
         if (--(*ref_count_) == 0) {
             SDL_FreeSurface(data);
@@ -143,24 +117,10 @@ Surface& Surface::operator=(Surface&& rhs)
 
 Surface::~Surface()
 {
-#ifdef DEBUG_LOG
-    std::cerr << "Destroying surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-#endif
-
-    // Note that --(*ref_count_) can be < 0 if we initialise without Surface
-    // data and then call reset.
     if (--(*ref_count_) == 0) {
-#ifdef DEBUG_LOG
-        std::cerr << " (deleting)";
-#endif
         SDL_FreeSurface(data);
         delete ref_count_;
     }
-#ifdef DEBUG_LOG
-    std::cerr << std::endl;
-#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -182,23 +142,9 @@ void Surface::make_unique()
 
 void Surface::alloc(int w, int h, int bpp, int type)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "alloc surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
-
     // Free any previous data
     reset();
     unchecked_alloc(w, h, bpp, type);
-
-#ifdef DEBUG_LOG
-    std::cerr << "  done alloc surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
 }
 
 void Surface::alloc(int w, int h, int bpp)
@@ -215,17 +161,7 @@ void Surface::alloc(int w, int h)
 
 void Surface::load(const std::string path)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "load (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-    std::cerr << "  temp: "; 
-#endif
     Surface surface;
-#ifdef DEBUG_LOG
-    std::cerr << "  (&surface)" << std::endl;
-#endif
     surface.load_alpha(path);
     bool pinkfound = false, alphafound = false;
     check_for_transparency(surface, pinkfound, alphafound);
@@ -237,13 +173,6 @@ void Surface::load(const std::string path)
     } else {
         load_raw(path);
     }
-
-#ifdef DEBUG_LOG
-    std::cerr << "  done load (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
 }
 
 void Surface::load_raw(const std::string path)
@@ -275,24 +204,10 @@ void Surface::set_color_key()
 
 void Surface::reset()
 {
-#ifdef DEBUG_LOG
-    std::cerr << "Reset surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-#endif
- 
-    // Note that *ref_count_ can be < 0 after decrementing if we initialise
-    // without Surface data and then call reset.
     if (--(*ref_count_) == 0) {
-#ifdef DEBUG_LOG
-        std::cerr << " (deleting)";
-#endif
         SDL_FreeSurface(data);
         delete ref_count_;
     }
-#ifdef DEBUG_LOG
-    std::cerr << std::endl;
-#endif
 
     // Restore plain constructor state.
     data = nullptr;
@@ -301,14 +216,6 @@ void Surface::reset()
     height_ = 0;
 
     ref_count_ = new std::size_t(1);
-
-#ifdef DEBUG_LOG
-    assert(!(*ref_count_ <= 0 && data != nullptr));
-    std::cerr << "  done reset surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
 }
 
 Surface* Surface::enable_per_pixel_alpha() const
@@ -374,13 +281,6 @@ SDL_Surface* Surface::sdl_load(std::string path)
 
 void Surface::unchecked_alloc(int w, int h, int bpp, int type)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "alloc surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
-
     SDL_Surface* screen = Screen::video_surface();
     SDL_Surface* surface = SDL_CreateRGBSurface(type, w, h, bpp, 
                                                 screen->format->Rmask, 
@@ -397,13 +297,6 @@ void Surface::unchecked_alloc(int w, int h, int bpp, int type)
 
     set_width(data->w);
     set_height(data->h);
-    
-#ifdef DEBUG_LOG
-    std::cerr << "  done alloc surface (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
 }
 
 void Surface::unchecked_alloc(int w, int h, int bpp)
@@ -420,17 +313,7 @@ void Surface::unchecked_alloc(int w, int h)
 
 void Surface::unchecked_load(std::string path)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "load (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-    std::cerr << "  temp: "; 
-#endif
     Surface surface;
-#ifdef DEBUG_LOG
-    std::cerr << "  (&surface)" << std::endl;
-#endif
     surface.load_alpha(path);
     bool pinkfound = false, alphafound = false;
     check_for_transparency(surface, pinkfound, alphafound);
@@ -442,13 +325,6 @@ void Surface::unchecked_load(std::string path)
     } else {
         unchecked_load_raw(path);
     }
-
-#ifdef DEBUG_LOG
-    std::cerr << "  done load (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data;
-    std::cerr << std::endl;
-#endif
 }
 
 void Surface::unchecked_load_raw(std::string path)

@@ -28,28 +28,14 @@ namespace sdlc {
 
 Sprite::Sprite() 
 { 
-#ifdef DEBUG_LOG
-    std::cerr << "Sprite init (" << this << ")";
-    std::cerr << std::endl;
-#endif
 }
 
 Sprite::Sprite(std::string path) : Surface(path)
 { 
-#ifdef DEBUG_LOG
-    std::cerr << "Sprite init (" << this << ")";
-    std::cerr << ", loading " << path;
-    std::cerr << std::endl;
-#endif
 }
 
 Sprite::Sprite(const Surface& surface) : Surface(surface)
 {
-#ifdef DEBUG_LOG
-    std::cerr << "Sprite cc (" << this << ")";
-    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
-    std::cerr << ", data: " << data << std::endl;
-#endif
 }
 
 Sprite::Sprite(int w, int h, int bpp, int type) : Surface(w, h, bpp, type)

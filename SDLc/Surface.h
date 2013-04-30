@@ -24,7 +24,6 @@
 // -----------------------------------------------------------------------------
 
 #define USE_SDL_IMAGE
-#define DEBUG_LOG
 
 #include "BaseSurface.h"
 
@@ -74,10 +73,6 @@ protected:
     int set_width(int w);
     int set_height(int h);
 
-#ifdef DEBUG_LOG
-    std::size_t *ref_count_ = nullptr;
-#endif
-
 private:
     SDL_Surface* sdl_load(std::string path);
 
@@ -90,9 +85,7 @@ private:
     void unchecked_load_color_key(std::string path);
 
     // Used for reference counting SDL_Surface* data.
-#ifndef DEBUG_LOG
     std::size_t *ref_count_ = nullptr;
-#endif
 
     int width_ = 0;
     int height_ = 0;
