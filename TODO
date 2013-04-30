@@ -13,6 +13,9 @@ Surface rework
 - Constructors for Surface::alloc/load should not delegate to default constructor.
 - Check that Surface new/delete is exception safe.
 
+Surface
+- Replace the big if check in alloc with bitwise check.
+
 BaseSurface
 - Line functions are far to verbose.
 

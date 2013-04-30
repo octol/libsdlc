@@ -81,6 +81,9 @@ protected:
 private:
     SDL_Surface* sdl_load(std::string path);
 
+    void unchecked_alloc(int w, int h, int bpp, int type);
+    void unchecked_alloc(int w, int h, int bpp);
+    void unchecked_alloc(int w, int h);
     void unchecked_load(std::string path);
     void unchecked_load_raw(std::string path);
     void unchecked_load_alpha(std::string path);

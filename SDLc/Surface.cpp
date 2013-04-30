@@ -244,17 +244,7 @@ void Surface::alloc(int w, int h, int bpp, int type)
 void Surface::alloc(int w, int h, int bpp)
 {
     SDL_Surface* screen = Screen::video_surface();
-
-    if (screen->flags == SDL_SWSURFACE || 
-        screen->flags == (SDL_SWSURFACE | SDL_FULLSCREEN)) {
-        alloc(w, h, bpp, SDL_SWSURFACE);
-    } else if (screen->flags == SDL_HWSURFACE || 
-               screen->flags == (SDL_HWSURFACE | SDL_FULLSCREEN) || 
-               screen->flags == (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) {
-        alloc(w, h, bpp, SDL_HWSURFACE);
-    } else {
-        throw std::invalid_argument("Surface::alloc() undefined video mode");
-    }
+    alloc(w, h, bpp, screen->flags & SDL_HWSURFACE);
 }
 
 void Surface::alloc(int w, int h)
@@ -426,6 +416,53 @@ SDL_Surface* Surface::sdl_load(std::string path)
     height_ = surface->h;
 
     return surface;
+}
+
+void Surface::unchecked_alloc(int w, int h, int bpp, int type)
+{
+#ifdef DEBUG_LOG
+    std::cerr << "alloc surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
+
+    SDL_Surface* screen = Screen::video_surface();
+    SDL_Surface* surface = SDL_CreateRGBSurface(type, w, h, bpp, 
+                                                screen->format->Rmask, 
+                                                screen->format->Gmask,
+                                                screen->format->Bmask,
+                                                screen->format->Amask);
+    if (surface == NULL)
+        throw std::runtime_error("SDL_CreateRGBSurface() failed");
+
+    data = SDL_DisplayFormat(surface);
+    SDL_FreeSurface(surface);
+    if (data == NULL) 
+        throw std::runtime_error("SDL_DisplayFormat() failed");
+
+    set_width(data->w);
+    set_height(data->h);
+    assert(!(*ref_count_ <= 0 && data != nullptr));
+
+#ifdef DEBUG_LOG
+    std::cerr << "  done alloc surface (" << this << ")";
+    std::cerr << ", ref: " << *ref_count_ << " (" << ref_count_ << ")";
+    std::cerr << ", data: " << data;
+    std::cerr << std::endl;
+#endif
+}
+
+void Surface::unchecked_alloc(int w, int h, int bpp)
+{
+    SDL_Surface* screen = Screen::video_surface();
+    unchecked_alloc(w, h, bpp, screen->flags & SDL_HWSURFACE);
+}
+
+void Surface::unchecked_alloc(int w, int h)
+{
+    SDL_Surface* screen = Screen::video_surface();
+    unchecked_alloc(w, h, screen->format->BitsPerPixel);
 }
 
 void Surface::unchecked_load(std::string path)
