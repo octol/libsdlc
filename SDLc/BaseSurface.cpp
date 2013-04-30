@@ -78,8 +78,10 @@ void BaseSurface::set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
     uint32_t color = SDL_MapRGB(data->format, r, g, b);
     if (data->format->BitsPerPixel > 16) {
+#pragma GCC diagnostic ignored "-Wconversion"
         *((uint32_t*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
     } else {
+#pragma GCC diagnostic ignored "-Wconversion"
         *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
     }
 }
@@ -123,8 +125,11 @@ void BaseSurface::blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8
     uint8_t red, green, blue;
     get_pix(x, y, &red, &green, &blue);
 
+#pragma GCC diagnostic ignored "-Wconversion"
     red = ((a * (r - red)) >> 8) + red;
+#pragma GCC diagnostic ignored "-Wconversion"
     green = ((a * (g - green)) >> 8) + green;
+#pragma GCC diagnostic ignored "-Wconversion"
     blue = ((a * (b - blue)) >> 8) + blue;
 
     set_pix(x, y, red, green, blue);
@@ -190,6 +195,7 @@ void BaseSurface::fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b,
     uint32_t pixel = *((uint32_t*)data->pixels + ((y * data->pitch) >> 1) + x);
 #endif
 #ifdef OPTIMIZE_SCREEN_WIDTH_640
+#pragma GCC diagnostic ignored "-Wconversion"
     uint32_t pixel = *((uint32_t*)data->pixels + y * 640 + x);
 #endif
     SDL_GetRGBA(pixel, data->format, r, g, b, a);
@@ -353,6 +359,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
         blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
@@ -363,6 +370,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
             blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         }
     }
@@ -386,6 +394,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
         blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
@@ -396,6 +405,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
             blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         }
     }
@@ -419,6 +429,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
         blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
@@ -429,6 +440,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
             blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
@@ -452,6 +464,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
         blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
@@ -462,6 +475,7 @@ void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, 
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
             blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
@@ -626,6 +640,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
         fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
@@ -636,6 +651,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
             fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
         }
     }
@@ -659,6 +675,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
         fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
@@ -669,6 +686,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
             fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
         }
     }
@@ -692,6 +710,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
 
         alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
         fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (xPoint1 < xPoint2) {
             xPoint1++;
@@ -702,6 +721,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
             }
             alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
             fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
@@ -725,6 +745,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
 
         alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
         fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
         fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         while (yPoint1 < yPoint2) {
             yPoint1++;
@@ -735,6 +756,7 @@ void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
             }
             alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
             fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
+#pragma GCC diagnostic ignored "-Wconversion"
             fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
@@ -824,6 +846,7 @@ void BaseSurface::draw_char(int x, int y, char c, uint32_t color)
                     *((uint32_t*)data->pixels + yTmp * data->pitch / 4 + xTmp) 
                         = color;
                 else
+#pragma GCC diagnostic ignored "-Wconversion"
                     *((uint16_t*)data->pixels + yTmp * data->pitch / 2 + xTmp) 
                         = color;
             }

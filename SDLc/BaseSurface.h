@@ -171,8 +171,11 @@ void BaseSurface::fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, 
 {
     uint8_t red = 0, green = 0, blue = 0;
     fast_get_pix(x, y, &red, &green, &blue);
+#pragma GCC diagnostic ignored "-Wconversion"
     red = ((a * (r - red)) >> 8) + red;
+#pragma GCC diagnostic ignored "-Wconversion"
     green = ((a * (g - green)) >> 8) + green;
+#pragma GCC diagnostic ignored "-Wconversion"
     blue = ((a * (b - blue)) >> 8) + blue;
     fast_set_pix(x, y, red, green, blue);
 }
@@ -188,11 +191,15 @@ void BaseSurface::fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b)
 #endif
 
     uint8_t tmp;
+#pragma GCC diagnostic ignored "-Wconversion"
     tmp = (pixel & 63488) >> 11;
+#pragma GCC diagnostic ignored "-Wconversion"
     *r = (uint8_t)(tmp << 3) + (tmp >> 5);
     tmp = (pixel & 2016) >> 5;
+#pragma GCC diagnostic ignored "-Wconversion"
     *g = (uint8_t)(tmp << 2) + (tmp >> 5);
     tmp = (pixel & 31) >> 0;
+#pragma GCC diagnostic ignored "-Wconversion"
     *b = (uint8_t)(tmp << 3) + (tmp >> 5);
 }
 
