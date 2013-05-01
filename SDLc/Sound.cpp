@@ -30,7 +30,7 @@ Sound::Sound() : ref_count_(new std::size_t(1))
 {
 }
 
-Sound::Sound(const std::string path) : Sound()
+Sound::Sound(std::string path) : Sound()
 {
     unchecked_load(path);
 }

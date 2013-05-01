@@ -21,22 +21,23 @@
 
 #include <string>
 #include "SDL_mixer.h"
+#include "Audio.h"
 
 namespace sdlc {
 
-class Sound final {
+class Sound final : public Audio {
 public:
     Sound();
-    explicit Sound(const std::string path);
+    explicit Sound(std::string path);
     Sound(const Sound& sound);
     Sound(Sound&& sound);
     Sound& operator=(const Sound& sound);
     Sound& operator=(Sound&& sound);
     ~Sound();
 
-    void load(const std::string path);
-    void reset();
-    void play(int iterations);
+    virtual void load( std::string path) override;
+    virtual void reset() override;
+    virtual void play(int iterations) override;
 
     int channel() const;
     int set_channel(int value);

@@ -47,6 +47,7 @@ nobase_libsdlc_include_HEADERS = SDLc.h \
 				 SDLc/Sprite.h \
 				 SDLc/Timer.h \
 				 SDLc/Mixer.h \
+				 SDLc/Audio.h \
 				 SDLc/Music.h \
 				 SDLc/Sound.h
 

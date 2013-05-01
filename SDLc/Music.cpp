@@ -31,7 +31,7 @@ Music::Music() : ref_count_(new std::size_t(1))
 {
 }
 
-Music::Music(const std::string path) : Music()
+Music::Music(std::string path) : Music()
 {
     unchecked_load(path);
 }
