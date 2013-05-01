@@ -3,7 +3,7 @@ m4_include(m4/acx_pthread.m4)
 
 AC_PREREQ([2.68])
 AC_INIT([libSDLc],
-        [0.4.3],
+        [0.5.0],
         [jon@haeggblad.com],
         [libsdlc],
         [http://github.com/octol/libsdlc])
@@ -14,7 +14,7 @@ AM_INIT_AUTOMAKE
 LT_INIT([disable-static])
 
 AC_SUBST([LIBSDLC_SO_VERSION],[2:0:0])
-AC_SUBST([LIBSDLC_API_VERSION],[0.4.3])
+AC_SUBST([LIBSDLC_API_VERSION],[0.5.0])
 
 #-------------------------------------------------------------------------------
 # Checks for programs.

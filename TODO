@@ -5,24 +5,15 @@ Plugins:
 TODO:
 -----
 
-- Go over all error suppressions.
+- Copy and swap.
 - Add Color class.
 - Add Position class (what about velocity?)
 
 Surface rework
-- Implement internal_* load functions that does not call reset()
-- Constructors for Surface::alloc/load should not delegate to default constructor.
 - Check that Surface new/delete is exception safe.
-
-Surface
-- Replace the big if check in alloc with bitwise check.
-
-BaseSurface
-- Line functions are far to verbose.
 
 Mixer
 - Decide how global functions such as volume and fadeout best is treated.
-- Give Sound and Music common base class.
 
 Timer
 - Limit the amount that the frame time can increase / decrease per step.

@@ -3,7 +3,17 @@ NEWS
 
 This file contains various news and updates regarding the development of SDLc.
 
-* Mon, 29 Apr 2013 17:30:00 +0100L Jon Haggblad <jon@haeggblad.com>
+* Wed, 01 May 2013 16:58:17 +0100: Jon Haggblad <jon@haeggblad.com>
+
+    SDLc 0.5.0 includes a rewrite of the reference counting more in line
+    with how Koening does it. Decided to remove the debug logging introduced
+    earlier, mainly for code clarity, but also since I don't think it is
+    particularly useful. The ugly line functions in BaseSurface have been
+    cleaned up a bit. Although it is not used anywhere yet, I decided to
+    create an abstract base class for the Sound and Music classes which
+    might be useful in the future.
+
+* Mon, 29 Apr 2013 17:30:00 +0100: Jon Haggblad <jon@haeggblad.com>
 
     0.4.2 is a minor release with just a few tweaks. Instead of printing error
     messages to stderr, exceptions are now being thrown. The old enums
