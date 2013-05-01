@@ -31,7 +31,7 @@ public:
     Font();
     explicit Font(std::string path);
 
-    void load(const std::string path);
+    void load(std::string path);
     Surface* get_char(char c) const;
 
 private:

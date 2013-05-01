@@ -33,7 +33,7 @@ Font::Font()
         i = std::make_shared<sdlc::Surface>();
 }
 
-Font::Font(const std::string path) : Font()
+Font::Font(std::string path) : Font()
 {
     load(path);
 }
@@ -42,7 +42,7 @@ Font::Font(const std::string path) : Font()
 // Member Functions
 // -----------------------------------------------------------------------------
 
-void Font::load(const std::string path)
+void Font::load(std::string path)
 {
     Surface src;
     src.load_raw(path);

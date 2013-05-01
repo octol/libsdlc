@@ -71,10 +71,6 @@ public:
     void line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
     void line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
 
-    // These are 16 bit only
-    void fast_line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
-    void fast_line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
-
     void fill_rect(int x, int y, int w, int h, uint8_t r, uint8_t g, uint8_t b);
 
     // The alpha value of the entire surface
@@ -172,12 +168,9 @@ void BaseSurface::fast_blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, 
 {
     uint8_t red = 0, green = 0, blue = 0;
     fast_get_pix(x, y, &red, &green, &blue);
-#pragma GCC diagnostic ignored "-Wconversion"
-    red = ((a * (r - red)) >> 8) + red;
-#pragma GCC diagnostic ignored "-Wconversion"
-    green = ((a * (g - green)) >> 8) + green;
-#pragma GCC diagnostic ignored "-Wconversion"
-    blue = ((a * (b - blue)) >> 8) + blue;
+    red = (uint8_t)(((a * (r - red)) >> 8) + red);
+    green = (uint8_t)(((a * (g - green)) >> 8) + green);
+    blue = (uint8_t)(((a * (b - blue)) >> 8) + blue);
     fast_set_pix(x, y, red, green, blue);
 }
 
@@ -192,16 +185,12 @@ void BaseSurface::fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b)
 #endif
 
     uint8_t tmp;
-#pragma GCC diagnostic ignored "-Wconversion"
-    tmp = (pixel & 63488) >> 11;
-#pragma GCC diagnostic ignored "-Wconversion"
-    *r = (uint8_t)(tmp << 3) + (tmp >> 5);
-    tmp = (pixel & 2016) >> 5;
-#pragma GCC diagnostic ignored "-Wconversion"
-    *g = (uint8_t)(tmp << 2) + (tmp >> 5);
+    tmp = (uint8_t)((pixel & 63488) >> 11);
+    *r = (uint8_t)((tmp << 3) + (tmp >> 5));
+    tmp = (uint8_t)((pixel & 2016) >> 5);
+    *g = (uint8_t)((tmp << 2) + (tmp >> 5));
     tmp = (pixel & 31) >> 0;
-#pragma GCC diagnostic ignored "-Wconversion"
-    *b = (uint8_t)(tmp << 3) + (tmp >> 5);
+    *b = (uint8_t)((tmp << 3) + (tmp >> 5));
 }
 
 inline

@@ -69,11 +69,9 @@ void BaseSurface::set_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
     uint32_t color = SDL_MapRGB(data->format, r, g, b);
     if (data->format->BitsPerPixel > 16) {
-#pragma GCC diagnostic ignored "-Wconversion"
         *((uint32_t*)data->pixels + ((y * data->pitch) >> 2) + x) = color;
     } else {
-#pragma GCC diagnostic ignored "-Wconversion"
-        *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = color;
+        *((uint16_t*)data->pixels + ((y * data->pitch) >> 1) + x) = (uint16_t)color;
     }
 }
 
@@ -116,12 +114,9 @@ void BaseSurface::blend_pix(int x, int y, uint8_t r, uint8_t g, uint8_t b, uint8
     uint8_t red, green, blue;
     get_pix(x, y, &red, &green, &blue);
 
-#pragma GCC diagnostic ignored "-Wconversion"
-    red = ((a * (r - red)) >> 8) + red;
-#pragma GCC diagnostic ignored "-Wconversion"
-    green = ((a * (g - green)) >> 8) + green;
-#pragma GCC diagnostic ignored "-Wconversion"
-    blue = ((a * (b - blue)) >> 8) + blue;
+    red = (uint8_t)(((a * (r - red)) >> 8) + red);
+    green = (uint8_t)(((a * (g - green)) >> 8) + green);
+    blue = (uint8_t)(((a * (b - blue)) >> 8) + blue);
 
     set_pix(x, y, red, green, blue);
 }
@@ -186,569 +181,120 @@ void BaseSurface::fast_get_pix(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b,
     uint32_t pixel = *((uint32_t*)data->pixels + ((y * data->pitch) >> 1) + x);
 #endif
 #ifdef OPTIMIZE_SCREEN_WIDTH_640
-#pragma GCC diagnostic ignored "-Wconversion"
     uint32_t pixel = *((uint32_t*)data->pixels + y * 640 + x);
 #endif
     SDL_GetRGBA(pixel, data->format, r, g, b, a);
 }
 #endif
 
-// This implementation seems far too verbose. Need to make this more
-// compact.
 void BaseSurface::line(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
-    int xPoint1, yPoint1, xPoint2, yPoint2;
-    int dx, dy;
-    int rValue;
+    int X1, Y1, X2, Y2, dx, dy, R;
     float m = (float)(y2 - y1) / (float)(x2 - x1);
 
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 0 && m < 1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
+    if ((x1 < x2) || (y1 < y2)) { 
+        X1 = x1; Y1 = y1; X2 = x2; Y2 = y2; 
+    } else { 
+        X1 = x2; Y1 = y2; X2 = x1; Y2 = y1; 
+    }
+    dx = X2 - X1; 
+    dy = Y2 - Y1;
+    set_pix(X1, Y1, r, g, b);
 
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
+    if (m > -1 && m < 1) {
+        R = ((dx - dy) / 2);
 
-        set_pix(xPoint1, yPoint1, r, g, b);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue + dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 + 1;
+        while (X1 < X2) {
+            X1++; 
+            R = (m >= 0) ? R + dy : R - dy;
+            if (R >= dx) {
+                Y1 = (m >=0) ? Y1 + 1 : Y1 - 1;
+                R -= dx;
             }
-            set_pix(xPoint1, yPoint1, r, g, b);
+            set_pix(X1, Y1, r, g, b);
         }
     }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
+    else if (m >= 1 || m <= -1) {
+        R = -((dx - dy) / 2);
 
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        set_pix(xPoint1, yPoint1, r, g, b);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue + dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 + 1;
+        while (Y1 < Y2) {
+            Y1++;
+            R = (m <= -1) ? R - dx : R + dx;
+            if (R >= dy) {
+                X1 = (m <= -1) ? X1 - 1 : X1 + 1;
+                R -= dy;
             }
-            set_pix(xPoint1, yPoint1, r, g, b);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m < 0 && m > -1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        set_pix(xPoint1, yPoint1, r, g, b);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue - dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 - 1;
-            }
-            set_pix(xPoint1, yPoint1, r, g, b);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m <= -1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        set_pix(xPoint1, yPoint1, r, g, b);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue - dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 - 1;
-            }
-            set_pix(xPoint1, yPoint1, r, g, b);
+            set_pix(X1, Y1, r, g, b);
         }
     }
 }
 
-// TODO: This implementation seems far too verbose. Need to make this more
-// compact.
 void BaseSurface::line_aa(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
-    int xPoint1, yPoint1, xPoint2, yPoint2;
-    int dx, dy;
-    int rValue;
+    int X1, Y1, X2, Y2, dx, dy, R;
+    float m = (float)(y2 - y1) / (float)(x2 - x1);
     uint8_t alpha;
-    float m = (float)(y2 - y1) / (float)(x2 - x1);
 
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 0 && m < 1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
+    if ((x1 < x2) || (y1 < y2)) {
+        X1 = x1; Y1 = y1; X2 = x2; Y2 = y2; 
+    } else { 
+        X1 = x2; Y1 = y2; X2 = x1; Y2 = y1; 
+    }
+
+    dx = X2 - X1; dy = Y2 - Y1;
+    if (m > -1 && m < 1) {
+        R = ((dx - dy) / 2);
+
+        alpha = (uint8_t)(((float)R / (float)dx) * 255);
+        if (m >= 0) {
+            blend_pix(X1, Y1, r, g, b, alpha);
+            blend_pix(X1, Y1 - 1, r, g, b, (uint8_t)(255 - alpha));
         } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
+            blend_pix(X1, Y1 - 1, r, g, b, alpha);
+            blend_pix(X1, Y1, r, g, b, (uint8_t)(255 - alpha));
         }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue + dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 + 1;
+        while (X1 < X2) {
+            X1++; 
+            R = (m >= 0) ? R + dy : R - dy;
+            if (R >= dx) {
+                Y1 = (m >= 0) ? Y1 + 1 : Y1 - 1;
+                R -= dx;
             }
-            alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
+            alpha = (uint8_t)(((float)R / (float)dx) * 255);
+            if (m >= 0) {
+                blend_pix(X1, Y1, r, g, b, alpha);
+                blend_pix(X1, Y1 - 1, r, g, b, (uint8_t)(255 - alpha));
+            } else {
+                blend_pix(X1, Y1 - 1, r, g, b, alpha);
+                blend_pix(X1, Y1, r, g, b, (uint8_t)(255 - alpha));
+            }
         }
     }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
+    else if (m >= 1 || m <= -1) {
+        R = -((dx - dy) / 2);
+
+        alpha = (uint8_t)(((float)R / (float)dy) * 255);
+        if (m >= 1) {
+            blend_pix(X1, Y1, r, g, b, alpha);
+            blend_pix(X1 - 1, Y1, r, g, b, (uint8_t)(255 - alpha));
         } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
+            blend_pix(X1 - 1, Y1, r, g, b, alpha);
+            blend_pix(X1, Y1, r, g, b, (uint8_t)(255 - alpha));
         }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue + dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 + 1;
+        while (Y1 < Y2) {
+            Y1++;
+            R = (m <= -1) ? R - dx : R + dx;
+            if (R >= dy) {
+                X1 = (m <= -1) ? X1 - 1 : X1 + 1;
+                R -= dy;
             }
-            alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m < 0 && m > -1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue - dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 - 1;
+            if (m >= 1) {
+                blend_pix(X1, Y1, r, g, b, alpha);
+                blend_pix(X1 - 1, Y1, r, g, b, (uint8_t)(255 - alpha));
+            } else {
+                blend_pix(X1 - 1, Y1, r, g, b, alpha);
+                blend_pix(X1, Y1, r, g, b, (uint8_t)(255 - alpha));
             }
-            alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m <= -1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue - dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 - 1;
-            }
-            alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        }
-    }
-}
-
-// TODO: This implementation seems far too verbose. Need to make this more
-// compact.
-void BaseSurface::fast_line(int x1, int y1, int x2, int y2,
-                           uint8_t r, uint8_t g, uint8_t b)
-{
-    int xPoint1, yPoint1, xPoint2, yPoint2;
-    int dx, dy;
-    int rValue;
-    float m = (float)(y2 - y1) / (float)(x2 - x1);
-
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 0 && m < 1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        fast_set_pix(xPoint1, yPoint1, r, g, b);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue + dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 + 1;
-            }
-            fast_set_pix(xPoint1, yPoint1, r, g, b);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        fast_set_pix(xPoint1, yPoint1, r, g, b);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue + dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 + 1;
-            }
-            fast_set_pix(xPoint1, yPoint1, r, g, b);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m < 0 && m > -1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        fast_set_pix(xPoint1, yPoint1, r, g, b);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue - dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 - 1;
-            }
-            fast_set_pix(xPoint1, yPoint1, r, g, b);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m <= -1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        fast_set_pix(xPoint1, yPoint1, r, g, b);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue - dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 - 1;
-            }
-            fast_set_pix(xPoint1, yPoint1, r, g, b);
-        }
-    }
-}
-
-// TODO: This implementation seems far too verbose. Need to make this more
-// compact.
-void BaseSurface::fast_line_aa(int x1, int y1, int x2, int y2,
-                             uint8_t r, uint8_t g, uint8_t b)
-{
-    int xPoint1, yPoint1, xPoint2, yPoint2;
-    int dx, dy;
-    int rValue;
-    uint8_t alpha;
-    float m = (float)(y2 - y1) / (float)(x2 - x1);
-
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 0 && m < 1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue + dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 + 1;
-            }
-            alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, 255 - alpha);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m >= 1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue + dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 + 1;
-            }
-            alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            fast_blend_pix(xPoint1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, 255 - alpha);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m < 0 && m > -1) {
-        if (x1 < x2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dx - dy) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-        fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        while (xPoint1 < xPoint2) {
-            xPoint1++;
-            rValue = rValue - dy;
-            if (rValue >= dx) {
-                rValue = rValue - dx;
-                yPoint1 = yPoint1 - 1;
-            }
-            alpha = (uint8_t)(((float)rValue / (float)dx) * 255);
-            fast_blend_pix(xPoint1, yPoint1 - 1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        }
-    }
-    ////////////////////////////////////////////////////////////////////////////
-    if (m <= -1) {
-        if (y1 < y2) {
-            xPoint1 = x1;
-            yPoint1 = y1;
-            xPoint2 = x2;
-            yPoint2 = y2;
-        } else {
-            xPoint1 = x2;
-            yPoint1 = y2;
-            xPoint2 = x1;
-            yPoint2 = y1;
-        }
-
-        dx = xPoint2 - xPoint1;
-        dy = yPoint2 - yPoint1;
-        rValue = ((dy - dx) / 2);
-
-        alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-        fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-        fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
-        while (yPoint1 < yPoint2) {
-            yPoint1++;
-            rValue = rValue - dx;
-            if (rValue >= dy) {
-                rValue = rValue - dy;
-                xPoint1 = xPoint1 - 1;
-            }
-            alpha = (uint8_t)(((float)rValue / (float)dy) * 255);
-            fast_blend_pix(xPoint1 - 1, yPoint1, r, g, b, alpha);
-#pragma GCC diagnostic ignored "-Wconversion"
-            fast_blend_pix(xPoint1, yPoint1, r, g, b, 255 - alpha);
         }
     }
 }
@@ -808,6 +354,8 @@ void BaseSurface::print(int x, int y, uint32_t value, Font& font)
 // Private Functions
 // -----------------------------------------------------------------------------
 
+// Returns a character used for fixed font printing when we don't want to
+// load the font from a bitmap.
 void BaseSurface::draw_char(int x, int y, char c, uint32_t color)
 {
     extern unsigned char fontdata[8 * 256];
@@ -817,38 +365,35 @@ void BaseSurface::draw_char(int x, int y, char c, uint32_t color)
     uint8_t bits[8] = { 128, 64, 32, 16, 8, 4, 2, 1 };
     uint8_t* bitpos;
     uint8_t* curpos;
-    int xTmp, yTmp;
+    int xx, yy;
 
-    /* Variable setup */
+    // Variable setup
     k = (uint8_t)c;
     k = k * 8;
     charpos = fontdata;
     charpos = charpos + k;
 
-    /* Drawing loop */
+    // Drawing loop 
     curpos = (uint8_t*)data->pixels;
-    xTmp = x;
-    yTmp = y;
+    xx = x;
+    yy = y;
     for (iy = 0; iy < 8; iy++) {
         bitpos = bits;
         for (ix = 0; ix < 8; ix++) {
             if ((*charpos & *bitpos) == *bitpos) {
                 if (data->format->BitsPerPixel > 16)
-                    *((uint32_t*)data->pixels + yTmp * data->pitch / 4 + xTmp) 
-                        = color;
+                    *((uint32_t*)data->pixels + yy * data->pitch / 4 + xx) = color;
                 else
-#pragma GCC diagnostic ignored "-Wconversion"
-                    *((uint16_t*)data->pixels + yTmp * data->pitch / 2 + xTmp) 
-                        = color;
+                    *((uint16_t*)data->pixels + yy * data->pitch / 2 + xx) = (uint16_t)color;
             }
 
             bitpos++;
             curpos += 4;
-            xTmp++;
+            xx++;
         }
         charpos++;
-        yTmp++;
-        xTmp = xTmp - 8;
+        yy++;
+        xx -= 8;
     }
 }
 

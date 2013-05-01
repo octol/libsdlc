@@ -48,20 +48,30 @@ public:
     Surface& operator=(Surface&& rhs);
     virtual ~Surface();
 
-    // Make the current object independent from other Surfaces by duplicting
-    // the underlying data.
+    // Make the current object independent from other Surfaces by
+    // duplicating the underlying data.
     void make_unique();
 
+    // Reset the object to an initial state equivalent to running the
+    // default constructor. Deletes the underlying data if this is the last
+    // reference.
+    void reset();
+
+    // Allocate an empty surface ready from drawing on/blitting to.
     void alloc(int w, int h, int bpp, int type);
     void alloc(int w, int h, int bpp);
     void alloc(int w, int h);
-    void load(const std::string path);
-    void load_raw(const std::string path);
-    void load_alpha(const std::string path);
-    void load_color_key(const std::string path);
-    void set_color_key();
-    void reset();
 
+    // Allocate and load the surface from a bitmap.
+    void load(std::string path);
+    void load_raw(std::string path);
+    void load_alpha(std::string path);
+    void load_color_key(std::string path);
+
+    // Sets the color key used for transparency.
+    void set_color_key();
+
+    // Returns a new surface where per-pixel alpha blending is supported.
     Surface* enable_per_pixel_alpha() const;
 
     int width() const;

@@ -130,14 +130,36 @@ Surface::~Surface()
 
 void Surface::make_unique()
 {
-    SDL_Surface* new_data = SDL_DisplayFormat(data);
-    if (!new_data)
-        throw std::runtime_error("SDL_DisplayFormat failed");
+    if (*ref_count_ != 1) {
+        SDL_Surface* new_data = nullptr;
+        if (data != nullptr) {
+            new_data = SDL_DisplayFormat(data);
+            if (!new_data)
+                throw std::runtime_error("SDL_DisplayFormat failed");
+        }
 
-    reset();                // Remove our current refence.
-    data = new_data;        // Replace with new data
-    set_width(data->w);
-    set_height(data->h);
+        --(*ref_count_);
+        ref_count_ = new std::size_t(1);
+        data = new_data;
+        width_ = data->w;
+        height_ = data->h;
+    }
+}
+
+void Surface::reset()
+{
+    if (--(*ref_count_) == 0) {
+        SDL_FreeSurface(data);
+        delete ref_count_;
+    }
+
+    // Restore plain constructor state.
+    data = nullptr;
+    ref_count_ = nullptr;
+    width_ = 0;
+    height_ = 0;
+
+    ref_count_ = new std::size_t(1);
 }
 
 void Surface::alloc(int w, int h, int bpp, int type)
@@ -175,19 +197,19 @@ void Surface::load(const std::string path)
     }
 }
 
-void Surface::load_raw(const std::string path)
+void Surface::load_raw(std::string path)
 {
     reset();
     unchecked_load_raw(path);
 }
 
-void Surface::load_alpha(const std::string path)
+void Surface::load_alpha(std::string path)
 {
     reset();
     unchecked_load_alpha(path);
 }
 
-void Surface::load_color_key(const std::string path)
+void Surface::load_color_key(std::string path)
 {
     reset();
     unchecked_load_color_key(path);
@@ -200,22 +222,6 @@ void Surface::set_color_key()
 
     if (SDL_SetColorKey(data, SDL_SRCCOLORKEY | SDL_RLEACCEL, c) == -1) 
         throw std::runtime_error("SDL_SetColorKey() failed");
-}
-
-void Surface::reset()
-{
-    if (--(*ref_count_) == 0) {
-        SDL_FreeSurface(data);
-        delete ref_count_;
-    }
-
-    // Restore plain constructor state.
-    data = nullptr;
-    ref_count_ = nullptr;
-    width_ = 0;
-    height_ = 0;
-
-    ref_count_ = new std::size_t(1);
 }
 
 Surface* Surface::enable_per_pixel_alpha() const
