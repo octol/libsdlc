@@ -21,8 +21,13 @@
 
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 namespace sdlc {
+
+const int FONT_GRID_W = 29;
+const int FONT_GRID_H = 3;
+const int FONT_GRID_LENGTH = FONT_GRID_W*FONT_GRID_H;
 
 class Surface;
 
@@ -33,11 +38,20 @@ public:
 
     void load(std::string path);
     Surface* get_char(char c) const;
+    Surface* operator[](char c) const;
 
 private:
+    typedef std::shared_ptr<sdlc::Surface> SharedSurface;
+    typedef std::array<SharedSurface,FONT_GRID_LENGTH> CharArray;
+    typedef std::unordered_map<char,int> CharMap;
+
+    CharArray& allocate_array(CharArray&, int width, int height) const;
+    CharArray& copy_array(CharArray&, const sdlc::Surface&, int width, int height) const;
+    CharMap set_char_hash() const;
     unsigned int map(int i, int j) const;
 
-    std::array<std::shared_ptr<sdlc::Surface>,256> gfx_;
+    CharArray gfx_;
+    CharMap loc_;
 };
 } // namespace sdlc
 #endif // SDLC_FONT_H

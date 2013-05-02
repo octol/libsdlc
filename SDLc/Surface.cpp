@@ -301,8 +301,8 @@ void Surface::unchecked_alloc(int w, int h, int bpp, int type)
     if (data == NULL) 
         throw std::runtime_error("SDL_DisplayFormat() failed");
 
-    set_width(data->w);
-    set_height(data->h);
+    width_ = data->w;
+    height_ = data->h;
 }
 
 void Surface::unchecked_alloc(int w, int h, int bpp)
@@ -342,6 +342,8 @@ void Surface::unchecked_load_raw(std::string path)
         data = nullptr;
         throw std::runtime_error("SDL_DisplayFormat() failed");
     }
+    width_ = data->w;
+    height_ = data->h;
 }
 
 void Surface::unchecked_load_alpha(std::string path)
@@ -353,6 +355,8 @@ void Surface::unchecked_load_alpha(std::string path)
         data = nullptr;
         throw std::runtime_error("SDL_DisplayFormatAlpha() failed");
     }
+    width_ = data->w;
+    height_ = data->h;
 }
 
 void Surface::unchecked_load_color_key(std::string path)

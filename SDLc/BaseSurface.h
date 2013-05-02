@@ -46,10 +46,10 @@ public:
 
     void lock();
     void unlock();
-    void blit(int x, int y, SDL_Surface* src, SDL_Rect rect);
-    void blit(int x, int y, SDL_Surface* src);
-    void blit(int x, int y, BaseSurface& src, SDL_Rect rect);
-    void blit(int x, int y, BaseSurface& src);
+    void blit(int x, int y, const SDL_Surface* src, const SDL_Rect rect);
+    void blit(int x, int y, const SDL_Surface* src);
+    void blit(int x, int y, const BaseSurface& src, const SDL_Rect rect);
+    void blit(int x, int y, const BaseSurface& src);
     void blit(const Sprite& sprite);
 
     // Drawing primitives
@@ -79,8 +79,8 @@ public:
 
     // Basic printing. Uses fixed font if not specified.
     // Note that max(value) = 999 999 999.
-    void print(int x, int y, const std::string text, uint8_t r, uint8_t g, uint8_t b);
-    void print(int x, int y, const std::string text, Font& font);
+    void print(int x, int y, std::string text, uint8_t r, uint8_t g, uint8_t b);
+    void print(int x, int y, std::string text, Font& font);
     void print(int x, int y, uint32_t value, uint8_t r, uint8_t g, uint8_t b);
     void print(int x, int y, uint32_t value, Font& font); 
 
@@ -125,13 +125,13 @@ void BaseSurface::unlock()
 }
 
 inline
-void BaseSurface::blit(int x, int y, BaseSurface& src, SDL_Rect rect) 
+void BaseSurface::blit(int x, int y, const BaseSurface& src, const SDL_Rect rect) 
 {
     blit(x, y, src.data, rect);
 }
 
 inline
-void BaseSurface::blit(int x, int y, BaseSurface& src)   
+void BaseSurface::blit(int x, int y, const BaseSurface& src)   
 {
     blit(x, y, src.data);
 }

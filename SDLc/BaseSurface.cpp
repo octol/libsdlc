@@ -26,7 +26,7 @@ namespace sdlc {
 // Member functions
 // -----------------------------------------------------------------------------
 
-void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
+void BaseSurface::blit(int x, int y, const SDL_Surface* src, const SDL_Rect rect)
 {
     SDL_Rect dst_rect;
 
@@ -35,11 +35,11 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src, SDL_Rect rect)
     dst_rect.w = rect.w;
     dst_rect.h = rect.h;
 
-    if (SDL_BlitSurface(src, &rect, data, &dst_rect) != 0) 
+    if (SDL_BlitSurface(const_cast<SDL_Surface*>(src), const_cast<SDL_Rect*>(&rect), data, &dst_rect) != 0) 
         throw std::runtime_error(SDL_GetError());
 }
 
-void BaseSurface::blit(int x, int y, SDL_Surface* src)
+void BaseSurface::blit(int x, int y, const SDL_Surface* src)
 {
     SDL_Rect dst_rect;
 
@@ -48,7 +48,7 @@ void BaseSurface::blit(int x, int y, SDL_Surface* src)
     dst_rect.w = static_cast<uint16_t>(data->w);
     dst_rect.h = static_cast<uint16_t>(data->h);
 
-    if (SDL_BlitSurface(src, NULL, data, &dst_rect) != 0) 
+    if (SDL_BlitSurface(const_cast<SDL_Surface*>(src), NULL, data, &dst_rect) != 0) 
         throw std::runtime_error(SDL_GetError());
 }
 
@@ -311,32 +311,22 @@ void BaseSurface::fill_rect(int x, int y, int w, int h, uint8_t r, uint8_t g, ui
     SDL_FillRect(data, &tmp, SDL_MapRGB(data->format, r, g, b));
 }
 
-void BaseSurface::print(int x, int y, const std::string text,
-                        uint8_t r, uint8_t g, uint8_t b)
+void BaseSurface::print(int x, int y, std::string text, uint8_t r, uint8_t g, uint8_t b)
 {
     lock();
     uint32_t color = SDL_MapRGB(data->format, r, g, b);
-    const char* cursor = text.c_str();
-    std::string::size_type length = text.length();
-
-    for (size_t i = 0; i < length; i++) {
-        draw_char(x, y, *cursor, color);
-        cursor++;
-        x += 8;
+    for (auto& c: text) {
+       draw_char(x, y, c, color);
+       x += 8;
     }
     unlock();
 }
 
 void BaseSurface::print(int x, int y, std::string text, Font& font)
 {
-    char* cursor = &text[0];
-    std::string::size_type length = text.length();
-
-    for (size_t i = 0; i < length; i++) {
-        blit(x, y, *font.get_char(*cursor));
-        x += (font.get_char(*cursor))->width();
-
-        cursor++;
+    for (auto& c : text) {
+        blit(x, y, *font[c]);
+        x += font[c]->width();
     }
 }
 

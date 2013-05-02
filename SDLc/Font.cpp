@@ -29,8 +29,6 @@ namespace sdlc {
 
 Font::Font()
 {
-    for (auto& i : gfx_) 
-        i = std::make_shared<sdlc::Surface>();
 }
 
 Font::Font(std::string path) : Font()
@@ -46,101 +44,76 @@ void Font::load(std::string path)
 {
     Surface src;
     src.load_raw(path);
+    int w = ((src.width() - 25) / 29);
+    int h = ((src.height() - 2) / 3);
 
-    int width = ((src.width() - 25) / 29);
-    int height = ((src.height() - 2) / 3);
+    // Create the surfaces for each character and then copy the actual
+    // characters.
+    gfx_ = copy_array(allocate_array(gfx_, w, h), src, w, h);
 
-    // Set the rectangles around each font
-    // The two-dimensional loop is due to the way the format of the font
-    // image.
-    SDL_Rect src_rect;
-    for (int j = 0; j < 3; j++) {
-        for (int i = 0; i < 29; i++) {
-            src_rect.x = i * (width + 1);
-            src_rect.y = j * (height + 1);
-            src_rect.w = width;
-            src_rect.h = height;
-
-            gfx_.at(map(i,j))->alloc(width, height);
-            gfx_.at(map(i,j))->set_color_key();
-            gfx_.at(map(i,j))->blit(0, 0, src, src_rect);
-        }
-    }
-
-    // Space is after the last character as it is now part of the font
-    // image.
-    gfx_.at(map(8,2))->alloc(width, height);
-    gfx_.at(map(8,2))->set_color_key();
-    gfx_.at(map(8,2))->fill_rect(0, 0, width, height, 255, 0, 255);
+    // Setup hash map
+    loc_ = set_char_hash();
 }
 
-// TODO: This can be made more elegant
 Surface* Font::get_char(char c) const
 {
-    // a-z :26
-    // 0-9 :10
-    // . , ! ? : = ( ) :8
-    // blank
-    // total: 45
+    return gfx_[loc_.at(c)].get();
+}
 
-    int i = 0;
-    int j = 0;
+Surface* Font::operator[](char c) const
+{
+    return get_char(c);
+}
 
-    if (c >= '0' && c <= '9') {
-        i = (int)c - (int)'0';
-        j = 1;
-    } else if (c >= 'a' && c <= 'z') {
-        i = (int)c - (int)'a';
-    } else if (c >= 'A' && c <= 'Z') {
-        i = (int)c - (int)'A';
-    //} else if (c == u'å' || c == u'Å') { 
-    //    i = 26;
-    //} else if (c == u'ä' || c == u'Ä') {
-    //    i = 27;
-    //} else if (c == u'ö' || c == u'Ö') {
-    //    i = 28;
-    } else if (c == '.') {
-        i = 0; j = 2;
-    } else if (c == ',') {
-        i = 1; j = 2;
-    } else if (c == '!') {
-        i = 2; j = 2;
-    } else if (c == '?') {
-        i = 3; j = 2;
-    } else if (c == ':') {
-        i = 4; j = 2;
-    } else if (c == '=') {
-        i = 5; j = 2;
-    } else if (c == '(') {
-        i = 6; j = 2;
-    } else if (c == ')') {
-        i = 7; j = 2;
-    } else if (c == ' ') {
-        return gfx_.at(map(8,2)).get();
-    } else {
-        throw std::invalid_argument("Undefined character");
+// -----------------------------------------------------------------------------
+// Private Functions
+// -----------------------------------------------------------------------------
+
+Font::CharArray& Font::allocate_array(CharArray& char_array, int width, int height) const
+{
+    for (auto& c : char_array) {
+        c = std::make_shared<sdlc::Surface>(width,height);
+        c->set_color_key();
     }
-    return gfx_[map(i,j)].get();
+    return char_array;
+}
+
+Font::CharArray& Font::copy_array(CharArray& char_array, const sdlc::Surface& src, int width, int height) const
+{
+    for (int j = 0; j < FONT_GRID_H; j++) {
+        for (int i = 0; i < FONT_GRID_W; i++) {
+            SDL_Rect src_rect;
+            src_rect.x = (int16_t)(i * (width + 1));
+            src_rect.y = (int16_t)(j * (height + 1));
+            src_rect.w = (int16_t)width;
+            src_rect.h = (int16_t)height;
+            char_array.at(map(i,j))->blit(0, 0, src, src_rect);
+        }
+    }
+    return char_array;
+}
+
+Font::CharMap Font::set_char_hash() const
+{
+    CharMap loc;
+
+    for (char c = 'a'; c <= 'z'; ++c) 
+        loc[c] = map((int)c - (int)'a', 0);
+    for (char c = 'A'; c <= 'A'; ++c)
+        loc[c] = map((int)c - (int)'A', 0);
+    for (char c = '0'; c <= '9'; ++c)
+        loc[c] = map((int)c - (int)'0', 1);
+
+    std::string misc = ".,!?:=() ";
+    for (std::string::size_type i = 0; i != misc.size(); ++i)
+        loc[misc[i]] = map((int)i, 2);
+
+    return std::move(loc);
 }
 
 unsigned int Font::map(int i, int j) const
 {
-    int offset = 0;
-
-    // alpha: j = 0
-    if (j == 0) {
-        offset += 0;
-    // numeric: j = 1
-    } else if (j == 1) {
-        offset += 26;
-    // other: j = 2
-    } else if (j == 2) {
-        offset += 26 + 10;
-    } else {
-        throw std::invalid_argument("Unexpected input");
-    }
-
-    return i + offset;
+    return i + j*FONT_GRID_W;
 }
 
 } // namespace sdlc

@@ -5,6 +5,7 @@ Plugins:
 TODO:
 -----
 
+- SurfaceLoader class to specify loader in Surface constructor.
 - Copy and swap.
 - Add Color class.
 - Add Position class (what about velocity?)
