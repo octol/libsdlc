@@ -3,6 +3,10 @@ NEWS
 
 This file contains various news and updates regarding the development of SDLc.
 
+* Thu, 02 May 2013 20:58:41 +0100: Jon Haggblad <jon@haeggblad.com>
+
+    Version 0.5.1 is a minor update, mainly cleaning up.
+
 * Wed, 01 May 2013 16:58:17 +0100: Jon Haggblad <jon@haeggblad.com>
 
     SDLc 0.5.0 includes a rewrite of the reference counting more in line

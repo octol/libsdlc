@@ -3,7 +3,7 @@ m4_include(m4/acx_pthread.m4)
 
 AC_PREREQ([2.68])
 AC_INIT([libSDLc],
-        [0.5.0],
+        [0.5.1],
         [jon@haeggblad.com],
         [libsdlc],
         [http://github.com/octol/libsdlc])
@@ -13,8 +13,8 @@ AC_CONFIG_HEADERS([config.h libsdlcconfig.h])
 AM_INIT_AUTOMAKE
 LT_INIT([disable-static])
 
-AC_SUBST([LIBSDLC_SO_VERSION],[2:0:0])
-AC_SUBST([LIBSDLC_API_VERSION],[0.5.0])
+AC_SUBST([LIBSDLC_SO_VERSION],[3:0:0])
+AC_SUBST([LIBSDLC_API_VERSION],[0.5.1])
 
 #-------------------------------------------------------------------------------
 # Checks for programs.
@@ -38,17 +38,17 @@ AC_LANG_POP([C++])
 #-------------------------------------------------------------------------------
 # Add development flags.
 #-------------------------------------------------------------------------------
-CXXFLAGS="-g -Og -std=gnu++11"
-CXXFLAGS="$CXXFLAGS -Wpedantic -Wall -W -Wextra"
-CXXFLAGS="$CXXFLAGS -Wcast-qual -Wwrite-strings"
-CXXFLAGS="$CXXFLAGS -Weffc++"
+#CXXFLAGS="-g -Og -std=gnu++11"
+#CXXFLAGS="$CXXFLAGS -Wpedantic -Wall -W -Wextra"
+#CXXFLAGS="$CXXFLAGS -Wcast-qual -Wwrite-strings"
+#CXXFLAGS="$CXXFLAGS -Weffc++"
 #CXXFLAGS="$CXXFLAGS -Wshadow"
-CXXFLAGS="$CXXFLAGS -Wconversion" 
-CXXFLAGS="$CXXFLAGS -Wfatal-errors"
-CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"
+#CXXFLAGS="$CXXFLAGS -Wconversion" 
+#CXXFLAGS="$CXXFLAGS -Wfatal-errors"
+#CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"
 #CXXFLAGS="$CXXFLAGS -fsanitize=address"
-CXXFLAGS="$CXXFLAGS -fno-inline"
-CXXFLAGS="$CXXFLAGS -fdiagnostics-color=auto"
+#CXXFLAGS="$CXXFLAGS -fno-inline"
+#CXXFLAGS="$CXXFLAGS -fdiagnostics-color=auto"
 
 #-------------------------------------------------------------------------------
 # Configure pthreads.

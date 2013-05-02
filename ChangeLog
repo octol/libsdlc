@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+v0.5.1: Thu, 02 May 2013 20:57:53 +0100
+    * Simplified to one load function in Surface.
+    * Font class completely restructured.
+
 v0.5.0: Wed, 01 May 2013 16:54:03 +0100
     * Redid reference counting to be more efficient.
     * General code cleanup for surface loading and allocating.
