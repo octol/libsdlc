@@ -32,9 +32,9 @@ Surface::Surface() : ref_count_(new std::size_t(1))
 {
 }
 
-Surface::Surface(std::string path) : Surface()
+Surface::Surface(std::string path, LoadType load_type) : Surface()
 {
-    unchecked_load(path);
+    unchecked_load(path, load_type);
 }
 
 Surface::Surface(int w, int h, int bpp, int type) : Surface()
@@ -181,38 +181,10 @@ void Surface::alloc(int w, int h)
     alloc(w, h, screen->format->BitsPerPixel);
 }
 
-void Surface::load(const std::string path)
-{
-    Surface surface;
-    surface.load_alpha(path);
-    bool pinkfound = false, alphafound = false;
-    check_for_transparency(surface, pinkfound, alphafound);
-
-    if (pinkfound) {
-        load_color_key(path);
-    } else if (alphafound) {
-        load_alpha(path);
-    } else {
-        load_raw(path);
-    }
-}
-
-void Surface::load_raw(std::string path)
+void Surface::load(const std::string path, enum LoadType load_type)
 {
     reset();
-    unchecked_load_raw(path);
-}
-
-void Surface::load_alpha(std::string path)
-{
-    reset();
-    unchecked_load_alpha(path);
-}
-
-void Surface::load_color_key(std::string path)
-{
-    reset();
-    unchecked_load_color_key(path);
+    unchecked_load(path, load_type);
 }
 
 void Surface::set_color_key()
@@ -242,6 +214,11 @@ Surface* Surface::enable_per_pixel_alpha() const
 // -----------------------------------------------------------------------------
 
 void Surface::check_for_transparency(Surface& s, bool& pink, bool& alpha)
+{
+    check_for_transparency(std::move(s), pink, alpha);
+}
+
+void Surface::check_for_transparency(Surface&& s, bool& pink, bool& alpha)
 {
     uint8_t r[4], g[4], b[4], a[4];
     int w = s.width();
@@ -317,52 +294,37 @@ void Surface::unchecked_alloc(int w, int h)
     unchecked_alloc(w, h, screen->format->BitsPerPixel);
 }
 
-void Surface::unchecked_load(std::string path)
+void Surface::unchecked_load(std::string path, enum LoadType load_type)
 {
-    Surface surface;
-    surface.load_alpha(path);
-    bool pinkfound = false, alphafound = false;
-    check_for_transparency(surface, pinkfound, alphafound);
+    if (load_type == LoadType::Auto) {
+        bool pinkfound = false, alphafound = false;
+        check_for_transparency(Surface(path, LoadType::Alpha), pinkfound, alphafound);
 
-    if (pinkfound) {
-        unchecked_load_color_key(path);
-    } else if (alphafound) {
-        unchecked_load_alpha(path);
+        if (pinkfound) {
+            unchecked_load(path, LoadType::Colorkey);
+        } else if (alphafound) {
+            unchecked_load(path, LoadType::Alpha);
+        } else {
+            unchecked_load(path, LoadType::Raw);
+        }
     } else {
-        unchecked_load_raw(path);
-    }
-}
-
-void Surface::unchecked_load_raw(std::string path)
-{
-    SDL_Surface* surface = sdl_load(path);
-    data = SDL_DisplayFormat(surface);
-    SDL_FreeSurface(surface);
-    if (data == NULL) {
-        data = nullptr;
-        throw std::runtime_error("SDL_DisplayFormat() failed");
-    }
-    width_ = data->w;
-    height_ = data->h;
-}
-
-void Surface::unchecked_load_alpha(std::string path)
-{
-    SDL_Surface* surface = sdl_load(path);
-    data = SDL_DisplayFormatAlpha(surface);
-    SDL_FreeSurface(surface);
-    if (data == NULL) {
-        data = nullptr;
-        throw std::runtime_error("SDL_DisplayFormatAlpha() failed");
+        SDL_Surface* surface = sdl_load(path);
+        if (load_type == LoadType::Alpha) {
+            data = SDL_DisplayFormatAlpha(surface);
+        } else {
+            data = SDL_DisplayFormat(surface);
+        }
+        SDL_FreeSurface(surface);
+        if (data == NULL) {
+            data = nullptr;
+            throw std::runtime_error("Setting display format failed");
+        }
+        if (load_type == LoadType::Colorkey) {
+            set_color_key();
+        }
     }
     width_ = data->w;
     height_ = data->h;
-}
-
-void Surface::unchecked_load_color_key(std::string path)
-{
-    unchecked_load_raw(path);
-    set_color_key();
 }
 
 } // namespace sdlc

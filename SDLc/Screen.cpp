@@ -115,10 +115,10 @@ void Screen::update_area(int x, int y, int w, int h)
         if (h > (data->h - y))
             h = (data->h - y);
 
-        update_r_[update_i_].x = x;
-        update_r_[update_i_].y = y;
-        update_r_[update_i_].w = w;
-        update_r_[update_i_].h = h;
+        update_r_[update_i_].x = (uint16_t)x;
+        update_r_[update_i_].y = (uint16_t)y;
+        update_r_[update_i_].w = (uint16_t)w;
+        update_r_[update_i_].h = (uint16_t)h;
 
         assert(update_i_ < 255);
         update_i_++;

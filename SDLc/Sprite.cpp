@@ -155,8 +155,8 @@ SDL_Rect Sprite::reduced_rect() const
 {
     SDL_Rect rect = Sprite::rect();
 
-    rect.x = rect.x + (int16_t)((float)rect.w * 0.25f);
-    rect.y = rect.y + (int16_t)((float)rect.h * 0.25f);
+    rect.x = (int16_t)(rect.x + ((float)rect.w * 0.25f));
+    rect.y = (int16_t)(rect.y + ((float)rect.h * 0.25f));
     rect.w = (int16_t)(rect.w * 0.5f);
     rect.h = (int16_t)(rect.h * 0.5f);
 

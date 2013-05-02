@@ -33,10 +33,12 @@
 
 namespace sdlc {
 
+enum class LoadType { Auto, Raw, Alpha, Colorkey };
+
 class Surface : public BaseSurface {
 public:
     Surface();
-    explicit Surface(std::string path);
+    explicit Surface(std::string path, enum LoadType = LoadType::Auto);
     Surface(int w, int h, int bpp, int type);
     Surface(int w, int h, int bpp);
     Surface(int w, int h);
@@ -63,10 +65,7 @@ public:
     void alloc(int w, int h);
 
     // Allocate and load the surface from a bitmap.
-    void load(std::string path);
-    void load_raw(std::string path);
-    void load_alpha(std::string path);
-    void load_color_key(std::string path);
+    void load(std::string path, enum LoadType = LoadType::Auto);
 
     // Sets the color key used for transparency.
     void set_color_key();
@@ -78,6 +77,7 @@ public:
     int height() const;
 
     static void check_for_transparency(Surface& s, bool& pink, bool& alpha);
+    static void check_for_transparency(Surface&& s, bool& pink, bool& alpha);
 
 protected:
     int set_width(int w);
@@ -89,10 +89,7 @@ private:
     void unchecked_alloc(int w, int h, int bpp, int type);
     void unchecked_alloc(int w, int h, int bpp);
     void unchecked_alloc(int w, int h);
-    void unchecked_load(std::string path);
-    void unchecked_load_raw(std::string path);
-    void unchecked_load_alpha(std::string path);
-    void unchecked_load_color_key(std::string path);
+    void unchecked_load(std::string path, enum LoadType = LoadType::Auto);
 
     // Used for reference counting SDL_Surface* data.
     std::size_t* ref_count_ = nullptr;

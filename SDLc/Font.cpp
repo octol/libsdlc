@@ -42,8 +42,7 @@ Font::Font(std::string path) : Font()
 
 void Font::load(std::string path)
 {
-    Surface src;
-    src.load_raw(path);
+    Surface src(path, LoadType::Raw);
     int w = ((src.width() - 25) / 29);
     int h = ((src.height() - 2) / 3);
 
