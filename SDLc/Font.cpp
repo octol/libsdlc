@@ -81,6 +81,9 @@ Font::CharArray& Font::copy_array(CharArray& char_array, const sdlc::Surface& sr
 {
     for (int j = 0; j < FONT_GRID_H; j++) {
         for (int i = 0; i < FONT_GRID_W; i++) {
+            if ((j == 1 && i > 9) || (j == 2 && i > 7))
+                break;
+
             SDL_Rect src_rect;
             src_rect.x = (int16_t)(i * (width + 1));
             src_rect.y = (int16_t)(j * (height + 1));
@@ -89,6 +92,10 @@ Font::CharArray& Font::copy_array(CharArray& char_array, const sdlc::Surface& sr
             char_array.at(map(i,j))->blit(0, 0, src, src_rect);
         }
     }
+
+    // blank is a special case.
+    char_array.at(map(8,2))->fill_rect(0, 0, width, height, 255, 0, 255);
+
     return char_array;
 }
 
@@ -98,7 +105,7 @@ Font::CharMap Font::set_char_hash() const
 
     for (char c = 'a'; c <= 'z'; ++c) 
         loc[c] = map((int)c - (int)'a', 0);
-    for (char c = 'A'; c <= 'A'; ++c)
+    for (char c = 'A'; c <= 'Z'; ++c)
         loc[c] = map((int)c - (int)'A', 0);
     for (char c = '0'; c <= '9'; ++c)
         loc[c] = map((int)c - (int)'0', 1);
