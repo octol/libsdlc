@@ -38,17 +38,10 @@ AC_LANG_POP([C++])
 #-------------------------------------------------------------------------------
 # Add development flags.
 #-------------------------------------------------------------------------------
-#CXXFLAGS="-g -Og -std=gnu++11"
-#CXXFLAGS="$CXXFLAGS -Wpedantic -Wall -W -Wextra"
-#CXXFLAGS="$CXXFLAGS -Wcast-qual -Wwrite-strings"
+CXXFLAGS="-g -Og -std=gnu++11 \
+    -Wall -W -Wextra -Wpedantic -Wcast-qual -Wwrite-strings -Wconversion \
+    -fno-omit-frame-pointer -fno-inline -fdiagnostics-color=auto"
 #CXXFLAGS="$CXXFLAGS -Weffc++"
-#CXXFLAGS="$CXXFLAGS -Wshadow"
-#CXXFLAGS="$CXXFLAGS -Wconversion" 
-#CXXFLAGS="$CXXFLAGS -Wfatal-errors"
-#CXXFLAGS="$CXXFLAGS -fno-omit-frame-pointer"
-#CXXFLAGS="$CXXFLAGS -fsanitize=address"
-#CXXFLAGS="$CXXFLAGS -fno-inline"
-#CXXFLAGS="$CXXFLAGS -fdiagnostics-color=auto"
 
 #-------------------------------------------------------------------------------
 # Configure pthreads.
