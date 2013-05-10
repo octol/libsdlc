@@ -42,10 +42,10 @@ public:
     Sprite(int w, int h, int bpp);
     Sprite(int w, int h);
 
-    Sprite(const Sprite& sprite) = default;
-    Sprite(Sprite&& sprite) = default;
-    Sprite& operator=(const Sprite& rhs) = default;
-    Sprite& operator=(Sprite&& rhs) = default;
+    Sprite(const Sprite&) = default;
+    Sprite(Sprite&&) = default;
+    Sprite& operator=(const Sprite&) = default;
+    Sprite& operator=(Sprite&&) = default;
     virtual ~Sprite();
 
     // Main functions
