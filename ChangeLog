@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+v0.5.2: Tue, 14 May 2013 08:01:50 +0100
+    * Several minor bugs fixed.
+
 v0.5.1: Thu, 02 May 2013 20:57:53 +0100
     * Simplified to one load function in Surface.
     * Font class completely restructured.
