@@ -339,7 +339,7 @@ void BaseSurface::print(int x, int y, uint32_t value, uint8_t r, uint8_t g, uint
 
 void BaseSurface::print(int x, int y, uint32_t value, Font& font)
 {
-    print(x, y, std::string(value), font);
+    print(x, y, std::to_string(value), font);
 }
 
 // -----------------------------------------------------------------------------
