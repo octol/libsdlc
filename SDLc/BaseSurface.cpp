@@ -16,9 +16,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with SDLc.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include "Font.h"
 #include "Sprite.h"
+
+#define SSTR( x ) dynamic_cast< std::ostringstream & >( ( std::ostringstream() << std::dec << x ) ).str()
 
 namespace sdlc {
 
@@ -332,12 +336,16 @@ void BaseSurface::print(int x, int y, std::string text, Font& font)
 
 void BaseSurface::print(int x, int y, uint32_t value, uint8_t r, uint8_t g, uint8_t b)
 {
-    print(x, y, std::to_string(value), r, g, b);
+    //print(x, y, std::to_string(value), r, g, b);
+    std::string str = SSTR(value);
+    print(x, y, str, r, g, b);
 }
 
 void BaseSurface::print(int x, int y, uint32_t value, Font& font)
 {
-    print(x, y, std::to_string(value), font);
+    //print(x, y, std::string(value), font);
+    std::string str = SSTR(value);
+    print(x, y, str, font);
 }
 
 // -----------------------------------------------------------------------------
