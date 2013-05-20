@@ -5,6 +5,7 @@ SDLc/.deps/
 SDLc/.dirstamp
 SDLc/.libs/
 SDLc/*.lo
+SDLc/*.o
 aclocal.m4
 autom4te.cache
 config.guess
