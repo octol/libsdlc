@@ -1,3 +1,7 @@
+AM_CPPFLAGS = $(SDL_CFLAGS) $(SDL_image_CFLAGS) $(SDL_mixer_CFLAGS)
+AM_LDFLAGS = $(SDL_LDFLAGS) $(SDL_image_LDFLAGS) $(SDL_mixer_LDFLAGS)
+LDADD = $(SDL_LIBS) $(SDL_image_LIBS) $(SDL_mixer_LIBS)
+
 ## Place generated object files (.o) into the same directory as their source
 ## files, in order to avoid collisions when non-recursive make is used.
 AUTOMAKE_OPTIONS = subdir-objects

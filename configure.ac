@@ -1,12 +1,8 @@
 m4_include(m4/ax_cxx_compile_stdcxx_11.m4)
 m4_include(m4/acx_pthread.m4)
 
-AC_PREREQ([2.68])
-AC_INIT([libSDLc],
-        [0.5.2],
-        [jon@haeggblad.com],
-        [libsdlc],
-        [http://github.com/octol/libsdlc])
+AC_PREREQ([2.69])
+AC_INIT([libSDLc],[0.5.2],[jon@haeggblad.com],[libsdlc],[http://www.haeggblad.com/libsdlc])
 AC_CONFIG_SRCDIR([README])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h libsdlcconfig.h])
@@ -15,6 +11,11 @@ LT_INIT([disable-static])
 
 AC_SUBST([LIBSDLC_SO_VERSION],[3:0:0])
 AC_SUBST([LIBSDLC_API_VERSION],[0.5.2])
+
+DEBUG_CXXFLAGS="-g -Og -std=gnu++11 \
+-Wall -W -Wextra -Wpedantic -Wcast-qual -Wwrite-strings -Wconversion \
+-fno-omit-frame-pointer -fno-inline -fdiagnostics-color=auto"
+#DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -Weffc++"
 
 #-------------------------------------------------------------------------------
 # Checks for programs.
@@ -34,14 +35,6 @@ AC_TYPE_SIZE_T
 AC_LANG_PUSH([C++])
 AX_CXX_COMPILE_STDCXX_11
 AC_LANG_POP([C++])
-
-#-------------------------------------------------------------------------------
-# Add development flags.
-#-------------------------------------------------------------------------------
-#CXXFLAGS="-g -Og -std=gnu++11 \
-#    -Wall -W -Wextra -Wpedantic -Wcast-qual -Wwrite-strings -Wconversion \
-#    -fno-omit-frame-pointer -fno-inline -fdiagnostics-color=auto"
-#CXXFLAGS="$CXXFLAGS -Weffc++"
 
 #-------------------------------------------------------------------------------
 # Configure pthreads.
@@ -68,39 +61,49 @@ AC_SUBST(PTHREAD_LIBS)
 # Check for SDL
 #-------------------------------------------------------------------------------
 SDL_VERSION=1.2.0
-AM_PATH_SDL($SDL_VERSION,:,
-	    AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
-)
-CFLAGS="$CFLAGS $SDL_CFLAGS"
-CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
-LIBS="$LIBS $SDL_LIBS"
+PKG_CHECK_MODULES(SDL,sdl >= $SDL_VERSION, [], 
+                  AC_MSG_ERROR([SDL library >= $SDL_VERSION not found!]))
+
+PKG_CHECK_MODULES(SDL_mixer, SDL_mixer >= $SDL_VERSION ,[],
+	          AC_MSG_ERROR([SDL_mixer library >= $SDL_VERSION not found]))
+
+PKG_CHECK_MODULES(SDL_image, SDL_image >= $SDL_VERSION ,[],
+	          AC_MSG_ERROR([SDL_image library >= $SDL_VERSION not found]))
 
 #-------------------------------------------------------------------------------
-# Check for SDL_mixer
+# Debug build switch
+# from http://www.bioinf.uni-freiburg.de/~mmann/HowTo/automake.html#debug
 #-------------------------------------------------------------------------------
-have_SDLmixer=no
-AC_CHECK_LIB(SDL_mixer, Mix_OpenAudio, have_SDLmixer=yes)
-if test x$have_SDLmixer != xyes; then
-    AC_MSG_ERROR([*** Can not find the SDL_mixer library
-Try: http://www.libsdl.org/projects/SDL_mixer/
-])
+AC_MSG_CHECKING([whether to enable the debug build])
+AC_ARG_ENABLE([debug],
+    [AS_HELP_STRING([--enable-debug],
+        [enable debug build (def=no)])],
+    [enable_debug="$enableval"],
+    [enable_debug=no])
+AC_MSG_RESULT([$enable_debug])
+
+if test x"$enable_debug" = x"yes"; then
+    AC_DEFINE([DEBUG],[],[Debug Mode])
+    CXXFLAGS="$DEBUG_CXXFLAGS"
+else
+    AC_DEFINE([NDEBUG],[],[Release Mode])
 fi
-LIBS="$LIBS -lSDL_mixer"
 
 #-------------------------------------------------------------------------------
-# Check for SDL_image
+# Output result
 #-------------------------------------------------------------------------------
-have_SDLimage=no
-AC_CHECK_LIB(SDL_image, IMG_Load_RW, have_SDLimage=yes)
-if test x$have_SDLimage != xyes; then
-    AC_MSG_ERROR([*** Can not find the SDL_image library
-Try: http://www.libsdl.org/projects/SDL_image/
-])
-fi
-LIBS="$LIBS -lSDL_image"
 
 # Override the template file name of the generated .pc file, so that there
 # is no need to rename the template file when the API version changes.
 AC_CONFIG_FILES([Makefile
                  libsdlc-${LIBSDLC_API_VERSION}.pc:libsdlc.pc.in])
+
 AC_OUTPUT
+AC_MSG_RESULT([
+    SDLc $VERSION is now configured
+
+    Source directory: $srcdir
+    Installation prefix: $prefix
+    C++ compiler: $CXX $CXXFLAGS
+    Debug build: $enable_debug
+])
