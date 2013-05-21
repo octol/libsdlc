@@ -31,7 +31,6 @@ AC_TYPE_SIZE_T
 #-------------------------------------------------------------------------------
 # Check for C++11.
 #-------------------------------------------------------------------------------
-#AC_LANG([C++])
 AC_LANG_PUSH([C++])
 AX_CXX_COMPILE_STDCXX_11
 AC_LANG_POP([C++])
@@ -97,7 +96,6 @@ fi
 # is no need to rename the template file when the API version changes.
 AC_CONFIG_FILES([Makefile
                  libsdlc-${LIBSDLC_API_VERSION}.pc:libsdlc.pc.in])
-
 AC_OUTPUT
 AC_MSG_RESULT([
     SDLc $VERSION is now configured
