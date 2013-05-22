@@ -9,7 +9,7 @@ AC_CONFIG_HEADERS([config.h libsdlcconfig.h])
 AM_INIT_AUTOMAKE
 LT_INIT([disable-static])
 
-AC_SUBST([LIBSDLC_SO_VERSION],[4:0:0])
+AC_SUBST([LIBSDLC_SO_VERSION],[4:0:1])
 AC_SUBST([LIBSDLC_API_VERSION],[0.5.3])
 
 DEBUG_CXXFLAGS="-g -Og -std=gnu++11 \
