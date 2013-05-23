@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+v0.5.3: Thu, 23 May 2013 07:42:44 +0100
+    * Updated the build scripts to be able to cross compile using Mingw.
+    * Added --enable-debug flag.
+
 v0.5.2: Tue, 14 May 2013 08:01:50 +0100
     * Several minor bugs fixed.
 

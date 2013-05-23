@@ -3,6 +3,13 @@ NEWS
 
 This file contains various news and updates regarding the development of SDLc.
 
+* Thu, 23 May 2013 07:43:32 +0100: Jon Haggblad <jon@haeggblad.com>
+
+    Anothor minor update, this time to fix the build scripts. Instead of
+    relying on the old AC_CHECK_LIB scrips, we now use the more modern
+    pkg-config. There is now a --enable-debug flag to the configure script so
+    that we don't have to manually edit the file to generate debug symbols.
+
 * Thu, 02 May 2013 20:58:41 +0100: Jon Haggblad <jon@haeggblad.com>
 
     Version 0.5.1 is a minor update, mainly cleaning up.
